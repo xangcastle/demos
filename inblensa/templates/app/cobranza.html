@@ -1,0 +1,161 @@
+{% extends "app/index.html" %}
+{% load humanize %}
+{% comment %}{% block static-navbar %}{% endblock static-navbar %}
+
+{% block aside-bar %}{% endblock aside-bar %}
+{% endcomment %}
+{% block breadcrums %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="page-title">
+            <h1>Cobranza<small></small></h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-money"></i></a></li>
+                <li class="active">Cobranza</li>
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock breadcrums %}
+
+{% block cuerpo %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-card recent-activites">
+            <!-- Start .panel -->
+            <div class="panel-heading">
+                <h4 class="panel-title">Listado de clientes</h4>
+                <div class="panel-actions">
+                    <a href="#" class="panel-action panel-action-toggle" data-panel-toggle></a>
+                    <a href="#" class="panel-action panel-action-dismiss" data-panel-dismiss></a>
+                </div>
+            </div>
+            <div class="panel-body">
+                <table id="basic-datatables" class="table table-bordered table-responsive dataTable" role="grid" aria-describedby="basic-datatables_info">
+                    <thead>
+                        <tr>
+                            <th width="200px">Identificación  <i class="fa fa-address-card fa-fw"></i></th>
+                            <th>Nombre <i class="fa fa-user fa-fw"></i></th>
+                            <th width="100px">Telefono <i class="fa fa-phone fa-fw"></i></th>
+                            <th width="130px">Saldo <i class="fa fa-money fa-fw"></i></th>
+                            <th width="130px">Acción <i class="fa fa-flash fa-fw"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for cliente in clientes %}
+                        <tr role="row">
+                            <td>{{ cliente.identificacion }}</td>
+                            <td>{{ cliente.nombre }}</td>
+                            <td>{{ cliente.telefono }}</td>
+                            <td>{{ cliente.saldo_cliente|floatformat:2|intcomma }}$</td>
+                            <td class="text-center">
+                                <a href="#" onclick="mostrarComentarios({{ cliente.id }}); return false;" class="tooltipstered" title="Agregue su comentario"><i class="fa fa-comment"></i></a> |
+                                <a href="../cobranza_cliente/?id={{ cliente.id }}" class="tooltipstered" title="Detalle de cuenta"><i class="fa fa-eye"></i></a> |
+                                <a href="#" onclick="mostrar_estado_cuenta({{ cliente.id }}); return false;" class="tooltipstered" title="Ver estado de cuenta"><i class="fa fa-book"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title">Comentarios</h4>
+                <small>Registre su comentario en la parte inferior</small>
+            </div>
+            <div class="modal-body">
+                <div class="nano has-scrollbar" style="height:240px">
+                    <div class="nano-content pad-all" tabindex="0" style="right: -17px;">
+                        <div id="conten-comentarios"></div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <textarea id="post-comment" name="post-comment" rows="2" placeholder="Su comentario aquí.." class="form-control"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <button id="comentar" class="btn btn-effect-ripple btn-primary">Enviar comentario</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+    <input id="clienteid" type="hidden">
+</div>
+
+<div class="modal fade in" id="modal-estado-cuenta-preview" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title">Factura</h4>
+            </div>
+            <div class="modal-body">
+                <iframe id="conten-estado-cuenta-preview" width="100%" style="height: 400px;"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock cuerpo %}
+{% block scripts-block %}
+    <script src="/static/app/js/data-tables/jquery.dataTables.js"></script>
+    <script src="/static/app/js/data-tables/dataTables.tableTools.js"></script>
+    <script src="/static/app/js/data-tables/dataTables.bootstrap.js"></script>
+    <script src="/static/app/js/data-tables/dataTables.responsive.js"></script>
+    <script src="/static/app/js/data-tables/tables-data.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#comentar").on('click',function () {
+                        var comment= $("#post-comment").val();
+                        var cliente = $("#clienteid").val();
+                        $.ajax({
+                            url:"../add_comentario_cliente/",
+                            type:"POST",
+                            dataType: 'json',
+                            data: {comentario:comment,id_cliente:cliente, csrfmiddlewaretoken: '{{ csrf_token }}'},
+                            success: function (result) {
+                                data=result[0];
+                                $("#post-comment").val("");
+                                mostrarComentarios(cliente);
+                            }
+                        });
+            });
+            $(".tooltipstered").tooltip();
+        });
+        function mostrarComentarios(id_cliente) {
+            $("#clienteid").val(id_cliente);
+            $.ajax({
+                url:"../get_comentario_cliente/?id=" + id_cliente,
+                type:"GET",
+                success:function (result) {
+                    $("#conten-comentarios").empty().html(result);
+                    $("#myModal").modal('show')
+                }
+            });
+        }
+        function mostrar_estado_cuenta(cliente) {
+            var $iframe = $("#conten-estado-cuenta-preview");
+            var url="../mostrar_estado_cuenta/?id_cliente=" + cliente;
+            $iframe.attr('src',url);
+            $("#modal-estado-cuenta-preview").modal('show');
+            return false;
+        }
+    </script>
+{% endblock %}
