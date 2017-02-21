@@ -19,4 +19,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^inblensa/', include("inblensa.urls")),
+    url(r'^realstate/', include("realstate.urls")),
 ]

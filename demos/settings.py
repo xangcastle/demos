@@ -38,7 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'import_export',
+    'django.contrib.humanize',
+    'fontawesome',
+    'geoposition',
     'inblensa',
+    'realstate',
 ]
 
 MIDDLEWARE = [
@@ -124,3 +128,36 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+
+# default uses locally shipped version at 'fontawesome/css/font-awesome.min.css'
+FONTAWESOME_CSS_URL = '//cdn.example.com/fontawesome-min.css'  # absolute url
+FONTAWESOME_CSS_URL = 'myapp/css/fontawesome.min.css'  # relative url
+
+GEOPOSITION_GOOGLE_MAPS_API_KEY = 'AIzaSyCqPdfjM76erNHpC9HR3azDso29bBX6L_c'
+
+
+#For email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_USE_TLS = True
+
+EMAIL_HOST = 'gator3004.hostgator.com'
+
+EMAIL_HOST_USER = 'jose.garcia@metropolitanadistribucion.com'
+
+#Must generate specific password for your app in [gmail settings][1]
+EMAIL_HOST_PASSWORD = 'N3wd3v3l0p'
+
+EMAIL_PORT = 465
+
+#This did the trick
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Variables para el envio por gmail
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'xangcastle@gmail.com'
+EMAIL_HOST_PASSWORD = 'ABcq12!@'
+EMAIL_PORT = 587
