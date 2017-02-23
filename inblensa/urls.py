@@ -103,8 +103,14 @@ urlpatterns = [
     url(r'^anular_recibo/', login_required(anular_recibo),
         name='anular_recibo'),
 
+
+    url(r'^json_import_inventario/', json_import_inventario,
+        name='json_import_inventario'),
     url(r'^execute_import_inventario/', execute_import_inventario,
         name='execute_import_inventario'),
+
+    url(r'^json_import_cliente/', json_import_cliente,
+        name='json_import_cliente'),
     url(r'^execute_import_cliente/', execute_import_cliente,
         name='execute_import_cliente'),
 
