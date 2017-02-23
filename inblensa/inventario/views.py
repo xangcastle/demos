@@ -1,4 +1,6 @@
 import json
+
+from django.utils.encoding import smart_str
 from ..dbmanager import *
 from django.core import serializers
 from django.db.models import Max
@@ -26,22 +28,22 @@ def get_productos(request):
     data = []
     filtro = request.GET.get('q')
     if not filtro:
-    # productos = Producto.objects.values('codigo', 'nombre', 'precio', 'imagen', 'categoria', 'marca').distinct()
+        # productos = Producto.objects.values('codigo', 'nombre', 'precio', 'imagen', 'categoria', 'marca').distinct()
         productos = local_sql_exec('SELECT DISTINCT codigo, nombre, precio, imagen, marca, ' +
-                               '(select sum(existencia) from inventario_bodega_detalle where producto_id in ' +
-                               '(select p.id from inventario_producto p where  p.codigo =p1.codigo)) as cantidad ' +
-                               'FROM inventario_producto p1 INNER  JOIN inventario_producto_categoria ' +
-                               'on p1.categoria_id=inventario_producto_categoria.id ' +
-                               'INNER JOIN inventario_producto_marca ' +
-                               'on p1.marca_id=inventario_producto_marca.id LIMIT 100')
+                                   '(select sum(existencia) from inblensa_bodega_detalle where producto_id in ' +
+                                   '(select p.id from inblensa_producto p where  p.codigo =p1.codigo)) as cantidad ' +
+                                   'FROM inblensa_producto p1 INNER  JOIN inblensa_producto_categoria ' +
+                                   'on p1.categoria_id=inblensa_producto_categoria.id ' +
+                                   'INNER JOIN inblensa_producto_marca ' +
+                                   'on p1.marca_id=inblensa_producto_marca.id LIMIT 100')
     else:
         productos = local_sql_exec('SELECT DISTINCT codigo, nombre, precio, imagen, marca, ' +
-                                   '(select sum(existencia) from inventario_bodega_detalle where producto_id in ' +
-                                   '(select p.id from inventario_producto p where  p.codigo =p1.codigo)) as cantidad ' +
-                                   'FROM inventario_producto p1 INNER  JOIN inventario_producto_categoria ' +
-                                   'on p1.categoria_id=inventario_producto_categoria.id ' +
-                                   'INNER JOIN inventario_producto_marca ' +
-                                   'on p1.marca_id=inventario_producto_marca.id ' +
+                                   '(select sum(existencia) from inblensa_bodega_detalle where producto_id in ' +
+                                   '(select p.id from inblensa_producto p where  p.codigo =p1.codigo)) as cantidad ' +
+                                   'FROM inblensa_producto p1 INNER  JOIN inblensa_producto_categoria ' +
+                                   'on p1.categoria_id=inblensa_producto_categoria.id ' +
+                                   'INNER JOIN inblensa_producto_marca ' +
+                                   'on p1.marca_id=inblensa_producto_marca.id ' +
                                    'WHERE codigo ILIKE \'%' + filtro + '%\' OR nombre ILIKE \'%' + filtro + '%\' '
                                    'OR marca ILIKE \'%' + filtro + '%\' LIMIT 100')
     if productos:
@@ -63,23 +65,22 @@ def get_productos(request):
 
 @csrf_exempt
 def get_productos_autocomplete(request):
-
     query = request.POST.get('query')
     data = []
     if query:
         # productos = Producto.objects.values('codigo', 'nombre', 'precio', 'imagen', 'categoria', 'marca').distinct()
         productos = local_sql_exec('SELECT DISTINCT p1.id, codigo, nombre, precio, imagen, marca, ' +
-                                   '(select sum(existencia) from inventario_bodega_detalle where producto_id in ' +
-                                   '(select p.id from inventario_producto p where  p.codigo =p1.codigo)) as cantidad, ' +
+                                   '(select sum(existencia) from inblensa_bodega_detalle where producto_id in ' +
+                                   '(select p.id from inblensa_producto p where  p.codigo =p1.codigo)) as cantidad, ' +
                                    'ibd.id as id_detalle ' +
-                                   'FROM inventario_producto p1 INNER  JOIN inventario_producto_categoria ' +
-                                   'on p1.categoria_id=inventario_producto_categoria.id ' +
-                                   'INNER JOIN inventario_producto_marca ' +
-                                   'on p1.marca_id=inventario_producto_marca.id ' +
-                                   'INNER JOIN inventario_bodega_detalle ibd on p1.id = ibd.producto_id  '
+                                   'FROM inblensa_producto p1 INNER  JOIN inblensa_producto_categoria ' +
+                                   'on p1.categoria_id=inblensa_producto_categoria.id ' +
+                                   'INNER JOIN inblensa_producto_marca ' +
+                                   'on p1.marca_id=inblensa_producto_marca.id ' +
+                                   'INNER JOIN inblensa_bodega_detalle ibd on p1.id = ibd.producto_id  '
                                    'WHERE codigo ILIKE \'%' + query + '%\' OR nombre ILIKE \'%' + query + '%\' ' +
-                                   'AND (select sum(existencia) from inventario_bodega_detalle where producto_id in ' +
-                                   '(select p.id from inventario_producto p where  p.codigo =p1.codigo)) >0 '
+                                   'AND (select sum(existencia) from inblensa_bodega_detalle where producto_id in ' +
+                                   '(select p.id from inblensa_producto p where  p.codigo =p1.codigo)) >0 '
                                    'OR marca ILIKE \'%' + query + '%\' LIMIT 20')
         if productos:
             for p in productos:
@@ -95,18 +96,18 @@ def get_productos_autocomplete(request):
             data = json.dumps(data)
         else:
             productos = local_sql_exec('SELECT DISTINCT p1.id, codigo, nombre, precio, imagen, marca, serie, ' +
-                                       '(select sum(existencia) from inventario_bodega_detalle where producto_id in ' +
-                                       '(select p.id from inventario_producto p where  p.codigo =p1.codigo)) as cantidad, ' +
+                                       '(select sum(existencia) from inblensa_bodega_detalle where producto_id in ' +
+                                       '(select p.id from inblensa_producto p where  p.codigo =p1.codigo)) as cantidad, ' +
                                        'ibd.id as id_detalle ' +
-                                       'FROM inventario_producto p1 INNER  JOIN inventario_producto_categoria ' +
-                                       'on p1.categoria_id=inventario_producto_categoria.id ' +
-                                       'INNER JOIN inventario_producto_marca ' +
-                                       'on p1.marca_id=inventario_producto_marca.id ' +
-                                       'INNER JOIN inventario_bodega_detalle ibd on p1.id = ibd.producto_id  '
+                                       'FROM inblensa_producto p1 INNER  JOIN inblensa_producto_categoria ' +
+                                       'on p1.categoria_id=inblensa_producto_categoria.id ' +
+                                       'INNER JOIN inblensa_producto_marca ' +
+                                       'on p1.marca_id=inblensa_producto_marca.id ' +
+                                       'INNER JOIN inblensa_bodega_detalle ibd on p1.id = ibd.producto_id  '
                                        'WHERE codigo ILIKE \'%' + query + '%\' OR nombre ILIKE \'%' + query + '%\' ' +
                                        'OR serie ILIKE \'%' + query + '%\'' +
-                                       'AND (select sum(existencia) from inventario_bodega_detalle where producto_id in ' +
-                                       '(select p.id from inventario_producto p where  p.codigo =p1.codigo)) >0 '
+                                       'AND (select sum(existencia) from inblensa_bodega_detalle where producto_id in ' +
+                                       '(select p.id from inblensa_producto p where  p.codigo =p1.codigo)) >0 '
                                        'OR marca ILIKE \'%' + query + '%\' LIMIT 20')
             if productos:
                 for p in productos:
@@ -570,7 +571,7 @@ def add_nuevo_recibo(request):
                 cancelacion=cancelacion,
                 usuario_creacion=request.user,
                 comentario=comentario
-                #fecha_cobro_ck=fecha_pos_cambio_ck
+                # fecha_cobro_ck=fecha_pos_cambio_ck
             )
             recibo.referencia = referencia
             recibo.save()
@@ -613,6 +614,63 @@ def mostrar_recibo_provicional_pdf(request):
 
 
 @csrf_exempt
+def json_import_inventario(request):
+    data = []
+    obj_json = {}
+    try:
+        try:
+            json_data = json.loads(smart_str(request.body))
+        except:
+            json_data = json.loads(smart_str(request.body).decode('ISO-8859-1'))
+
+        if not json_data:
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "No Jason Data"
+        else:
+            i = 321
+            for d in json_data:
+                i += 1
+
+                if not d["producto_existencia"]:
+                    existencia = 0
+                else:
+                    existencia = d["producto_existencia"]
+
+                if not d["producto_costo"]:
+                    costo = 0
+                else:
+                    costo = d["producto_costo"]
+
+                if not d["producto_precio"]:
+                    precio = 0
+                else:
+                    precio = d["producto_precio"]
+                Import_Imventario.objects.get_or_create(id=i,
+                                                        razon_social=d["razon_social"],
+                                                        producto_codigo=d["producto_codigo"],
+                                                        producto_serie=d["producto_serie"],
+                                                        producto_nombre=d["producto_nombre"],
+                                                        producto_existencia=existencia,
+                                                        producto_costo=costo,
+                                                        producto_precio=precio,
+                                                        producto_marca=d["producto_marca"],
+                                                        producto_categoria=d["producto_categoria"],
+                                                        producto_medida=d["producto_medida"],
+                                                        bodega=d["bodega"])
+
+            obj_json['code'] = 200
+            obj_json['mensaje'] = "Importacion exitosa!"
+
+    except Exception as e:
+        obj_json['code'] = 500
+        obj_json['mensaje'] = "Json invalido"
+
+    data.append(obj_json)
+    data = json.dumps(data)
+    return HttpResponse(data, content_type='application/json')
+
+
+@csrf_exempt
 def execute_import_inventario(request):
     data = []
     obj_json = {}
@@ -626,6 +684,7 @@ def execute_import_inventario(request):
     data.append(obj_json)
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
+
 
 def anular_recibo(request):
     data = []

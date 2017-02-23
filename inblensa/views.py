@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.utils.encoding import smart_str
 from .dbmanager import sql_exec
 from .html_to_pdf import render_to_pdf, render_to_excel
 from django.core import serializers
@@ -36,6 +37,7 @@ class index(TemplateView):
             context['total_vendido'] = 0.0
         return super(index, self).render_to_response(context)
 
+
 def reset_recibos(request):
     data = []
     obj_json = {}
@@ -56,6 +58,7 @@ def reset_ventas(request):
     data.append(obj_json)
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
+
 
 class perfil(TemplateView):
     template_name = "app/perfil.html"
@@ -106,6 +109,7 @@ class perfil(TemplateView):
             context['usuario'] = user
             context['empresas'] = Empresa.objects.all()
             return super(perfil, self).render_to_response(context)
+
 
 @csrf_exempt
 def save_profile(request):
@@ -164,7 +168,7 @@ class cobranza_cliente(TemplateView):
 
 
 def get_cliente_comentarios(request):
-    sql_exec('sql-segdel',  'SELECT * FROM CTB_BANCOS')
+    sql_exec('sql-segdel', 'SELECT * FROM CTB_BANCOS')
     if request.GET.get('id'):
         id_cliente = int(request.GET.get('id'))
         comentarios = Cliente.objects.get(id=id_cliente).comentarios.all()
@@ -571,6 +575,45 @@ def get_tipo_gestion_resultado(request):
     data = serializers.serialize("json", resultado)
     return HttpResponse(data, content_type='application/json')
 
+
+@csrf_exempt
+def json_import_cliente(request):
+    data = []
+    obj_json = {}
+    try:
+        try:
+            json_data = json.loads(smart_str(request.body))
+        except:
+            json_data = json.loads(smart_str(request.body).decode('ISO-8859-1'))
+        if not json_data:
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "No Jason Data"
+        else:
+            i = 321
+            for d in json_data:
+                i += 1
+                if d["identificacion"]:
+                    Import.objects.get_or_create(id=i,
+                                                 razon_social=d["razon_social"],
+                                                 numero_ruc=d["numero_ruc"],
+                                                 nombre=d["nombre"],
+                                                 identificacion=d["identificacion"],
+                                                 telefono=d["telefono"],
+                                                 direccion=d["direccion"],
+                                                 contacto=d["contacto"])
+
+            obj_json['code'] = 200
+            obj_json['mensaje'] = "Importacion exitosa!"
+
+    except Exception as e:
+        obj_json['code'] = 500
+        obj_json['mensaje'] = "Json invalido"
+
+    data.append(obj_json)
+    data = json.dumps(data)
+    return HttpResponse(data, content_type='application/json')
+
+
 @csrf_exempt
 def execute_import_cliente(request):
     data = []
@@ -600,9 +643,10 @@ def recuperacion(request):
     data = []
     ps = Recibo_Provicional.objects.filter(usuario_creacion=request.user, cerrado=False)
     data.append(("Numero", "Fecha", "Cliente", "Forma de Pago", "Comentario",
-        "Referencia", "Monto"))
+                 "Referencia", "Monto"))
     for p in ps:
-        data.append((p.no_recibo, format_fecha(p.fecha_creacion), p.cliente.nombre, p.forma_pago.forma_pago, p.comentario, p.referencia, p.monto))
+        data.append((p.no_recibo, format_fecha(p.fecha_creacion), p.cliente.nombre, p.forma_pago.forma_pago,
+                     p.comentario, p.referencia, p.monto))
     return render_to_excel("Recuperacion al Dia.xls", data)
 
 
