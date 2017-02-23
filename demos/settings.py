@@ -161,3 +161,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'xangcastle@gmail.com'
 EMAIL_HOST_PASSWORD = 'ABcq12!@'
 EMAIL_PORT = 587
+
+
+LOGIN_URL = '/admin/login/'
