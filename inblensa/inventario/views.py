@@ -618,7 +618,11 @@ def json_import_inventario(request):
     data = []
     obj_json = {}
     try:
-        json_data = json.loads(smart_str(request.body))
+        try:
+            json_data = json.loads(smart_str(request.body))
+        except:
+            json_data = json.loads(smart_str(request.body).decode('ISO-8859-1'))
+
         if not json_data:
             obj_json['code'] = 400
             obj_json['mensaje'] = "No Jason Data"
