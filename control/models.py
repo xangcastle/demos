@@ -10,7 +10,7 @@ def get_aplications(user):
     for a in Aplicacion.objects.all():
         if user.has_perm('control.' + a.name):
             ids.append(a.id)
-    apps = Aplicacion.objects.filter(id__in=ids)
+    apps = Aplicacion.objects.filter(id__in=ids).order_by('id')
     return apps
 
 
