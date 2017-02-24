@@ -1,1 +1,27 @@
 
+.special-button {
+  display: inline-block;
+  height: 100px;
+  width: 100px;
+  overflow: hidden;
+  position: relative;
+  background: #eee;
+  color: #333;
+  text-decoration: none;
+  border-radius: 15px;
+}
+.special-button:hover {
+  background: #333;
+  color: #fff;
+}
+.special-button-table {
+  display: table;
+  width: 100%;
+  height: 100%;
+}
+.special-button-cell {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  padding: 10px;
+}

@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+
+from colorfield.fields import ColorField
 from django.conf import settings
 from django.db import models
 
@@ -34,6 +36,8 @@ class Aplicacion(models.Model):
     name = models.CharField(max_length=25, null=True, verbose_name="nombre de la aplicacion")
     label = models.CharField(max_length=25, blank=True, null=True, verbose_name="etiqueta de la aplicacion")
     icono = models.ImageField(upload_to="iconos", null=True, blank=True)
+    background_color = ColorField(default='#FF0000')
+
 
     class Meta:
         verbose_name_plural = "aplicaciones"
@@ -45,4 +49,5 @@ class Aplicacion(models.Model):
 
 class Permiso(models.Model):
     class Meta:
+        #pass
         permissions = get_permission()
