@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from inventario.views import *
 from .views import *
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 
 urlpatterns = [
     url(r'^$', login_required(index.as_view()), name='inblensa_index'),

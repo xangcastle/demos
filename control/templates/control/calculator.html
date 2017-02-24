@@ -1,0 +1,529 @@
+<html><head>
+<title>Calculadora científica</title>
+</head><body text="#234567" vlink="#0000CC" alink="#0000FF" link="#0000CC" bgcolor="#FFFFFF" onload="document.racunalo.zadatak.focus()"><p align="center"><b><font color="#000000">Calculadora
+científica
+<script language="javascript">
+<!--
+// Scientific Calculator written by Eni Generalic - http://www.ktf-split.hr/~eni/
+// If you use a variant of this in your page, then please email me (eni@ktf-split.hr)
+
+var broj = "0"
+var tocka = 0
+var eksp = 0
+var eksponent = 3
+var rjesenje = 0
+var decimala = 0
+var enter = "";
+
+
+function memory(operator) {
+
+	document.racunalo.zadatak.focus();
+
+	if (operator == 1) {		// MS
+		document.racunalo.memorija.value = document.racunalo.rezultat.value
+	}
+	else if (operator == 2)	{	// MR
+		var memorija = document.racunalo.memorija.value;
+		if (memorija==0 || slovo(memorija.charAt(0))) {memorija = ""};
+		document.racunalo.zadatak.value += memorija
+	}
+	else if (operator == 3) {	// CLS
+		if (document.racunalo.zadatak.value == "") {
+			document.racunalo.rezultat.value = ""
+		}
+		else {
+			document.racunalo.zadatak.value = ""
+		}
+	}
+}
+
+
+function display(noviznak) {
+	if (noviznak=="")
+		{document.racunalo.zadatak.focus()}
+	else
+		{document.racunalo.rezultat.select()}
+}
+
+
+function dodajBroj(noviznak) {
+	document.racunalo.zadatak.focus();
+	document.racunalo.zadatak.value += noviznak
+}
+
+
+function izracunaj(zarez) {
+	var pitanje = "";
+	var mem = 0;
+
+	if (zarez >= 1) {
+		if (document.racunalo.zadatak.value == "") {
+			broj = document.racunalo.rezultat.value
+		}
+		else {
+	 	broj = document.racunalo.zadatak.value;
+			if (ubacirezultat(broj.charAt(0))) {
+				broj = document.racunalo.rezultat.value + broj
+			}
+		}
+	}
+
+	for (var i=0; i<broj.length; i++) {
+		if (broj.charAt(i) == ",") {pitanje += "."}
+		else if (broj.charAt(i) == " ") {}
+		else {pitanje += broj.charAt(i)}
+	}
+
+	if (operator(broj.charAt(broj.length-1))) {return false};
+	pitanje = eval("1*" + pitanje);
+
+	if (zarez > 1) {
+		pitanje = matematika(zarez, pitanje)
+	}
+
+	document.racunalo.oldrezultat.value = pitanje;
+
+	zaokruzi(pitanje);
+
+	document.racunalo.zadatak.value = "";
+	document.racunalo.zadatak.focus()
+}
+
+
+function matematika(zarez, rjesenje) {
+with (Math)
+{
+	if (zarez == 2) {
+		rjesenje = pow(rjesenje, 2)
+	}
+	else if (zarez == 3) {
+		rjesenje = sqrt(rjesenje)
+	}
+	else if (zarez == 4) {
+		rjesenje = -rjesenje
+	}
+	else if (zarez == 5) {
+		rjesenje = log(rjesenje)
+	}
+	else if (zarez == 6) {
+		rjesenje = pow(E, rjesenje)
+	}
+	else if (zarez == 7) {
+		rjesenje = 1/rjesenje
+	}
+	else if (zarez == 8) {
+		rjesenje = log(rjesenje)/LN10
+	}
+	else if (zarez == 9) {
+		rjesenje = pow(10, rjesenje)
+	}
+	else if (zarez >= 10 && zarez <= 12) {
+		if (zarez == 10) {
+			rjesenje = atan(rjesenje)
+		}
+		else if (zarez == 11) {
+			rjesenje = acos(rjesenje)
+		}
+		else if (zarez == 12) {
+			rjesenje = asin(rjesenje)
+		}
+
+		if (document.racunalo.stupnjevi[1].checked) {rjesenje = (rjesenje * 180) / PI}
+	}
+	else if (zarez >= 14 && zarez <= 16) {
+		if (document.racunalo.stupnjevi[1].checked)
+			{radijani = (rjesenje / 180) * PI}
+		else
+			{radijani = rjesenje};
+
+		if (zarez == 14) {
+			rjesenje = tan(radijani)
+		}
+		else if (zarez == 15) {
+			rjesenje = cos(radijani)
+		}
+		else if (zarez == 16) {
+			rjesenje = sin(radijani)
+		}
+	}
+	else if (zarez == 17) {
+		rjesenje = rjesenje/100
+	}
+	else if (zarez == 18) {
+		rjesenje = rjesenje/1000000
+	}
+	else if (zarez == 20) {
+		rjesenje = factorial(rjesenje)
+	}
+	else if (zarez == 21) {
+		eksponent = prompt("Introduce exponente:", 3);
+		rjesenje = pow(rjesenje, eksponent)
+	}
+	else if (zarez == 22) {
+		eksponent = prompt("Introduce número de raíz:", 3);
+		rjesenje = pow(rjesenje, (1/eksponent))
+	}
+	return rjesenje
+}
+}
+
+
+function zaokruzi(ebroj) {
+
+decimala=parseFloat(document.racunalo.izaZareza.options[document.racunalo.izaZareza.selectedIndex].value);
+	var strbroj = ebroj + " ";
+	if (strbroj.charAt(0) == ".") {strbroj = "0" + strbroj};
+	var intbroj = strbroj.length - 1;
+	deczarez(strbroj);
+
+	if (intbroj > 16 && eksp == -1) {
+		if (decimala == -1) {decimala = 14};
+		strbroj = izazareza(strbroj.substring(0,intbroj)) + " ";
+		intbroj = strbroj.length - 1;
+		deczarez(strbroj)
+	}
+
+	if (decimala >= 0 && decimala != 14) {
+		if (tocka > 0) {
+			var odgovor = izazareza(strbroj.substring(0,intbroj))
+		}
+		else {
+			ebroj = strbroj.substring(0,intbroj);
+			if (decimala > 0) {
+				ebroj += ".";
+				for (var n = 0; n < decimala; n++) {
+					ebroj += "0"
+				}
+			}
+			var odgovor = ebroj
+		}
+	}
+	else {
+		decimala = 14;
+		var odgovor = izazareza(strbroj)
+	}
+
+	if (odgovor.charAt(0) == ".") {odgovor = "0" + odgovor};
+
+	document.racunalo.rezultat.value = odgovor;
+}
+
+
+function deczarez(novibroj) {
+	tocka = 0;
+	eksp = 0;
+
+	tocka = novibroj.indexOf(".");
+	eksp = novibroj.indexOf("e")
+}
+
+
+function izazareza(novibroj) {
+with (Math) {
+
+	if (eksp == -1) {
+		var duzina = tocka;
+		if (duzina == -1) {duzina = novibroj.length};
+		var desni = "";
+
+		if (duzina > 16) {
+			var privremeni = round(novibroj*pow(10, 18)) + " ";
+			var novie = privremeni.indexOf("e");
+			var lijevi = (privremeni.substring(0,novie));
+
+			lijevi = round(lijevi*pow(10, 15))/pow(10, 15) + " ";
+			desni = (privremeni.substring(novie+2,privremeni.length-1));
+			desni = "e+" + (desni-18)
+		}
+		else {
+			var lijevi = round(novibroj*pow(10, decimala))/pow(10, decimala) + " "
+		}
+	}
+	else {
+		var lijevi = novibroj.substring(0,eksp);
+		var desni = novibroj.substring(eksp,novibroj.length);
+
+		lijevi = round(lijevi*pow(10, decimala))/pow(10, decimala) + " "
+	}
+
+	lijevi = lijevi.substring(0,lijevi.length - 1);
+
+	if (lijevi.charAt(0) == ".") {lijevi = "0" + lijevi};
+
+	if (decimala < 14) {
+		if (lijevi.indexOf(".") == -1 && decimala != 0) {lijevi += "."};
+		var nula = (tocka + decimala) - (lijevi.length - 1);
+		if (nula > 0 && decimala > 0) {
+			for (var n = 0; n < nula; n++) {
+				lijevi += "0"
+			}
+		}
+	}
+	return (lijevi + " " + desni)
+}
+}
+
+
+function factorial(n) {
+	if ((n == 0) || (n == 1)) {
+		return 1
+	}
+	else {
+		var odgovor = (n * factorial(n-1));
+		return odgovor
+	}
+}
+
+
+function slovo(znak) {
+	var slovo="(ABCDEFGHIKLMNOPRSTUVWXYZ";
+	for (var i=0; i<slovo.length; i++)
+		if (znak == slovo.charAt(i)) {return true} {return false}
+}
+
+
+function operator(znak) {
+	var matoperator="*/+-";
+	for (var i=0; i<matoperator.length; i++)
+		if (znak == matoperator.charAt(i)) {return true}
+	return false
+}
+
+function ubacirezultat(znak) {
+	var ubacirezultat="*/+";
+	for (var i=0; i<ubacirezultat.length; i++)
+		if (znak == ubacirezultat.charAt(i)) {return true}
+	return false
+}
+
+//Eni Generalic, Split, Create: 1999/10/14; Update: 2001/12/10
+-->
+</script>
+<style>A:link {
+	COLOR: #0000cc; TEXT-DECORATION: none
+}
+A:visited {
+	COLOR: #0000cc; TEXT-DECORATION: none
+}
+A:hover {
+	COLOR: #123456; TEXT-DECORATION: none
+}
+BODY {
+	FONT-SIZE: 10pt; FONT-FAMILY: "Arial", "Verdana"
+}
+TD {
+	FONT-SIZE: 10pt; FONT-FAMILY: "Arial", "Verdana"
+}
+TH {
+	FONT-SIZE: 10pt; FONT-FAMILY: "Arial", "Verdana"
+}
+</style>
+
+
+
+
+</font></b>
+
+
+</p>
+<form name="racunalo">
+  <input type="hidden" name="oldrezultat"><input type="hidden" name="memorija">
+  <table cellspacing="0" cellpadding="1" width="280" align="center" bgcolor="#efefef" border="4">
+    <tbody><tr>
+      <td valign="center" align="middle">
+      <table cellspacing="3" cellpadding="1" width="100%" bgcolor="#cccccc" border="2">
+        <tbody><tr>
+          <td valign="center" align="middle" width="100%" bgcolor="#efefef">
+          <input style="font-size: 14pt; width: 260px; height: 30px; background: #efefef" onfocus="display(document.racunalo.rezultat.value)" size="13" name="rezultat">
+          </td>
+        </tr>
+      </tbody></table>
+      <table cellspacing="3" cellpadding="0" bgcolor="#efefef" border="2">
+        <tbody><tr>
+          <td valign="center" align="middle" colspan="4"><nobr><font size="+0">
+          <select onchange="if (document.racunalo.oldrezultat.value != '') {zaokruzi(document.racunalo.oldrezultat.value)}; document.racunalo.zadatak.focus()" size="1" name="izaZareza">
+          <option value="-1" selected="">decimal</option>
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          </select> </font><font face="Arial" color="#226622" size="2">
+          <input title="Radians" onclick="document.racunalo.zadatak.focus()" type="radio" checked="" name="stupnjevi"><a onmouseover="self.status='Radians'; return true" href="javascript:document.racunalo.stupnjevi[0].click()">Rad</a><input title="Stupnjevi" onclick="document.racunalo.zadatak.focus()" type="radio" name="stupnjevi"><a onmouseover="self.status='Degrees'; return true" href="javascript:document.racunalo.stupnjevi[1].click()">Deg</a></font></nobr></td>
+          <td align="middle">
+          <a title=" Eni Generalic " target="myHome" href="http://www.ktf-split.hr/~eni/">
+          <font face="Times" size="2"><i><b>EniG.</b></i></font></a></td>
+          <td>
+          <input title="Borra pantalla" style="font-size: 10pt; width: 38px; height: 24px; background: #eeeeee" onclick="memory(3)" type="button" value="Borra" name="Cls" width="38" height="24">
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6"></td>
+        </tr>
+        <tr bgcolor="#efefef">
+          <td valign="center" align="middle" width="100%" colspan="6">
+          <font color="#0000ff" size="3">
+          <input onkeydown="if (event.keyCode==13) {enter.click()}" style="FONT-WEIGHT: bold; FONT-SIZE: 10pt; WIDTH: 260px; HEIGHT: 25px" onchange="enter.click()" size="17" name="zadatak">
+          </font></td>
+        </tr>
+        <tr>
+          <td>
+          <input title="Raíz cuadrada" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(3)" type="button" value="sqrt" name="sqrt" width="38" height="28">
+          </td>
+          <td>
+          <input title="Raíz" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(22)" type="button" value="root" name="root" width="38" height="28">
+          </td>
+          <td>
+          <input title="Logaritmo neperiano" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(5)" type="button" value="ln" name="ln" width="38" height="28">
+          </td>
+          <td>
+          <input title="Logaritmo común" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(8)" type="button" value="log" name="log" width="38" height="28">
+          </td>
+          <td>
+          <input title="Tangente" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(14)" type="button" value="tan" name="tan" width="38" height="28">
+          </td>
+          <td>
+          <input title="Arco tangente" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(10)" type="button" value="atan" name="atan" width="38" height="28">
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <input title="Cuadrado" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(2)" type="button" value="x^2" name="kvadrat" width="38" height="28">
+          </td>
+          <td>
+          <input title="Potencia" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(21)" type="button" value="x^y" name="potencija" width="38" height="28">
+          </td>
+          <td>
+          <input title="Antilogaritmo neperiano" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(6)" type="button" value="e^x" name="aln" width="38" height="28">
+          </td>
+          <td>
+          <input title="Antilogaritmo" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(9)" type="button" value="10^x" name="alog" width="38" height="28">
+          </td>
+          <td>
+          <input title="Coseno" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(15)" type="button" value="cos" name="cos" width="38" height="28">
+          </td>
+          <td>
+          <input title="Arcocoseno" style="width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(11)" type="button" value="acos" name="acos" width="38" height="28">
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <input title="Cambia signo" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(4)" type="button" value="+/-" name="sign" width="38" height="28">
+          </td>
+          <td>
+          <input style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(7)" type="button" value="1/x" name="1/x" width="38" height="28">
+          </td>
+          <td>
+          <input title="Factorial" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(20)" type="button" value="x!" name="fact" width="38" height="28">
+          </td>
+          <td>
+          <input title="Pi" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="dodajBroj(Math.PI)" type="button" value="Pi" name="PI" width="38" height="28">
+          </td>
+          <td>
+          <input title="Seno" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(16)" type="button" value="sin" name="sin" width="38" height="28">
+          </td>
+          <td>
+          <input title="Arcoseno" style="font-size: 10pt; width: 38px; height: 28px; background: #cdcdcd" onclick="izracunaj(12)" type="button" value="asin" name="asin" width="38" height="28">
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6"></td>
+        </tr>
+        <tr>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj(7)" type="button" value="7" name="7" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj(8)" type="button" value="8" name="8" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj(9)" type="button" value="9" name="9" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj('/')" type="button" value="/" name="djeljeno" width="38" height="32">
+          </td>
+          <td>
+          <input title="Parte por millón" style="font-size: 10pt; width: 38px; height: 32px; background: #cdcdcd" onclick="izracunaj(18)" type="button" value="ppm" name="ppm" width="38" height="32">
+          </td>
+          <td>
+          <input title="Guarda en memoria" style="font-size: 10pt; width: 38px; height: 32px; background: #eeeeee" onclick="memory(1)" type="button" value="MS" name="MS" width="38" height="32">
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj(4)" type="button" value="4" name="4" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj(5)" type="button" value="5" name="5" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj(6)" type="button" value="6" name="6" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj('*')" type="button" value="*" name="puta" width="38" height="32">
+          </td>
+          <td>
+          <input title="Porcentaje" style="font-size: 10pt; width: 38px; height: 32px; background: #cdcdcd" onclick="izracunaj(17)" type="button" value="%" name="postotak" width="38" height="32">
+          </td>
+          <td>
+          <input title="Visualiza memoria" style="font-size: 10pt; width: 38px; height: 32px; background: #eeeeee" onclick="memory(2)" type="button" value="MR" name="MR" width="38" height="32">
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj(1)" type="button" value="1" name="1" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj(2)" type="button" value="2" name="2" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj(3)" type="button" value="3" name="3" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj('-')" type="button" value="-" name="minus" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 10pt; width: 38px; height: 32px; background: #cdcdcd" onclick="dodajBroj('(')" type="button" value="(" name="lijevo" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 10pt; width: 38px; height: 32px; background: #cdcdcd" onclick="dodajBroj(')')" type="button" value=")" name="desno" width="38" height="32">
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj(0)" type="button" value="0" name="0" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj('.')" type="button" value="." name="." width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 10pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj('e')" type="button" value="E" name="exp" width="38" height="32">
+          </td>
+          <td>
+          <input style="font-size: 12pt; width: 38px; height: 32px; background: #dedede" onclick="dodajBroj('+')" type="button" value="+" name="plus" width="38" height="32">
+          </td>
+          <td colspan="2">
+          <input style="font-size: 12pt; width: 83px; height: 32px; background: #cdcdcd" onclick="izracunaj(1)" type="button" value="=" name="enter" width="82" height="32">
+          </td>
+        </tr>
+      </tbody></table>
+      </td>
+    </tr>
+  </tbody></table>
+</form>
+
+
+
+</body></html>

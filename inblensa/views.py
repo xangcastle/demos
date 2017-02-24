@@ -16,10 +16,6 @@ from .models import *
 from datetime import datetime
 
 
-def inicio(request):
-    return HttpResponseRedirect("/app")
-
-
 class index(TemplateView):
     template_name = "app/index.html"
 

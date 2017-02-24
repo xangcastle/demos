@@ -1,0 +1,30 @@
+<html>
+  {% load static %}
+  <head>
+    <link href="{% static 'control/css.css' %}" rel="stylesheet"></link>
+  <script src="{% static 'control/js.js' %}"></script>
+  <style>
+    body {
+      background-image: url("{{options.background.url}}");
+      background-repeat: no-repeat;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: 0;
+      padding: 0;
+    }
+
+  </style>
+  <head>
+    <body>
+      {{user.username}}
+      {% for app in apps %}
+      <a class="app" href="/{{app.name}}">
+        <img class="icono" src="{{app.icono.url}}" alt="{{app.name}}" height="140px"/>
+        {{app.name}}
+      </a>
+      {% endfor %}
+    </body>
+
+    </html>
+
