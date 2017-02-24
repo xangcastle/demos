@@ -153,9 +153,6 @@
     $(document).ready(function () {
         cargarProductos();
         $("#busqueda").keyup(_.debounce(cargarProductos , 500));
-        //$("#busqueda").on('change',function (e) {
-        //    cargarProductos();
-        //})
     });
     function cargarProductos() {
         var query=$("#busqueda").val();
@@ -186,11 +183,9 @@
                 var values = result;
                 var userList = new List('productos', options);
 
-                $(".imagezoom").elevateZoom({
-                    scrollZoom : true,
-                    cursor: "crosshair",
-                    page: 30,
-                    plugins: [ ListPagination({}) ] });
+                $(".imagezoom").elevateZoom(
+                        {constrainType:"height", constrainSize:274, zoomType: "lens", containLensZoom: true, gallery:'gallery_01', cursor: 'pointer', galleryActiveClass: "active"}
+                );
             }
         });
     }
