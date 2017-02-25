@@ -23,7 +23,15 @@ class Commercio(models.Model):
     categoria = models.ForeignKey(Comercio_Categoria)
     propietario = models.ForeignKey(User)
 
-class promocion(models.Model):
+class Promocion(models.Model):
     nombre = models.CharField(max_length=100)
     banner = models.ImageField(upload_to=get_media_url, null=True, blank=True)
     commercio = models.ForeignKey(Commercio)
+
+class Producto(models.Model):
+    nombre = models.CharField(max_length=100)
+    descripcion = models.CharField(max_length=500)
+    precio =  models.FloatField()
+    descuento = models.FloatField(null=True, blank=True)
+    imagen = models.ImageField(upload_to=get_media_url, null=True, blank=True)
+

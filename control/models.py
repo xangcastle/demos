@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from colorfield.fields import ColorField
 from django.conf import settings
 from django.db import models
+from django.utils.safestring import mark_safe
 
 
 def get_aplications(user):
@@ -31,6 +32,9 @@ class Opcion(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     background = models.ImageField(upload_to="fondos", null=True, blank=True)
 
+    def __unicode__(self):
+        return self.user.username
+
 
 class Aplicacion(models.Model):
     name = models.CharField(max_length=25, null=True, verbose_name="nombre de la aplicacion")
@@ -44,6 +48,21 @@ class Aplicacion(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def image_tag(self):
+        return mark_safe('<div style="height: 100px; width: 100px; text-align: center; border-radius: 15px;'
+                         'background: linear-gradient(%s, rgba(34, 34, 34, 0.12));" >'
+                         '<img src="/media/%s" width="80px" height="80px" '
+                         'style="display: table-cell;     vertical-align: middle; text-align: center; padding: 10px;"/>'
+                         '</div>' % (self.background_color, self.icono))
+
+    image_tag.short_description = 'Image'
+
+    def background_tag(self):
+        return mark_safe('<div style="height: 30px; width: 100px; '
+                         'background: linear-gradient(%s, rgba(34, 34, 34, 0.12));" />' % (self.background_color))
+
+    background_tag.short_description = 'Fondo'
 
 
 
