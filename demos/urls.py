@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^inblensa/', include("inblensa.urls")),
     url(r'^realstate/', include("realstate.urls")),
+    url(r'^arca/', include("arca.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
