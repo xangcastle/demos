@@ -68,5 +68,5 @@ class Aplicacion(models.Model):
 
 class Permiso(models.Model):
     class Meta:
-        #pass
-        permissions = get_permission()
+        pass
+        #permissions = get_permission()

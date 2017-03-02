@@ -27,4 +27,6 @@ urlpatterns = [
     url(r'^inblensa/', include("inblensa.urls")),
     url(r'^realstate/', include("realstate.urls")),
     url(r'^arca/', include("arca.urls")),
+    url(r'^soc/', include("social_django.urls", namespace="social")),
+    url(r'^admin/login/', 'django.contrib.auth.views.login', {'template_name': '/control/login.html'}),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

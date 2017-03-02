@@ -100,18 +100,13 @@
         <div class="container" style="margin-top: 100px">
             <div style="margin: auto; max-width: 600px;">
             <div class="row">
-                {% for app in apps %}
-                    <div class="col-xs-4 text-center" style="margin-top: 20px">
-                        <a href="/{{app.name}}" class="special-button" style="background: -moz-linear-gradient({{ app.background_color }}, rgba(34, 34, 34, 0.12)); background: linear-gradient({{ app.background_color }}, rgba(34, 34, 34, 0.12));">
-                          <span class="special-button-table">
-                            <span class="special-button-cell">
-                                 <img class="icono" src="{{app.icono.url}}" alt="{{app.name}}" height="80px" width="80px"/>
-                            </span>
-                          </span>
-                        </a>
-                         <h4 style="color: white" >{{app.name}}</h4>
-                    </div>
-                {% endfor %}
+                <div class="col-sm-12">
+                    <form class="login" method="POST" action="/login/">
+                      {% csrf_token %}
+                      {{form.as_p}}
+                      <li><input type="submit" class="logBut" value="Log in"/></li>
+                  </form>
+                </div>
             </div>
         </div>
         </div>
