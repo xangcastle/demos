@@ -58,6 +58,9 @@ class pedido_admin(admin.ModelAdmin):
 
 admin.site.register(Pedido, pedido_admin)
 
+
+admin.site.register(Vendedor)
+
 #class documento_cobro_admin(admin.ModelAdmin):
 #    list_display = ('empresa', 'cliente', 'fecha', 'monto')
 #    list_filter = ('empresa', 'cliente')

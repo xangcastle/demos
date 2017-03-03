@@ -21,6 +21,13 @@ class Comercio_Categoria(models.Model):
     nombre = models.CharField(max_length=100)
     activo = models.BooleanField(default=True)
 
+    class Meta:
+        verbose_name_plural = "Categorias de comercio"
+        verbose_name="Categoria"
+
+    def __unicode__(self):
+        return self.nombre
+
 
 class Commercio(models.Model):
     nombre = models.CharField(max_length=100)
