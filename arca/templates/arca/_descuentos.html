@@ -1,0 +1,31 @@
+<div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Configuración</th>
+          <th>Creado</th>
+          <th class="col-xs-1">Activo?</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for descuento in descuentos %}
+        <tr>
+          <td >{{ descuento.nombre }}</td>
+          <td>{{ descuento.nombre }}</td>
+          <td>{{ descuento.creado }}</td>
+          <td>
+            <div class="checkboxArea">
+                {% if descuento.activo %}
+                    <input id="checkbox1" type="checkbox" name="checkbox" value="1" checked="checked">
+                {% else %}
+                    <input id="checkbox1" type="checkbox" name="checkbox" value="1" >
+                {% endif %}
+              <label for="checkbox1"><span></span></label>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>

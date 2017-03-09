@@ -266,14 +266,13 @@
             <div class="collapse navbar-collapse navbar-ex1-collapse">            
               <ul class="nav navbar-nav">
                 <li class="dropdown active">
-                  <a href="{% url 'arca_index' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Inicio</a>
-                  {% comment %}<ul class="dropdown-menu dropdown-menu-left">
-                    <li><a href="index-v1.html">Home Default</a></li>
-                    <li><a href="index-v2.html">Home Classic</a></li>
-                    <li><a href="index-v3.html">Home Deals</a></li>
-                    <li class="active"><a href="base1.html">Home Mega</a></li>
-                  </ul>{% endcomment %}
+                  <a href="{% url 'arca_index' %}" role="button">Inicio</a>
                 </li>
+                {% if user.profile.comercio %}
+                <li class="dropdown ">
+                  <a href="{% url 'mi_comercio' %}" role="button">Mi Empresa</a>
+                </li>
+                {% endif %}
                 <li class="dropdown megaDropMenu">
                   <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-close-others="true" aria-expanded="false">Shop</b></a>
                   <ul class="dropdown-menu row">
@@ -342,7 +341,7 @@
                   <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Mi cuenta</a>
                   <ul class="dropdown-menu dropdown-menu-right">
                     <li><a href="account-dashboard.html">Dashboard</a></li>
-                    <li><a href="account-profile.html">Perfil</a></li>
+                    <li><a href="{% url 'account_profile' %}">Perfil</a></li>
                     <li><a href="account-all-orders.html">Descuentos</a></li>
                   </ul>
                 </li>

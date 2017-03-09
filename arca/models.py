@@ -8,7 +8,10 @@ from django.db import models
 
 # Create your models here.
 from geoposition.fields import GeopositionField
+from social_django.models import UserSocialAuth
 
+class CustomUserSocialAuth(UserSocialAuth):
+    image = models.CharField(max_length=500, null=True,blank=True)
 
 def get_media_url(self, filename):
     clase = self.__class__.__name__
@@ -29,13 +32,15 @@ class Comercio_Categoria(models.Model):
         return self.nombre
 
 
-class Commercio(models.Model):
-    nombre = models.CharField(max_length=100)
-    direccion = models.CharField(max_length=500)
+class Comercio(models.Model):
+    nombre = models.CharField(max_length=100,null=True, blank=True)
+    direccion = models.CharField(max_length=500,null=True, blank=True)
     position = GeopositionField(null=True, blank=True)
-    telefono = models.CharField(max_length=10)
-    categoria = models.ForeignKey(Comercio_Categoria)
-    propietario = models.ForeignKey(User)
+    telefono = models.CharField(max_length=10, null=True, blank=True)
+    categoria = models.ForeignKey(Comercio_Categoria,null=True, blank=True, related_name="rel_comercio_categoria")
+    identificacion = models.CharField(max_length=50, null=True, blank=True)
+    propietario = models.ForeignKey(User, related_name="rel_comercio_usuario")
+    logo = models.ImageField(upload_to=get_media_url, null=True, blank=True)
     tiene_descuento_vigencia = models.BooleanField(default=False)
     tiene_descuento_compra_minima = models.BooleanField(default=False)
     tiene_servicio_afiliacion = models.BooleanField(default=False)
@@ -44,7 +49,7 @@ class Commercio(models.Model):
 
 class Empleado(models.Model):
     usuario = models.ForeignKey(User)
-    comercio = models.ForeignKey(Commercio)
+    comercio = models.ForeignKey(Comercio)
     fecha_alta = models.DateTimeField(auto_now_add=True)
     fecha_baja = models.DateTimeField(null=True, blank=True)
 
@@ -64,16 +69,17 @@ class Empleado(models.Model):
 
 # DEFINICION GENERAL DE UN DESCUENTO
 class Descuento(models.Model):
-    commercio = models.ForeignKey(Commercio)
+    comercio = models.ForeignKey(Comercio)
+    nombre = models.CharField(max_length=100,null=True, blank=True)
     porcentaje_descuento = models.FloatField()
     vigencia = models.IntegerField()  # VIGENIA DEL DESCUENTO EN DIAS ANTES DE VENCIMIENTO
-    desc_dia_vigencia = models.IntegerField()  # (PRO) ii.	Descuentos Segun Dias de Vigencia:
-    desc_dia_vigencia_porc_inf = models.FloatField()  # (PRO) porcentaje descuento si compra antes de este dia
-    desc_dia_vigencia_porc_sup = models.FloatField()  # (PRO) porcentaje descuento si compra despues de este dia
-    desc_compra_minima = models.FloatField()  # (PRO) iii.	Descuentos Segun Monto de Compra
-    desc_compra_minima_porc_inf = models.FloatField()  # (PRO) porcentaje descuento si monto compra < compra_minima
-    desc_compra_minima_porc_sup = models.FloatField()  # (PRO) porcentaje descuento si monto compra > compra_minima
-    tipo_cambio = models.FloatField()  # Campo para soportar multimoneda DOLAR/CORDOBA
+    desc_dia_vigencia = models.IntegerField(null=True, blank=True)  # (PRO) ii.	Descuentos Segun Dias de Vigencia:
+    desc_dia_vigencia_porc_inf = models.FloatField(null=True, blank=True)  # (PRO) porcentaje descuento si compra antes de este dia
+    desc_dia_vigencia_porc_sup = models.FloatField(null=True, blank=True)  # (PRO) porcentaje descuento si compra despues de este dia
+    desc_compra_minima = models.FloatField(null=True, blank=True)  # (PRO) iii.	Descuentos Segun Monto de Compra
+    desc_compra_minima_porc_inf = models.FloatField(null=True, blank=True)  # (PRO) porcentaje descuento si monto compra < compra_minima
+    desc_compra_minima_porc_sup = models.FloatField(null=True, blank=True)  # (PRO) porcentaje descuento si monto compra > compra_minima
+    tipo_cambio = models.FloatField(default=1)  # Campo para soportar multimoneda DOLAR/CORDOBA
     activo = models.BooleanField(default=True)
     creado_por = models.ForeignKey(User, related_name="Descuento_Usuario_Creacion")
     actualizado_por = models.ForeignKey(User, related_name="Descuento_Usuario_Actualizacion")
@@ -87,7 +93,7 @@ class Descuento(models.Model):
         if not self.creado_por:
             self.creado_por = usuario
         self.actualizado_por = usuario
-        self.save()
+        super(Descuento, self).save(*args, **kwargs)
 
 
 # CODIGO DE DESCUENTO QUE SE GENERA PARA UN CLIENTE
@@ -120,7 +126,7 @@ class Codigo_Descuento(models.Model):
 class Publicidad(models.Model):
     nombre = models.CharField(max_length=100)
     banner = models.ImageField(upload_to=get_media_url, null=True, blank=True)
-    commercio = models.ForeignKey(Commercio)
+    commercio = models.ForeignKey(Comercio)
     activo = models.BooleanField(default=True)
     creado_por = models.ForeignKey(User, related_name="Publicidad_Usuario_Creacion")
     actualizado_por = models.ForeignKey(User, related_name="Publicidad_Usuario_Actualizacion")

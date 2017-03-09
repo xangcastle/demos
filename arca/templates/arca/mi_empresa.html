@@ -1,0 +1,198 @@
+{% extends "arca/base2.html" %}
+
+{% block page-tible %}COMERCIO{% endblock %}
+{% block breadcrumb %}
+<li><a href="{% url 'arca_index' %}">Inicio</a></li>
+<li class="active">Mi Comercio</li>
+{% endblock %}
+{% block main-content %}
+    {% include "arca/_empresa.html" %}
+    <div class="row">
+      <div class="col-xs-12 commentsForm">
+        <div class="tabCommon">
+          <ul class="nav nav-tabs">
+              <li class="active"><a data-toggle="tab" href="#menu1" aria-expanded="true">Descuentos</a></li>
+              <li class=""><a data-toggle="tab" href="#menu2" aria-expanded="false">Cupones expedidos</a></li>
+              <li class=""><a data-toggle="tab" href="#menu3" aria-expanded="false">Mis productos</a></li>
+          </ul>
+          <div class="tab-bottom">
+          </div>
+          <div class="tab-content">
+            <div id="menu1" class="tab-pane fade  active in">
+                <button id="btnDescuento" class="btn btn-primary">Nuevo <i class="fa fa-plus"></i></button>
+                <div class="row">
+                <div class="col-xs-12">
+                    <div class="orderBox" id="content-listado-descuento">
+
+                    </div>
+                  </div>
+              </div>
+
+            </div>
+            <div id="menu2" class="tab-pane fade">
+                <div class="row">
+                <div class="col-xs-12">
+                    <div class="orderBox">
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>Carrier</th>
+                              <th>Method</th>
+                              <th>Information</th>
+                              <th>Price</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td class="col-xs-1"><i class="fa fa-plane" aria-hidden="true"></i></td>
+                              <td>by Air</td>
+                              <td>Delivery next day!</td>
+                              <td>$ 99.00</td>
+                              <td>
+                                <div class="checkboxArea">
+                                  <input id="checkbox1" type="checkbox" name="checkbox" value="1" checked="checked">
+                                  <label for="checkbox1"><span></span></label>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="col-xs-1"><i class="fa fa-ship" aria-hidden="true"></i></td>
+                              <td>by Ship</td>
+                              <td>Pick up in-store</td>
+                              <td>$ 39.00</td>
+                              <td>
+                                <div class="checkboxArea">
+                                  <input id="checkbox2" type="checkbox" name="checkbox" value="1">
+                                  <label for="checkbox2"><span></span></label>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div id="menu3" class="tab-pane fade">
+              <div class="row">
+                <div class="col-xs-12">
+                    <div class="orderBox">
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>Carrier</th>
+                              <th>Method</th>
+                              <th>Information</th>
+                              <th>Price</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td class="col-xs-1"><i class="fa fa-plane" aria-hidden="true"></i></td>
+                              <td>by Air</td>
+                              <td>Delivery next day!</td>
+                              <td>$ 99.00</td>
+                              <td>
+                                <div class="checkboxArea">
+                                  <input id="checkbox1" type="checkbox" name="checkbox" value="1" checked="checked">
+                                  <label for="checkbox1"><span></span></label>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="col-xs-1"><i class="fa fa-ship" aria-hidden="true"></i></td>
+                              <td>by Ship</td>
+                              <td>Pick up in-store</td>
+                              <td>$ 39.00</td>
+                              <td>
+                                <div class="checkboxArea">
+                                  <input id="checkbox2" type="checkbox" name="checkbox" value="1">
+                                  <label for="checkbox2"><span></span></label>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOGIN MODAL -->
+        <div class="modal fade login-modal" id="signup" tabindex="-1" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+                <div id="conten-descuento"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+{% endblock %}
+
+
+{% block script-block %}
+<script>
+$(document).ready(function () {
+    $("#btnDescuento").on('click',function () {
+        nuevoDescuento();
+    });
+    mostrarDescuentos();
+});
+function nuevoDescuento() {
+    $.ajax({
+        url:"{% url 'render_descuento' %}",
+        type:"GET",
+        success: function (result) {
+            $("#conten-descuento").empty().html(result);
+            $("#signup").modal({
+              backdrop: 'static',
+              keyboard: false
+            });
+        }
+    });
+}
+function mostrarDescuentos() {
+    $.ajax({
+        url:"{% url 'render_listado_descuento' %}",
+        type:"GET",
+        success:function (result) {
+            $("#content-listado-descuento").empty().html(result);
+        }
+    });
+}
+function guardarDescuento() {
+    var data =$('#conten-descuento :input').serialize();
+
+    $.ajax({
+        url:"{% url 'save_descuento' %}",
+        type:"post",
+        data:data,
+        success: function (result) {
+            var data=result[0];
+            if(data.code==200){
+                $("#signup").modal('hide');
+                mostrarDescuentos();
+            }else {
+                swal({
+                    title: "Upss.. ha ocurrido un inconveniente",
+                    text: data.mensaje,
+                    type: "warning"
+                });
+            }
+        }
+    });
+}
+</script>
+
+{% endblock %}

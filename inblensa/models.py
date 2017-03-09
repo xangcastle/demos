@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 import datetime
 from string import upper
+
+from arca.models import Comercio, Empleado as Empleado_Arca
 from .numero_letras import numero_a_letras
 from django.db import models
 from django.db.models import Sum, Max
@@ -100,13 +102,26 @@ class Empresa(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     foto = models.ImageField(upload_to=get_media_url, null=True)
+    telefono = models.CharField(max_length=20, null=True, blank=True)
+    direccion = models.CharField(max_length=500, null=True, blank=True)
     empresa = models.ForeignKey(Empresa, null=True, blank=True)
 
     def imagen_url(self):
         if self.foto:
-            return self.foto.url
+            if "http" in self.foto.url:
+                return str(self.foto)
+            else:
+                return self.foto.url
         else:
             return "/media/foto-no-disponible.jpg"
+
+    def comercio(self):
+        co = Comercio.objects.filter(propietario=self.user).first()
+        if not co:
+            empleado = Empleado_Arca.objects.filter(usuario=self.user, fecha_baja=None).first()
+            if empleado:
+                co=empleado.comercio
+        return co
 
 class Gestion_Resultado(models.Model):
     nombre = models.CharField(max_length=100)

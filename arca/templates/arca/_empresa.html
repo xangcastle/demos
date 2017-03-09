@@ -1,0 +1,30 @@
+<div class="row">
+    <div class="col-xs-12 commentsForm ">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">Datos de mi empresa</h4>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-sm-2 col-xs-12">
+                  <span class="cartImage"><img src="/media/{{ user.profile.comercio.logo }}" class="img-responsive img-thumbnail" alt="image"></span>
+              </div>
+              <div class="col-sm-4 col-xs-12">
+
+                <address>
+                  <span>RUC/NIT: {{ user.profile.comercio.identificacion }}</span><br>
+                  <span>Phone: +505 {{ user.profile.comercio.telefono }}</span>
+                </address>
+              </div>
+              <div class="col-sm-6 col-xs-12">
+                <address>
+                  <span>Direccion: </span><br>
+                  <p>{{ user.profile.comercio.direccion }}</p><br>
+                    <a href="{% url 'registrar_negocio' %}" class="btn btn-primary"><i class="fa fa-edit fa-fw"></i>Editar</a>
+                </address>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+{% extends "arca/base2.html" %}
+
+{% block page-tible %}Ingreso{% endblock %}
+{% block breadcrumb %}
+<li>
+    <a href="index.html">Inicio</a>
+</li>
+<li class="active">Igreso</li>
+{% endblock %}
+{% block main-content %}
+    <div class="row" style="padding-top: -300px">
+        <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12 logIn">
+          <div class="panel panel-default">
+            <div class="panel-heading"><h3>Inicio de <seción></seción></h3></div>
+            <div class="panel-body">
+              <form action="#" method="POST" role="form">
+                <div class="form-group">
+                  <label for="">Email/Usuario</label>
+                  <input class="form-control" id="" type="email">
+                </div>
+                <div class="form-group">
+                  <label for="">Contraseña</label>
+                  <input class="form-control" id="" type="password">
+                </div>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox"> Recordarme
+                  </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
+                <button type="submit" class="btn btn-default pull-left"><i class="fa fa-facebook" aria-hidden="true"></i><span>Ingresar con Facebook</span></button>
+                <a type="submit" class="btn btn-default pull-right" href="{% url 'social:begin' "google-oauth2" %}?next={{ request.path }}"><i class="fa fa-google-plus" aria-hidden="true"></i><span>Ingresar con Google</span></a>
+                <button type="button" class="btn btn-link btn-block">Olvido su contraseña?</button>
+              </form>
+            </div>
+          </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script-block %}
+    <script>
+    $(document).ready(function () {
+        $("section .mainContent").css("padding", "0 0 0 0");
+    });
+    </script>
+{% endblock script-block %}
