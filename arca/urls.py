@@ -26,6 +26,13 @@ urlpatterns = [
     url(r'^save_descuento/',
         login_required(function=save_descuento,
                        login_url="arca_login"), name="save_descuento"),
+    url(r'^render_listado_cupones/',
+        login_required(function=render_listado_cupones,
+                       login_url="arca_login"), name="render_listado_cupones"),
+    url(r'^render_cupon/',
+        login_required(function=render_cupon,
+                       login_url="arca_login"), name="render_cupon"),
+
 
 
 

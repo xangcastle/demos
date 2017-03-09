@@ -1,0 +1,28 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Cupon de descuento</h4>
+</div>
+<div class="modal-body">
+    <input type="hidden" id="id" name="id" value="{{ cupon.id|default_if_none:'' }}">
+    <input type="hidden" id="csrfmiddlewaretoken" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <div class="row">
+    <input type="hidden" name="codigo" value="{{ cupon.codigo }}">
+        <div class="form-group col-sm-12 col-xs-12 text-center">
+            <span class="cartImage">
+                <img src="http://chart.googleapis.com/chart?cht=qr&chs=300x300&chl={{ cupon.codigo }}"
+                     class="img-responsive img-thumbnail" alt="image"></span>
+        </div>
+        <div class="form-group col-sm-12 col-xs-12">
+            <label for="">Descuento</label>
+            <select class="form-control" id="descuento" name="descuento" required="required">
+                <option value="0">--Descuentos--</option>
+                {% for descuento in descuentos %}
+                    <option value="{{ descuento.id }}">{{ descuento.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+    <button class="btn btn-primary btn-block" style="width: 100%" onclick="guardarDescuento()">Validar<i class="fa fa-check fa-fw"></i></button>
+
+
+</div>

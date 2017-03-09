@@ -166,6 +166,15 @@ def save_descuento(request):
     nombre = request.POST.get('nombre')
     porcentaje = request.POST.get('porcentaje')
     vigencia = request.POST.get('vigencia')
+
+    vigencia_param = request.POST.get('vigencia_param')
+    vigencia_porc_inf = request.POST.get('vigencia_porc_inf')
+    vigencia_porc_sup = request.POST.get('vigencia_porc_sup')
+
+    compra_min_param = request.POST.get('compra_min_param')
+    compra_minima_porc_inf = request.POST.get('compra_minima_porc_inf')
+    compra_minima_porc_sup = request.POST.get('compra_minima_porc_sup')
+
     id = request.POST.get('id')
     comercio = request.user.profile.comercio()
 
@@ -186,6 +195,111 @@ def save_descuento(request):
                 vigencia=vigencia,
                 creado_por=request.user
             )
+        descuento.nombre = nombre
+        descuento.porcentaje_descuento=porcentaje
+        descuento.vigencia=vigencia
+
+        if vigencia_param:
+            descuento.desc_dia_vigencia=vigencia_param
+            descuento.desc_dia_vigencia_porc_inf = vigencia_porc_inf
+            descuento.desc_dia_vigencia_porc_sup = vigencia_porc_sup
+        else:
+            descuento.desc_dia_vigencia = None
+            descuento.desc_dia_vigencia_porc_inf = None
+            descuento.desc_dia_vigencia_porc_sup = None
+
+        if compra_min_param:
+            descuento.desc_compra_minima = compra_min_param
+            descuento.desc_compra_minima_porc_inf = compra_minima_porc_inf
+            descuento.desc_compra_minima_porc_sup = compra_minima_porc_sup
+        else:
+            descuento.desc_compra_minima = None
+            descuento.desc_compra_minima_porc_inf = None
+            descuento.desc_compra_minima_porc_sup = None
+
+        descuento.save()
+        obj_json['code'] = 200
+        obj_json['mensaje'] = "Descuento registrado exitosamente!"
+
+    data.append(obj_json)
+    data = json.dumps(data)
+    return HttpResponse(data, content_type='application/json')
+
+def render_listado_cupones(request):
+    descuentos = Descuento.objects.filter(comercio=request.user.profile.comercio()).order_by('-activo')
+
+    cupones = Codigo_Descuento.objects.filter(descuento__in = descuentos)
+    html = render_to_string('arca/_cupones.html', {'cupones': cupones})
+    return HttpResponse(html)
+
+def render_cupon(request):
+    id = request.GET.get('id')
+    if id:
+        cupon = Codigo_Descuento.objects.filter(id=id).first()
+    else:
+        cupon = Codigo_Descuento()
+    descuentos = Descuento.objects.filter(comercio=request.user.profile.comercio(), activo = True)
+    html = render_to_string('arca/_cupon.html',
+                            {'cupon': cupon, 'descuentos': descuentos})
+    return HttpResponse(html)
+
+@csrf_exempt
+def save_cupon(request):
+    data = []
+    obj_json = {}
+    categoria = request.POST.get('categoria')
+    codigo = request.POST.get('codigo')
+    vigencia = request.POST.get('vigencia')
+
+    vigencia_param = request.POST.get('vigencia_param')
+    vigencia_porc_inf = request.POST.get('vigencia_porc_inf')
+    vigencia_porc_sup = request.POST.get('vigencia_porc_sup')
+
+    compra_min_param = request.POST.get('compra_min_param')
+    compra_minima_porc_inf = request.POST.get('compra_minima_porc_inf')
+    compra_minima_porc_sup = request.POST.get('compra_minima_porc_sup')
+
+    id = request.POST.get('id')
+    comercio = request.user.profile.comercio()
+
+    if not comercio:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Comercio invalido"
+    elif not nombre:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Nombre invalido"
+    else:
+        if id:
+            descuento = Descuento.objects.filter(id=id).first()
+        else:
+            descuento, create = Descuento.objects.get_or_create(
+                comercio=comercio,
+                nombre=nombre,
+                porcentaje_descuento=porcentaje,
+                vigencia=vigencia,
+                creado_por=request.user
+            )
+        descuento.nombre = nombre
+        descuento.porcentaje_descuento=porcentaje
+        descuento.vigencia=vigencia
+
+        if vigencia_param:
+            descuento.desc_dia_vigencia=vigencia_param
+            descuento.desc_dia_vigencia_porc_inf = vigencia_porc_inf
+            descuento.desc_dia_vigencia_porc_sup = vigencia_porc_sup
+        else:
+            descuento.desc_dia_vigencia = None
+            descuento.desc_dia_vigencia_porc_inf = None
+            descuento.desc_dia_vigencia_porc_sup = None
+
+        if compra_min_param:
+            descuento.desc_compra_minima = compra_min_param
+            descuento.desc_compra_minima_porc_inf = compra_minima_porc_inf
+            descuento.desc_compra_minima_porc_sup = compra_minima_porc_sup
+        else:
+            descuento.desc_compra_minima = None
+            descuento.desc_compra_minima_porc_inf = None
+            descuento.desc_compra_minima_porc_sup = None
 
         descuento.save()
         obj_json['code'] = 200

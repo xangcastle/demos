@@ -1,6 +1,16 @@
 {% extends "arca/base2.html" %}
 
 {% block page-tible %}COMERCIO{% endblock %}
+{% block style-block%}
+    <style>
+    a {
+        color: #337ab7;
+    }
+    a:hover,a:focus {
+        color: #337ab7;
+    }
+    </style>
+{% endblock %}
 {% block breadcrumb %}
 <li><a href="{% url 'arca_index' %}">Inicio</a></li>
 <li class="active">Mi Comercio</li>
@@ -30,48 +40,10 @@
 
             </div>
             <div id="menu2" class="tab-pane fade">
+                <button id="btnCupon" class="btn btn-primary">Nuevo <i class="fa fa-plus"></i></button>
                 <div class="row">
                 <div class="col-xs-12">
-                    <div class="orderBox">
-                      <div class="table-responsive">
-                        <table class="table">
-                          <thead>
-                            <tr>
-                              <th>Carrier</th>
-                              <th>Method</th>
-                              <th>Information</th>
-                              <th>Price</th>
-                              <th></th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td class="col-xs-1"><i class="fa fa-plane" aria-hidden="true"></i></td>
-                              <td>by Air</td>
-                              <td>Delivery next day!</td>
-                              <td>$ 99.00</td>
-                              <td>
-                                <div class="checkboxArea">
-                                  <input id="checkbox1" type="checkbox" name="checkbox" value="1" checked="checked">
-                                  <label for="checkbox1"><span></span></label>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="col-xs-1"><i class="fa fa-ship" aria-hidden="true"></i></td>
-                              <td>by Ship</td>
-                              <td>Pick up in-store</td>
-                              <td>$ 39.00</td>
-                              <td>
-                                <div class="checkboxArea">
-                                  <input id="checkbox2" type="checkbox" name="checkbox" value="1">
-                                  <label for="checkbox2"><span></span></label>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+                    <div class="orderBox" id="content-listado-cupones">
                     </div>
                   </div>
               </div>
@@ -130,11 +102,10 @@
         <div class="modal fade login-modal" id="signup" tabindex="-1" role="dialog">
           <div class="modal-dialog">
             <div class="modal-content">
-                <div id="conten-descuento"></div>
+                <div id="conten-modal"></div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
@@ -144,17 +115,52 @@
 {% block script-block %}
 <script>
 $(document).ready(function () {
+    $.ajaxSetup({ cache: false });
     $("#btnDescuento").on('click',function () {
         nuevoDescuento();
     });
+    $("#btnCupon").on('click',function () {
+        nuevoCupon();
+    });
     mostrarDescuentos();
+    mostrarCupones();
 });
+
+function init_modal_descuento_triguers() {
+    $(".modal-triguer").on("click", function (e) {
+        $('#conten-modal').load(this.href, function () {
+            $('#signup').modal({
+                backdrop: 'static',
+                keyboard: true
+            }, 'show');
+            $("#ckvigencia").on('change', function () {
+                $("#vigencia_param").prop('disabled', !$(this).is(":checked"));
+                $("#vigencia_porc_inf").prop('disabled', !$(this).is(":checked"));
+                $("#vigencia_porc_sup").prop('disabled', !$(this).is(":checked"));
+                if($(this).is(":checked"))
+                        $("#vigencia_param").focus();
+            });
+            $("#ckcompraminima").on('change', function () {
+                $("#compra_min_param").prop('disabled', !$(this).is(":checked"));
+                $("#compra_minima_porc_inf").prop('disabled', !$(this).is(":checked"));
+                $("#compra_minima_porc_sup").prop('disabled', !$(this).is(":checked"));
+                if($(this).is(":checked"))
+                        $("#compra_min_param").focus();
+            });
+        });
+        return false;
+    });
+
+}
+
+
+
 function nuevoDescuento() {
     $.ajax({
         url:"{% url 'render_descuento' %}",
         type:"GET",
         success: function (result) {
-            $("#conten-descuento").empty().html(result);
+            $("#conten-modal").empty().html(result);
             $("#signup").modal({
               backdrop: 'static',
               keyboard: false
@@ -168,11 +174,12 @@ function mostrarDescuentos() {
         type:"GET",
         success:function (result) {
             $("#content-listado-descuento").empty().html(result);
+            init_modal_descuento_triguers();
         }
     });
 }
 function guardarDescuento() {
-    var data =$('#conten-descuento :input').serialize();
+    var data =$('#conten-modal :input').serialize();
 
     $.ajax({
         url:"{% url 'save_descuento' %}",
@@ -190,6 +197,30 @@ function guardarDescuento() {
                     type: "warning"
                 });
             }
+        }
+    });
+}
+
+function mostrarCupones() {
+    $.ajax({
+        url:"{% url 'render_listado_cupones' %}",
+        type:"GET",
+        success:function (result) {
+            $("#content-listado-cupones").empty().html(result);
+            //init_modal_descuento_triguers();
+        }
+    });
+}
+function nuevoCupon() {
+    $.ajax({
+        url:"{% url 'render_cupon' %}",
+        type:"GET",
+        success: function (result) {
+            $("#conten-modal").empty().html(result);
+            $("#signup").modal({
+              backdrop: 'static',
+              keyboard: false
+            });
         }
     });
 }
