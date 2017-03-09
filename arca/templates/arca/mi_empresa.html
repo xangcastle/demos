@@ -224,6 +224,29 @@ function nuevoCupon() {
         }
     });
 }
+function guardarCupon() {
+    var data =$('#conten-modal :input').serialize();
+
+    $.ajax({
+        url:"{% url 'save_cupon' %}",
+        type:"post",
+        data:data,
+        success: function (result) {
+            var data=result[0];
+            if(data.code==200){
+                $("#signup").modal('hide');
+                mostrarCupones();
+            }else {
+                swal({
+                    title: "Upss.. ha ocurrido un inconveniente",
+                    text: data.mensaje,
+                    type: "warning"
+                });
+            }
+        }
+    });
+}
+
 </script>
 
 {% endblock %}

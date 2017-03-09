@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 # Create your models here.
+from django.utils.timezone import utc
 from geoposition.fields import GeopositionField
 from social_django.models import UserSocialAuth
 
@@ -113,15 +114,24 @@ class Codigo_Descuento(models.Model):
         return self.descuento.vigencia <= dias_transcurridos
 
     def vence_en(self):
-        dias_transcurridos = (self.creado - datetime.date.now()).days
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        dias_transcurridos = (self.creado - now).days
         dias_vence = self.descuento.vigencia - dias_transcurridos
         if dias_vence == 0:
-            return "Hoy"
+            return "vence Hoy"
         elif dias_vence > 0:
-            return "%s dias" % dias_vence
+            return "vence en %s dias" % dias_vence
         else:
-            return "hace %s dias" % dias_vence
+            return "vencido hace %s dias" % dias_vence
 
+    def save(self, *args, **kwargs):
+        li = []
+        li.append(kwargs.pop('user', 1))
+        usuario = User.objects.get(id=li[0])
+        if not self.creado_por:
+            self.creado_por = usuario
+        self.actualizado_por = usuario
+        super(Codigo_Descuento, self).save(*args, **kwargs)
 
 class Publicidad(models.Model):
     nombre = models.CharField(max_length=100)

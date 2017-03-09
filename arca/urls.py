@@ -32,6 +32,10 @@ urlpatterns = [
     url(r'^render_cupon/',
         login_required(function=render_cupon,
                        login_url="arca_login"), name="render_cupon"),
+    url(r'^save_cupon/',
+        login_required(function=save_cupon,
+                       login_url="arca_login"), name="save_cupon"),
+
 
 
 

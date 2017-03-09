@@ -20,7 +20,7 @@
                 <address>
                   <span>Direccion: </span><br>
                   <p>{{ user.profile.comercio.direccion }}</p><br>
-                    <a href="{% url 'registrar_negocio' %}" class="btn btn-primary"><i class="fa fa-edit fa-fw"></i>Editar</a>
+                    <a href="{% url 'registrar_negocio' %}?id={{ user.profile.comercio.id }}" class="btn btn-primary"><i class="fa fa-edit fa-fw"></i>Editar</a>
                 </address>
               </div>
             </div>
