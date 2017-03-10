@@ -1,4 +1,4 @@
-from arca.models import Perfil
+from arca.models import Usuario as Perfil
 
 
 def save_profile(backend, user, response, *args, **kwargs):

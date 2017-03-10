@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from .models import *
 import json
 
 from django import forms
@@ -17,99 +15,17 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import TemplateView
 from social_django.models import UserSocialAuth
 
-def login_app(request):
-   usuario = None
-
-   if request.method == "POST":
-      username = request.POST.get('username', '')
-      password = request.POST.get('password', '')
-      usuario = autenticate(Usuario(), username, password)
-
-   response = render(request, 'arca2/app.html', {"usuario" : usuario})
-   if usuario:
-      response.set_cookie('usuario', usuario)
-
-   return response
 
 
-def index_app(request):
-   if 'usuario' in request.COOKIES:
-      usuario = request.COOKIES['usuario']
 
-      response = render(request, 'arca2/app.html', {"usuario" : usuario})
-
-   else:
-      response = render(request, 'arca2/app.html', {})
-
-   return response
-
-
-def login_comercio(request):
-   comercio = None
-
-   if request.method == "POST":
-      username = request.POST.get('username', '')
-      password = request.POST.get('password', '')
-      comercio = autenticate(Comercio(), username, password)
-
-   response = render(request, 'arca2/comercio.html', {"comercio" : comercio})
-   if comercio:
-      response.set_cookie('comercio', comercio)
-
-   return response
-
-
-def index_comercio(request):
-   if 'comercio' in request.COOKIES:
-      comercio = request.COOKIES['comercio']
-
-      response = render(request, 'arca2/app.html', {"comercio" : comercio})
-
-   else:
-      response = render(request, 'arca2/comercio.html', {})
-
-class Login(TemplateView):
-    template_name = "arca/login.html"
-
-    def get(self, request, *args, **kwargs):
-
-        next_page = request.GET.get('next', '/arca/')
-        if request.user.is_authenticated():
-            return redirect(next_page)
-        else:
-            context = super(Login, self).get_context_data(**kwargs)
-            return super(Login, self).render_to_response(context)
-
-
-class Index(TemplateView):
-    template_name = "arca/base1.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(Index, self).get_context_data(**kwargs)
-        return context
-
-
-def get_comercio_categorias(request):
-    categorias = Comercio_Categoria.objects.all()
-    data = []
-    for categoria in categorias:
-        obj_json = {}
-        obj_json['id'] = categoria.id
-        obj_json['nombre'] = categoria.nombre
-        data.append(obj_json)
-
-    data = json.dumps(data)
-    response = HttpResponse(data, content_type='application/json')
-    response["Access-Control-Allow-Origin"] = "*"
-    response["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
-    response["Access-Control-Max-Age"] = "1000"
-    response["Access-Control-Allow-Headers"] = "*"
-    return response
 
 class account_profile(TemplateView):
     template_name = "arca/account_profile.html"
 
     def get(self, request, *args, **kwargs):
+        if not request.user.perfil:
+            Perfil.objects.get_or_create(user=request.user)
+
         context = super(account_profile, self).get_context_data(**kwargs)
         return super(account_profile, self).render_to_response(context)
 
@@ -164,7 +80,6 @@ class negocio_form(ModelForm):
 class registrar_negocio(TemplateView):
     template_name = "arca/registrar_negocio.html"
 
-    @csrf_exempt
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio, self).get_context_data(**kwargs)
         comercio = request.user.perfil.comercio()
@@ -176,7 +91,6 @@ class registrar_negocio(TemplateView):
         context["form"] = comercio_form
         return super(registrar_negocio, self).render_to_response(context)
 
-    @csrf_exempt
     def post(self, request, *args, **kwargs):
         context = super(registrar_negocio, self).get_context_data(**kwargs)
         form = negocio_form(request.POST, request.FILES)
@@ -193,106 +107,13 @@ class registrar_negocio(TemplateView):
 
         return super(registrar_negocio, self).render_to_response(context)
 
-
-class registrar_negocio_st1(TemplateView):
-    template_name = "arca/registrar_negocio_st1.html"
-
-    @csrf_exempt
-    def get(self, request, *args, **kwargs):
-        context = super(registrar_negocio_st1, self).get_context_data(**kwargs)
-
-        return super(registrar_negocio_st1, self).render_to_response(context)
-
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        context = super(registrar_negocio, self).get_context_data(**kwargs)
-        form = negocio_form(request.POST, request.FILES)
-        # check whether it's valid:
-        if form.is_valid():
-            comercio = form.save(commit=False, user=request.user)
-            comercio.propietario = request.user
-            comercio.save()
-            context["form"] = form
-            context["success_message"] = "Datos actualizados exitosamente!"
-            return redirect("mi_comercio")
-        else:
-            context["form"] = form
-
-        return super(registrar_negocio, self).render_to_response(context)
-
-
-class registrar_negocio_st2(TemplateView):
-    template_name = "arca/registrar_negocio_st2.html"
-
-    def get(self, request, *args, **kwargs):
-        context = super(registrar_negocio_st2, self).get_context_data(**kwargs)
-        return super(registrar_negocio_st2, self).render_to_response(context)
-
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        context = super(registrar_negocio_st2, self).get_context_data(**kwargs)
-        if not request.POST.get('nombre_empresa'):
-            super(registrar_negocio_st1, self).render_to_response(context)
-        else:
-            request.session['nombre_empresa'] = request.POST.get('nombre_empresa')
-            return super(registrar_negocio_st2, self).render_to_response(context)
-
-
-class registrar_negocio_st3(TemplateView):
-    template_name = "arca/registrar_negocio_st3.html"
-
-    def get(self, request, *args, **kwargs):
-        context = super(registrar_negocio_st3, self).get_context_data(**kwargs)
-        return super(registrar_negocio_st3, self).render_to_response(context)
-
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        context = super(registrar_negocio_st3, self).get_context_data(**kwargs)
-        if not request.POST.get('identificacion'):
-            super(registrar_negocio_st2, self).render_to_response(context)
-        elif not request.POST.get('telefono'):
-            super(registrar_negocio_st2, self).render_to_response(context)
-        elif not request.POST.get('direccion'):
-            super(registrar_negocio_st2, self).render_to_response(context)
-        else:
-            request.session['identificacion_empresa'] = request.POST.get('identificacion')
-            request.session['telefono_empresa'] = request.POST.get('telefono')
-            request.session['direccion_empresa'] = request.POST.get('direccion')
-            return super(registrar_negocio_st3, self).render_to_response(context)
-
-class registrar_negocio_st4(TemplateView):
-    template_name = "arca/registrar_negocio_st4.html"
-
-    def get(self, request, *args, **kwargs):
-        context = super(registrar_negocio_st4, self).get_context_data(**kwargs)
-        return super(registrar_negocio_st4, self).render_to_response(context)
-
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        context = super(registrar_negocio_st4, self).get_context_data(**kwargs)
-        if not request.POST.get('usuario_nombre'):
-            super(registrar_negocio_st3, self).render_to_response(context)
-        elif not request.POST.get('usuario_apellido'):
-            super(registrar_negocio_st3, self).render_to_response(context)
-        elif not request.POST.get('email'):
-            super(registrar_negocio_st3, self).render_to_response(context)
-        elif not request.POST.get('email'):
-            super(registrar_negocio_st3, self).render_to_response(context)
-        elif not request.POST.get('password'):
-            super(registrar_negocio_st3, self).render_to_response(context)
-        else:
-            request.session['usuario_nombre'] = request.POST.get('usuario_nombre')
-            request.session['usuario_apellido'] = request.POST.get('usuario_apellido')
-            request.session['usuario_email'] = request.POST.get('email')
-            request.session['usuario_password'] = request.POST.get('password')
-            return super(registrar_negocio_st4, self).render_to_response(context)
 
 class mi_comercio(TemplateView):
     template_name = "arca/mi_empresa.html"
 
     def get(self, request, *args, **kwargs):
         context = super(mi_comercio, self).get_context_data(**kwargs)
-        context['empleados'] = request.user.perfil.comercio().usuarios_empleados()
+        context['empleados'] =request.user.perfil.comercio().usuarios_empleados()
         return super(mi_comercio, self).render_to_response(context)
 
 
@@ -390,13 +211,13 @@ def render_listado_cupones(request):
     page = request.GET.get('page', 1)
 
     for k, vals in request.GET.lists():
-        for v in vals:
-            if not k == 'page' and not k == '_':
-                cupones = cupones.filter(**{k: v})
+            for v in vals:
+                if not k == 'page' and not k == '_':
+                    cupones = cupones.filter(**{k: v})
 
     paginator = Paginator(cupones, 3)
     try:
-        cupones = paginator.page(page)
+      cupones = paginator.page(page)
     except PageNotAnInteger:
         cupones = paginator.page(1)
     except EmptyPage:
@@ -457,4 +278,3 @@ def save_cupon(request):
     data.append(obj_json)
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
-
