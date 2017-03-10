@@ -47,6 +47,9 @@ class Comercio(models.Model):
     tiene_servicio_afiliacion = models.BooleanField(default=False)
     tiene_servicio_crm = models.BooleanField(default=False)
 
+    def __unicode__(self):
+        return self.nombre
+
 
 class Empleado(models.Model):
     usuario = models.ForeignKey(User)
@@ -54,18 +57,10 @@ class Empleado(models.Model):
     fecha_alta = models.DateTimeField(auto_now_add=True)
     fecha_baja = models.DateTimeField(null=True, blank=True)
 
-    def save(self, *args, **kwargs):
-        li = []
-        li.append(kwargs.pop('user', 1))
-        usuario = User.objects.get(id=li[0])
-        # SE DA DE BAJA AL EMPLEADO SI ESTA EN OTRO COMERCIO
-        ck_empleado = Empleado.objects.filter(usuario=self.usuario)
-        if ck_empleado:
-            for empleado in ck_empleado:
-                if empleado.comercio != self.comercio:
-                    empleado.fecha_baja = datetime.date.now()
+    def __unicode__(self):
+        return self.usuario.username
 
-        Empleado.objects.get_or_create(usuario=self.usuario, comercio=self.comercio)
+
 
 
 # DEFINICION GENERAL DE UN DESCUENTO
@@ -74,12 +69,15 @@ class Descuento(models.Model):
     nombre = models.CharField(max_length=100,null=True, blank=True)
     porcentaje_descuento = models.FloatField()
     vigencia = models.IntegerField()  # VIGENIA DEL DESCUENTO EN DIAS ANTES DE VENCIMIENTO
+
     desc_dia_vigencia = models.IntegerField(null=True, blank=True)  # (PRO) ii.	Descuentos Segun Dias de Vigencia:
     desc_dia_vigencia_porc_inf = models.FloatField(null=True, blank=True)  # (PRO) porcentaje descuento si compra antes de este dia
     desc_dia_vigencia_porc_sup = models.FloatField(null=True, blank=True)  # (PRO) porcentaje descuento si compra despues de este dia
     desc_compra_minima = models.FloatField(null=True, blank=True)  # (PRO) iii.	Descuentos Segun Monto de Compra
+
     desc_compra_minima_porc_inf = models.FloatField(null=True, blank=True)  # (PRO) porcentaje descuento si monto compra < compra_minima
     desc_compra_minima_porc_sup = models.FloatField(null=True, blank=True)  # (PRO) porcentaje descuento si monto compra > compra_minima
+
     tipo_cambio = models.FloatField(default=1)  # Campo para soportar multimoneda DOLAR/CORDOBA
     activo = models.BooleanField(default=True)
     creado_por = models.ForeignKey(User, related_name="Descuento_Usuario_Creacion")

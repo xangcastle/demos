@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from inblensa.models import Profile
 from social_django import *
 from django.shortcuts import render, redirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 from django.views.generic import TemplateView
@@ -149,6 +150,8 @@ class mi_comercio(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = super(mi_comercio, self).get_context_data(**kwargs)
+        context['empleados'] = Empleado.objects.filter(comercio=
+                                                      Empleado.objects.get(usuario=request.user).comercio)
         return super(mi_comercio, self).render_to_response(context)
 
 
@@ -242,6 +245,22 @@ def render_listado_cupones(request):
     descuentos = Descuento.objects.filter(comercio=request.user.profile.comercio()).order_by('-activo')
 
     cupones = Codigo_Descuento.objects.filter(descuento__in=descuentos)
+
+    page = request.GET.get('page', 1)
+
+    for k, vals in request.GET.lists():
+            for v in vals:
+                if not k == 'page' and not k == '_':
+                    cupones = cupones.filter(**{k: v})
+
+    paginator = Paginator(cupones, 3)
+    try:
+      cupones = paginator.page(page)
+    except PageNotAnInteger:
+        cupones = paginator.page(1)
+    except EmptyPage:
+        cupones = paginator.page(paginator.num_pages)
+
     html = render_to_string('arca/_cupones.html', {'cupones': cupones})
     return HttpResponse(html)
 

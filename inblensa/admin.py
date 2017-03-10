@@ -65,3 +65,6 @@ admin.site.register(Vendedor)
 #    list_display = ('empresa', 'cliente', 'fecha', 'monto')
 #    list_filter = ('empresa', 'cliente')
 #admin.site.register(Documento_Cobro, documento_cobro_admin)
+
+
+admin.site.register(Profile)
