@@ -11,13 +11,38 @@ from django.utils.timezone import utc
 from geoposition.fields import GeopositionField
 from social_django.models import UserSocialAuth
 
-class CustomUserSocialAuth(UserSocialAuth):
-    image = models.CharField(max_length=500, null=True,blank=True)
-
 def get_media_url(self, filename):
     clase = self.__class__.__name__
     code = str(self.id)
     return '%s/%s/%s' % (clase, code, filename)
+
+class CustomUserSocialAuth(UserSocialAuth):
+    image = models.CharField(max_length=500, null=True,blank=True)
+
+class Perfil(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    foto = models.ImageField(upload_to=get_media_url, null=True)
+    telefono = models.CharField(max_length=20, null=True, blank=True)
+    direccion = models.CharField(max_length=500, null=True, blank=True)
+
+    def imagen_url(self):
+        if self.foto:
+            if "http" in self.foto.url:
+                return str(self.foto)
+            else:
+                return self.foto.url
+        else:
+            return "/media/foto-no-disponible.jpg"
+
+    def comercio(self):
+        co = Comercio.objects.filter(propietario=self.user).first()
+        if not co:
+            empleado = Empleado.objects.filter(usuario=self.user, fecha_baja=None).first()
+            if empleado:
+                co=empleado.comercio
+        return co
+
+
 
 
 # Create your models here.
@@ -50,6 +75,13 @@ class Comercio(models.Model):
     def __unicode__(self):
         return self.nombre
 
+    def usuarios_empleados(self):
+        usuarios=[]
+        empleados = Empleado.objects.filter(comercio=self)
+        for empleado in empleados:
+            usuarios.append(empleado.usuario)
+        usuarios.append(self.propietario)
+        return  usuarios
 
 class Empleado(models.Model):
     usuario = models.ForeignKey(User)

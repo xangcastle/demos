@@ -49,7 +49,7 @@
           <select id="filtro_empleado">
             <option value="todos">Todos</option>
             {% for e in empleados %}
-            <option value="{{e.usuario.id}}">{{e.usuario}}</option>
+            <option value="{{e.id}}">{{e}}</option>
             {% endfor %}
           </select>
           <div>

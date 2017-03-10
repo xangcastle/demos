@@ -115,13 +115,6 @@ class Profile(models.Model):
         else:
             return "/media/foto-no-disponible.jpg"
 
-    def comercio(self):
-        co = Comercio.objects.filter(propietario=self.user).first()
-        if not co:
-            empleado = Empleado_Arca.objects.filter(usuario=self.user, fecha_baja=None).first()
-            if empleado:
-                co=empleado.comercio
-        return co
 
 class Gestion_Resultado(models.Model):
     nombre = models.CharField(max_length=100)

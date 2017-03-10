@@ -7,7 +7,6 @@ from django.forms import ModelForm
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-from inblensa.models import Profile
 from social_django import *
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -60,8 +59,8 @@ class account_profile(TemplateView):
     template_name = "arca/account_profile.html"
 
     def get(self, request, *args, **kwargs):
-        if not request.user.profile:
-            Profile.objects.get_or_create(user=request.user)
+        if not request.user.perfil:
+            Perfil.objects.get_or_create(user=request.user)
 
         context = super(account_profile, self).get_context_data(**kwargs)
         return super(account_profile, self).render_to_response(context)
@@ -119,7 +118,7 @@ class registrar_negocio(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio, self).get_context_data(**kwargs)
-        comercio = request.user.profile.comercio()
+        comercio = request.user.perfil.comercio()
 
         if comercio:
             comercio_form = negocio_form(instance=comercio)
@@ -150,8 +149,7 @@ class mi_comercio(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = super(mi_comercio, self).get_context_data(**kwargs)
-        context['empleados'] = Empleado.objects.filter(comercio=
-                                                      Empleado.objects.get(usuario=request.user).comercio)
+        context['empleados'] =request.user.perfil.comercio().usuarios_empleados()
         return super(mi_comercio, self).render_to_response(context)
 
 
@@ -162,14 +160,14 @@ def render_descuento(request):
     else:
         descuento = Descuento()
 
-    descuento.comercio = request.user.profile.comercio()
+    descuento.comercio = request.user.perfil.comercio()
     html = render_to_string('arca/_descuento.html',
                             {'descuento': descuento})
     return HttpResponse(html)
 
 
 def render_listado_descuento(request):
-    descuentos = Descuento.objects.filter(comercio=request.user.profile.comercio()).order_by('-activo')
+    descuentos = Descuento.objects.filter(comercio=request.user.perfil.comercio()).order_by('-activo')
     html = render_to_string('arca/_descuentos.html', {'descuentos': descuentos})
     return HttpResponse(html)
 
@@ -191,7 +189,7 @@ def save_descuento(request):
     compra_minima_porc_sup = request.POST.get('compra_minima_porc_sup')
 
     id = request.POST.get('id')
-    comercio = request.user.profile.comercio()
+    comercio = request.user.perfil.comercio()
 
     if not comercio:
         obj_json['code'] = 400
@@ -242,7 +240,7 @@ def save_descuento(request):
 
 
 def render_listado_cupones(request):
-    descuentos = Descuento.objects.filter(comercio=request.user.profile.comercio()).order_by('-activo')
+    descuentos = Descuento.objects.filter(comercio=request.user.perfil.comercio()).order_by('-activo')
 
     cupones = Codigo_Descuento.objects.filter(descuento__in=descuentos)
 
@@ -271,7 +269,7 @@ def render_cupon(request):
         cupon = Codigo_Descuento.objects.filter(id=id).first()
     else:
         cupon = Codigo_Descuento()
-    descuentos = Descuento.objects.filter(comercio=request.user.profile.comercio(), activo=True)
+    descuentos = Descuento.objects.filter(comercio=request.user.perfil.comercio(), activo=True)
     html = render_to_string('arca/_cupon.html',
                             {'cupon': cupon, 'descuentos': descuentos})
     return HttpResponse(html)
@@ -285,7 +283,7 @@ def save_cupon(request):
     codigo = request.POST.get('codigo')
 
     id = request.POST.get('id')
-    comercio = request.user.profile.comercio()
+    comercio = request.user.perfil.comercio()
     usuario = request.user
     if not usuario:
         obj_json['code'] = 400

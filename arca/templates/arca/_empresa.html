@@ -7,20 +7,20 @@
           <div class="panel-body">
             <div class="row">
               <div class="col-sm-2 col-xs-12">
-                  <span class="cartImage"><img src="/media/{{ user.profile.comercio.logo }}" class="img-responsive img-thumbnail" alt="image"></span>
+                  <span class="cartImage"><img src="/media/{{ user.perfil.comercio.logo }}" class="img-responsive img-thumbnail" alt="image"></span>
               </div>
               <div class="col-sm-4 col-xs-12">
 
                 <address>
-                  <span>RUC/NIT: {{ user.profile.comercio.identificacion }}</span><br>
-                  <span>Phone: +505 {{ user.profile.comercio.telefono }}</span>
+                  <span>RUC/NIT: {{ user.perfil.comercio.identificacion }}</span><br>
+                  <span>Phone: +505 {{ user.perfil.comercio.telefono }}</span>
                 </address>
               </div>
               <div class="col-sm-6 col-xs-12">
                 <address>
                   <span>Direccion: </span><br>
-                  <p>{{ user.profile.comercio.direccion }}</p><br>
-                    <a href="{% url 'registrar_negocio' %}?id={{ user.profile.comercio.id }}" class="btn btn-primary"><i class="fa fa-edit fa-fw"></i>Editar</a>
+                  <p>{{ user.perfil.comercio.direccion }}</p><br>
+                    <a href="{% url 'registrar_negocio' %}?id={{ user.perfil.comercio.id }}" class="btn btn-primary"><i class="fa fa-edit fa-fw"></i>Editar</a>
                 </address>
               </div>
             </div>

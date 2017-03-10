@@ -50,8 +50,8 @@
                         <span class="icon-bar"></span>
                     </button>
                     <a class="navbar-brand" href="#">
-                        {% if user.profile.empresa %}
-                            {{ user.profile.empresa.razon_social }}
+                        {% if user.perfil.empresa %}
+                            {{ user.perfil.empresa.razon_social }}
                         {% else %}
                             Boost - Admin
                         {% endif %}
@@ -257,7 +257,7 @@
                             <li class="nav-header">
                                 <div class="dropdown side-profile text-left">
                                     <span style="display: block;">
-                                        <img alt="image" class="img-circle" src="{{ user.profile.imagen_url }}" width="50" height="80">
+                                        <img alt="image" class="img-circle" src="{{ user.perfil.imagen_url }}" width="50" height="80">
                                     </span>
                                     <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                                         <span class="clear" style="display: block;">
