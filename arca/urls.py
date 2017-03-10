@@ -11,9 +11,16 @@ urlpatterns = [
     url(r'^account_profile/',
         login_required(function= account_profile.as_view(),
                        login_url="arca_login"), name="account_profile"),
+
     url(r'^registrar_negocio/',
         login_required(function=registrar_negocio.as_view(),
                        login_url="arca_login"), name="registrar_negocio"),
+
+    url(r'^registrar_negocio_st1/', registrar_negocio_st1.as_view(), name="registrar_negocio_st1"),
+    url(r'^registrar_negocio_st2/', registrar_negocio_st2.as_view(), name="registrar_negocio_st2"),
+    url(r'^registrar_negocio_st3/', registrar_negocio_st3.as_view(), name="registrar_negocio_st3"),
+    url(r'^registrar_negocio_st4/', registrar_negocio_st4.as_view(), name="registrar_negocio_st4"),
+
     url(r'^mi_comercio/',
         login_required(function=mi_comercio.as_view(),
                        login_url="arca_login"), name="mi_comercio"),
