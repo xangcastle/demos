@@ -78,7 +78,7 @@ class negocio_form(ModelForm):
 
 
 class registrar_negocio(TemplateView):
-    template_name = "arca/registrar_negocio.html"
+    template_name = "arca/comercio/registrar_negocio.html"
 
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio, self).get_context_data(**kwargs)

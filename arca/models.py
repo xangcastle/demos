@@ -67,6 +67,12 @@ class Comercio(models.Model):
     def __unicode__(self):
         return self.nombre
 
+    def usuarios_empleados(self):
+        usuarios = []
+        empleados = Empleado.objects.filter(comercio=self)
+        for empleado in empleados:
+            usuarios.append(empleado.usuario)
+        return usuarios
 
 class Empleado(models.Model):
     '''

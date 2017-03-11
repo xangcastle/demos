@@ -7,7 +7,7 @@ urlpatterns = [
     #url(r'^$', index_app, name='arca'),
     url(r'^comercios/', index_comercio, name='arca_comercios'),
     url(r'^login_app/', login_app, name='arca_login_app'),
-    url(r'^login_comercio/', login_comercio, name='arca_login_comercio'),
+    url(r'^login_comercio/', login_comercio.as_view(), name='arca_login_comercio'),
 
     url(r'^$', Index.as_view(), name='arca_index'),
     url(r'^login/', Login.as_view(), name='arca_login'),

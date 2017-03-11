@@ -43,20 +43,26 @@ def index_app(request):
 
    return response
 
+class login_comercio(TemplateView):
+    template_name = "arca/comercio/login_comercio.html"
 
-def login_comercio(request):
-   comercio = None
+    def get(self, request, *args, **kwargs):
+        context = super(login_comercio, self).get_context_data(**kwargs)
+        return super(login_comercio, self).render_to_response(context)
 
-   if request.method == "POST":
-      username = request.POST.get('username', '')
-      password = request.POST.get('password', '')
-      comercio = autenticate(Comercio(), username, password)
+    def post(self, request, *args, **kwargs):
+       comercio = None
 
-   response = render(request, 'arca2/comercio.html', {"comercio" : comercio})
-   if comercio:
-      response.set_cookie('comercio', comercio)
+       if request.method == "POST":
+          username = request.POST.get('username', '')
+          password = request.POST.get('password', '')
+          comercio = autenticate(Comercio(), username, password)
 
-   return response
+       response = render(request, 'arca/comercio/login_comercio.html', {"comercio" : comercio})
+       if comercio:
+          response.set_cookie('comercio', comercio)
+
+       return response
 
 
 def index_comercio(request):
@@ -161,41 +167,11 @@ class negocio_form(ModelForm):
         return comercio
 
 
-class registrar_negocio(TemplateView):
-    template_name = "arca/registrar_negocio.html"
 
-    @csrf_exempt
-    def get(self, request, *args, **kwargs):
-        context = super(registrar_negocio, self).get_context_data(**kwargs)
-        comercio = request.user.perfil.comercio()
-
-        if comercio:
-            comercio_form = negocio_form(instance=comercio)
-        else:
-            comercio_form = negocio_form()
-        context["form"] = comercio_form
-        return super(registrar_negocio, self).render_to_response(context)
-
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        context = super(registrar_negocio, self).get_context_data(**kwargs)
-        form = negocio_form(request.POST, request.FILES)
-        # check whether it's valid:
-        if form.is_valid():
-            comercio = form.save(commit=False, user=request.user)
-            comercio.propietario = request.user
-            comercio.save()
-            context["form"] = form
-            context["success_message"] = "Datos actualizados exitosamente!"
-            return redirect("mi_comercio")
-        else:
-            context["form"] = form
-
-        return super(registrar_negocio, self).render_to_response(context)
 
 
 class registrar_negocio_st1(TemplateView):
-    template_name = "arca/registrar_negocio_st1.html"
+    template_name = "arca/comercio/registrar_negocio_st1.html"
 
     @csrf_exempt
     def get(self, request, *args, **kwargs):
@@ -220,9 +196,8 @@ class registrar_negocio_st1(TemplateView):
 
         return super(registrar_negocio, self).render_to_response(context)
 
-
 class registrar_negocio_st2(TemplateView):
-    template_name = "arca/registrar_negocio_st2.html"
+    template_name = "arca/comercio/registrar_negocio_st2.html"
 
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio_st2, self).get_context_data(**kwargs)
@@ -237,9 +212,8 @@ class registrar_negocio_st2(TemplateView):
             request.session['nombre_empresa'] = request.POST.get('nombre_empresa')
             return super(registrar_negocio_st2, self).render_to_response(context)
 
-
 class registrar_negocio_st3(TemplateView):
-    template_name = "arca/registrar_negocio_st3.html"
+    template_name = "arca/comercio/registrar_negocio_st3.html"
 
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio_st3, self).get_context_data(**kwargs)
@@ -261,7 +235,7 @@ class registrar_negocio_st3(TemplateView):
             return super(registrar_negocio_st3, self).render_to_response(context)
 
 class registrar_negocio_st4(TemplateView):
-    template_name = "arca/registrar_negocio_st4.html"
+    template_name = "arca/comercio/registrar_negocio_st4.html"
 
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio_st4, self).get_context_data(**kwargs)
@@ -276,8 +250,6 @@ class registrar_negocio_st4(TemplateView):
             super(registrar_negocio_st3, self).render_to_response(context)
         elif not request.POST.get('email'):
             super(registrar_negocio_st3, self).render_to_response(context)
-        elif not request.POST.get('email'):
-            super(registrar_negocio_st3, self).render_to_response(context)
         elif not request.POST.get('password'):
             super(registrar_negocio_st3, self).render_to_response(context)
         else:
@@ -287,12 +259,48 @@ class registrar_negocio_st4(TemplateView):
             request.session['usuario_password'] = request.POST.get('password')
             return super(registrar_negocio_st4, self).render_to_response(context)
 
+class registrar_negocio(TemplateView):
+    template_name = "arca/comercio/registrar_negocio.html"
+
+    @csrf_exempt
+    def post(self, request, *args, **kwargs):
+        context = super(registrar_negocio, self).get_context_data(**kwargs)
+        nombre_empresa = request.session['nombre_empresa']
+        identificacion_empresa = request.session['identificacion_empresa']
+        direccion_empresa = request.session['direccion_empresa']
+        telefono_empresa = request.session['telefono_empresa']
+        usuario_nombre = request.session['usuario_nombre']
+        usuario_apellido = request.session['usuario_apellido']
+        usuario_email = request.session['usuario_email']
+        usuario_password = request.session['usuario_password']
+
+        comercio, create = Comercio.objects.get_or_create(identificacion=identificacion_empresa)
+        comercio.nombre=nombre_empresa
+        comercio.direccion=direccion_empresa
+        comercio.telefono=telefono_empresa
+        comercio.username=usuario_email
+        comercio.password=usuario_password
+        comercio.nombre=usuario_nombre + " " + usuario_apellido
+        comercio.save()
+
+        comercio = autenticate(Comercio(), usuario_email, usuario_password)
+
+        response = render(request, 'arca/mi_empresa.html', {"comercio": comercio})
+        if comercio:
+            response.set_cookie('comercio', comercio.id)
+
+        return response
+
 class mi_comercio(TemplateView):
     template_name = "arca/mi_empresa.html"
 
     def get(self, request, *args, **kwargs):
         context = super(mi_comercio, self).get_context_data(**kwargs)
-        context['empleados'] = request.user.perfil.comercio().usuarios_empleados()
+
+        if 'comercio' in request.COOKIES:
+            comercio = Comercio.objects.get(id=int(request.COOKIES['comercio']))
+            context['comercio']=comercio
+            context['empleados'] = comercio.usuarios_empleados()
         return super(mi_comercio, self).render_to_response(context)
 
 
@@ -310,8 +318,12 @@ def render_descuento(request):
 
 
 def render_listado_descuento(request):
-    descuentos = Descuento.objects.filter(comercio=request.user.perfil.comercio()).order_by('-activo')
-    html = render_to_string('arca/_descuentos.html', {'descuentos': descuentos})
+    comercio = None
+    if 'comercio' in request.COOKIES:
+        comercio = Comercio.objects.get(id=int(request.COOKIES['comercio']))
+    descuentos = Descuento.objects.filter(comercio=comercio).order_by('-activo')
+
+    html = render_to_string('arca/_descuentos.html', {'descuentos': descuentos,'comercio':comercio})
     return HttpResponse(html)
 
 
@@ -383,7 +395,10 @@ def save_descuento(request):
 
 
 def render_listado_cupones(request):
-    descuentos = Descuento.objects.filter(comercio=request.user.perfil.comercio()).order_by('-activo')
+    comercio = None
+    if 'comercio' in request.COOKIES:
+        comercio = Comercio.objects.get(id=int(request.COOKIES['comercio']))
+    descuentos = Descuento.objects.filter(comercio=comercio).order_by('-activo')
 
     cupones = Codigo_Descuento.objects.filter(descuento__in=descuentos)
 

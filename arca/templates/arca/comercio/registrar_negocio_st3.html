@@ -32,7 +32,7 @@
           <div class="col-xs-3 progress-wizard-step disabled">
             <div class="text-center progress-wizard-stepnum">Confirmacion</div>
             <div class="progress"><div class="progress-bar"></div></div>
-            <a href="checkout-step-3.html" class="progress-wizard-dot"></a>
+            <a href="{% url 'registrar_negocio_st4' %}" class="progress-wizard-dot"></a>
           </div>
 
         </div>
@@ -46,23 +46,28 @@
           </div>
           <div class="form-group col-sm-6 col-xs-12">
             <label for="">Nombre</label>
-            <input class="form-control" id="usuario_nombre" name="usuario_nombre" type="text" required>
+            <input class="form-control" id="usuario_nombre" name="usuario_nombre" type="text" required
+            value="{{ request.session.usuario_nombre }}">
           </div>
           <div class="form-group col-sm-6 col-xs-12">
             <label for="">Apellido</label>
-            <input class="form-control" id="usuario_apellido" name="usuario_apellido" type="text" required>
+            <input class="form-control" id="usuario_apellido" name="usuario_apellido" type="text" required
+            value="{{ request.session.usuario_apellido }}">
           </div>
           <div class="form-group col-sm-12">
             <label for="">Correo Electronico</label>
-            <input class="form-control" id="email" name="email" type="text" required>
+            <input class="form-control" id="email" name="email" type="text" required
+            value="{{ request.session.usuario_email }}">
           </div>
           <div class="form-group col-sm-6 col-xs-12">
             <label for="">Contraseña</label>
-            <input class="form-control" id="password" name="password" type="password" required>
+            <input class="form-control" id="password" name="password" type="password" required
+            value="{{ request.session.usuario_password }}">
           </div>
           <div class="form-group col-sm-6 col-xs-12">
             <label for="">Contraseña Confirmacion</label>
-            <input class="form-control" id="password_conf" name="password_conf" type="password" required>
+            <input class="form-control" id="password_conf" name="password_conf" type="password" required
+            value="{{ request.session.usuario_password }}">
           </div>
           <div class="form-group col-sm-6 col-xs-12">
             <div id="alert-messages"></div>
