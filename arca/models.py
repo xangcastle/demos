@@ -12,12 +12,34 @@ def get_media_url(self, filename):
     return '%s/%s/%s' % (clase, code, filename)
 
 
-class Usuario(models.Model):
+
+class Login(models.Model):
+    username = models.CharField(max_length=255, null=True, blank=True)
+    password = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        return self.username
+
+
+def autenticate(login, username, password):
+    '''
+    login is a Login instance...
+    '''
+    try:
+      return type(login).objects.get(username=username, password=password)
+    except:
+      return None
+
+
+
+class Usuario(Login):
     '''
     Este es el usuario de la app de descuentos
     '''
-    username = models.CharField(max_length=255, null=True, blank=True)
-    password = models.CharField(max_length=255, null=True, blank=True)
+
     email = models.EmailField(max_length=255, null=True, blank=True)
     foto = models.ImageField(upload_to=get_media_url, null=True)
     telefono = models.CharField(max_length=20, null=True, blank=True)
@@ -46,12 +68,10 @@ class Comercio_Categoria(models.Model):
         return self.nombre
 
 
-class Comercio(models.Model):
+class Comercio(Login):
     '''
     Este es el usuario dueno de negocio
     '''
-    username = models.CharField(max_length=255, null=True, blank=True)
-    password = models.CharField(max_length=255, null=True, blank=True)
     nombre = models.CharField(max_length=100,null=True, blank=True)
     direccion = models.CharField(max_length=500,null=True, blank=True)
     position = GeopositionField(null=True, blank=True)
@@ -68,21 +88,16 @@ class Comercio(models.Model):
         return self.nombre
 
 
-class Empleado(models.Model):
+class Empleado(Login):
     '''
     Este es el usuario que trabaja en un negocio
     '''
-    username = models.CharField(max_length=255, null=True, blank=True)
-    password = models.CharField(max_length=255, null=True, blank=True)
     comercio = models.ForeignKey(Comercio)
     nombre = models.CharField(max_length=100,null=True, blank=True)
     direccion = models.CharField(max_length=500,null=True, blank=True)
     telefono = models.CharField(max_length=10, null=True, blank=True)
     fecha_alta = models.DateTimeField(auto_now_add=True)
     fecha_baja = models.DateTimeField(null=True, blank=True)
-
-    def __unicode__(self):
-        return self.username
 
 
 class Descuento(models.Model):
@@ -147,13 +162,5 @@ class Producto(models.Model):
     precio = models.FloatField()
     descuento = models.FloatField(null=True, blank=True)  # precio promocional
     imagen = models.ImageField(upload_to=get_media_url, null=True, blank=True)
-
-
-
-def autenticate(instance, username, password):
-    try:
-      return type(instance).objects.get(username=username, password=password)
-    except:
-      return None
 
 
