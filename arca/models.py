@@ -171,14 +171,6 @@ class Producto(models.Model):
     descuento = models.FloatField(null=True, blank=True)  # precio promocional
     imagen = models.ImageField(upload_to=get_media_url, null=True, blank=True)
 
-
-def autenticate(instance, username, password):
-    try:
-      return type(instance).objects.get(username=username, password=password)
-    except:
-      return None
-
-
 def authorize(request, context):
     if 'auth_comercio' in request.COOKIES:
         comercio = Comercio.objects.get(id=int(request.COOKIES['auth_comercio']))
