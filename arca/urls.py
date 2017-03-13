@@ -39,4 +39,6 @@ urlpatterns = [
     url(r'^render_listado_empleado/', render_listado_empleado, name="render_listado_empleado"),
     url(r'^render_empleado/', render_empleado, name="render_empleado"),
     url(r'^save_empleado/', save_empleado, name="save_empleado"),
+
+    url(r'^dashboard_comercio/', dashboard_comercio.as_view(), name="dashboard_comercio"),
 ]

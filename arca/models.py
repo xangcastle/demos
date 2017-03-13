@@ -163,14 +163,18 @@ def autenticate(instance, username, password):
       return None
 
 def authorize(request, context):
-    if 'comercio' in request.COOKIES:
-        comercio = Comercio.objects.get(id=int(request.COOKIES['comercio']))
-        context['comercio'] = comercio
+    if 'auth_comercio' in request.COOKIES:
+        comercio = Comercio.objects.get(id=int(request.COOKIES['auth_comercio']))
+        context['auth_comercio'] = comercio
         context['aut_nombre'] = comercio.nombre
-    if 'usuario' in request.COOKIES:
-        usuario = Usuario.objects.get(id=int(request.COOKIES['usuario']))
-        context['usuario'] = usuario
+    if 'auth_usuario' in request.COOKIES:
+        usuario = Usuario.objects.get(id=int(request.COOKIES['auth_usuario']))
+        context['auth_usuario'] = usuario
         context['aut_nombre'] = "%s %s" % (usuario.nombre, usuario.apellido)
+    if 'auth_empleado' in request.COOKIES:
+        empleado = Empleado.objects.get(id=int(request.COOKIES['auth_empleado']))
+        context['auth_empleado'] = empleado
+        context['aut_nombre'] = "%s %s" % (empleado.nombre, empleado.apellido)
     return context
 
 

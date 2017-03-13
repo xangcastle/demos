@@ -1,7 +1,5 @@
 # coding=utf-8
-from django.shortcuts import render
 from django.template import Context
-from .models import *
 import json
 
 from django import forms
@@ -12,13 +10,11 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-from social_django import *
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 from django.views.generic import TemplateView
-from social_django.models import UserSocialAuth
 
 
 def login_app(request):
@@ -31,7 +27,7 @@ def login_app(request):
 
     response = render(request, 'arca2/app.html', {"usuario": usuario})
     if usuario:
-        response.set_cookie('usuario', usuario.id)
+        response.set_cookie('auth_usuario', usuario.id)
 
     return response
 
@@ -58,7 +54,7 @@ class login_comercio(TemplateView):
             comercio = autenticate(Comercio(), username, password)
             if comercio:
                 response = HttpResponseRedirect("/arca/mi_comercio")
-                response.set_cookie('comercio', comercio.id)
+                response.set_cookie('auth_comercio', comercio.id)
                 return response
             else:
                 context = super(login_comercio, self).get_context_data(**kwargs)
@@ -71,8 +67,8 @@ class login_comercio(TemplateView):
         else:
             empleado = autenticate(Empleado(), username, password)
             if empleado:
-                response = HttpResponseRedirect("/arca/mi_comercio")
-                response.set_cookie('empleado', empleado.id)
+                response = HttpResponseRedirect("/arca/dashboard_comercio")
+                response.set_cookie('auth_empleado', empleado.id)
                 return response
             else:
                 context = super(login_comercio, self).get_context_data(**kwargs)
@@ -84,22 +80,16 @@ class login_comercio(TemplateView):
                 return super(login_comercio, self).render_to_response(context)
 
 
-
 def logout_comercio(request):
     response = HttpResponseRedirect("/arca/login_comercio")
     try:
-        if 'comercio' in request.COOKIES:
-            response.delete_cookie('comercio')
+        if 'auth_comercio' in request.COOKIES:
+            response.delete_cookie('auth_comercio')
     except:
         pass
     try:
-        if 'usuario' in request.COOKIES:
-            response.delete_cookie('usuario')
-    except:
-        pass
-    try:
-        if 'empleado' in request.COOKIES:
-            response.delete_cookie('empleado')
+        if 'auth_empleado' in request.COOKIES:
+            response.delete_cookie('auth_empleado')
     except:
         pass
     return response
@@ -176,6 +166,7 @@ class account_profile(TemplateView):
         return super(account_profile, self).render_to_response(context)
 
 
+# region COMERCIO ADMIN
 class negocio_form(ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(), required=False)
     password_new = forms.CharField(label='Nueva Contraseña', max_length=100, required=False,
@@ -224,6 +215,57 @@ class negocio_form(ModelForm):
         return comercio
 
 
+class mi_comercio(TemplateView):
+    template_name = "arca/comercio/mi_comercio.html"
+
+    def get(self, request, *args, **kwargs):
+        context = super(mi_comercio, self).get_context_data(**kwargs)
+        context = authorize(request, context)
+        if context.get('auth_comercio'):
+            comercio = context.get('auth_comercio')
+            context['empleados'] = comercio.empleados()
+            return super(mi_comercio, self).render_to_response(context)
+        else:
+            return HttpResponseRedirect("/arca/login_comercio")
+
+
+class edit_comercio(TemplateView):
+    template_name = "arca/comercio/registrar_negocio.html"
+
+    @csrf_exempt
+    def get(self, request, *args, **kwargs):
+
+        context = super(edit_comercio, self).get_context_data(**kwargs)
+        context = authorize(request, context)
+
+        if context.get('auth_comercio'):
+            comercio = context.get('auth_comercio')
+            if comercio:
+                comercio_form = negocio_form(instance=comercio)
+            else:
+                comercio_form = negocio_form()
+            context["form"] = comercio_form
+            return super(edit_comercio, self).render_to_response(context)
+        else:
+            return HttpResponseRedirect("/arca/login_comercio")
+
+    @csrf_exempt
+    def post(self, request, *args, **kwargs):
+        context = super(edit_comercio, self).get_context_data(**kwargs)
+        form = negocio_form(request.POST, request.FILES)
+        # check whether it's valid:
+        if form.is_valid():
+            comercio = form.save(commit=False)
+            comercio.save()
+            context["form"] = form
+            context["success_message"] = "Datos actualizados exitosamente!"
+            return redirect("mi_comercio")
+        else:
+            context["form"] = form
+
+        return super(edit_comercio, self).render_to_response(context)
+
+#region REGISTRO DEL COMERCIO
 class registrar_negocio_st1(TemplateView):
     template_name = "arca/comercio/registrar_negocio_st1.html"
 
@@ -345,62 +387,12 @@ class registrar_negocio(TemplateView):
 
         response = render(request, 'arca/comercio/mi_comercio.html', {"comercio": comercio})
         if comercio:
-            response.set_cookie('comercio', comercio.id)
+            response.set_cookie('auth_comercio', comercio.id)
 
         return response
+#endregion
 
-
-class mi_comercio(TemplateView):
-    template_name = "arca/comercio/mi_comercio.html"
-
-    def get(self, request, *args, **kwargs):
-        context = super(mi_comercio, self).get_context_data(**kwargs)
-        context = authorize(request, context)
-        if context.get('comercio'):
-            comercio = context.get('comercio')
-            context['empleados'] = comercio.empleados()
-            return super(mi_comercio, self).render_to_response(context)
-        else:
-            return HttpResponseRedirect("/arca/login_comercio")
-
-
-class edit_comercio(TemplateView):
-    template_name = "arca/comercio/registrar_negocio.html"
-
-    @csrf_exempt
-    def get(self, request, *args, **kwargs):
-
-        context = super(edit_comercio, self).get_context_data(**kwargs)
-        context = authorize(request, context)
-
-        if context.get('comercio'):
-            comercio = context.get('comercio')
-            if comercio:
-                comercio_form = negocio_form(instance=comercio)
-            else:
-                comercio_form = negocio_form()
-            context["form"] = comercio_form
-            return super(edit_comercio, self).render_to_response(context)
-        else:
-            return HttpResponseRedirect("/arca/login_comercio")
-
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        context = super(edit_comercio, self).get_context_data(**kwargs)
-        form = negocio_form(request.POST, request.FILES)
-        # check whether it's valid:
-        if form.is_valid():
-            comercio = form.save(commit=False)
-            comercio.save()
-            context["form"] = form
-            context["success_message"] = "Datos actualizados exitosamente!"
-            return redirect("mi_comercio")
-        else:
-            context["form"] = form
-
-        return super(edit_comercio, self).render_to_response(context)
-
-
+# endregion
 # region DESCUENTOS
 def render_descuento(request):
     id = request.GET.get('id')
@@ -418,8 +410,8 @@ def render_descuento(request):
 def render_listado_descuento(request):
     context = Context()
     context = authorize(request, context)
-    if context.get('comercio'):
-        comercio = context.get('comercio')
+    if context.get('auth_comercio'):
+        comercio = context.get('auth_comercio')
         descuentos = Descuento.objects.filter(comercio=comercio).order_by('-activo')
         context['descuentos'] = descuentos
         html = render_to_string('arca/comercio/_descuentos.html', context)
@@ -498,8 +490,8 @@ def save_descuento(request):
 def render_listado_cupones(request):
     context = Context()
     context = authorize(request, context)
-    if context.get('comercio'):
-        comercio = context.get('comercio')
+    if context.get('auth_comercio'):
+        comercio = context.get('auth_comercio')
         descuentos = Descuento.objects.filter(comercio=comercio).order_by('-activo')
 
         cupones = Codigo_Descuento.objects.filter(descuento__in=descuentos)
@@ -586,8 +578,8 @@ def render_empleado(request):
 
     context = Context()
     context = authorize(request, context)
-    if context.get('comercio'):
-        empleado.comercio = context.get('comercio')
+    if context.get('auth_comercio'):
+        empleado.comercio = context.get('auth_comercio')
         context['empleado'] = empleado
         html = render_to_string('arca/comercio/_empleado.html', context)
         return HttpResponse(html)
@@ -596,8 +588,8 @@ def render_empleado(request):
 def render_listado_empleado(request):
     context = Context()
     context = authorize(request, context)
-    if context.get('comercio'):
-        comercio = context.get('comercio')
+    if context.get('auth_comercio'):
+        comercio = context.get('auth_comercio')
         empleados = Empleado.objects.filter(comercio=comercio).order_by('-fecha_baja')
         context['empleados'] = empleados
         html = render_to_string('arca/comercio/_empleados.html', context)
@@ -629,11 +621,11 @@ def save_empleado(request):
     elif not username:
         obj_json['code'] = 400
         obj_json['mensaje'] = "Nombre de Usuario invalido"
-    elif not context.get('comercio'):
+    elif not context.get('auth_comercio'):
         obj_json['code'] = 400
         obj_json['mensaje'] = "Comercio invalido, intente iniciar sesion nuevamente"
     else:
-        comercio = context.get('comercio')
+        comercio = context.get('auth_comercio')
 
         if id:
 
@@ -650,9 +642,9 @@ def save_empleado(request):
                 if password:
                     empleado.password = password
                 if not request.POST.get("ckactivo"):
-                    empleado.fecha_baja=datetime.datetime.now()
+                    empleado.fecha_baja = datetime.datetime.now()
                 else:
-                    empleado.fecha_baja=None
+                    empleado.fecha_baja = None
                 empleado.save()
                 obj_json['code'] = 200
                 obj_json['mensaje'] = "Empleado actualizado exitosamente!"
@@ -688,3 +680,14 @@ def save_empleado(request):
     return HttpResponse(data, content_type='application/json')
 
 # endregion
+
+class dashboard_comercio(TemplateView):
+    template_name = "arca/comercio/dashboard.html"
+
+    def get(self, request, *args, **kwargs):
+        context = super(dashboard_comercio, self).get_context_data(**kwargs)
+        context = authorize(request, context)
+        if not context.get('auth_comercio') and not context.get('auth_empleado'):
+            return HttpResponseRedirect("/arca/login_comercio")
+        else:
+            return super(dashboard_comercio, self).render_to_response(context)

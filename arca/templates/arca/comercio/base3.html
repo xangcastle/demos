@@ -71,7 +71,7 @@
               <div class="col-md-6 col-xs-12">
                 <ul class="list-inline pull-right top-right">
                   <li class="account-login">
-                      {% if comercio or usuario  %}
+                      {% if auth_comercio or auth_usuario or auth_empleado  %}
                       <span>
                           <a href="#"> Hola!
                             {{ aut_nombre }}
@@ -89,38 +89,6 @@
                           <input type="text" class="form-control" placeholder="Search…" aria-describedby="basic-addon2">
                           <button type="submit" class="input-group-addon">Submit</button>
                         </span>
-                      </li>
-                    </ul>
-                  </li>
-                  <li class="dropdown cart-dropdown">
-                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-shopping-cart"></i>$0</a>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                      <li>Item(s) in your cart</li>
-                      <li>
-                        <a href="single-product.html">
-                          <div class="media">
-                            <img class="media-left media-object" src="img/home/cart-items/cart-item-01.jpg" alt="cart-Image">
-                            <div class="media-body">
-                              <h5 class="media-heading">INCIDIDUNT UT <br><span>2 X $199</span></h5>
-                            </div>
-                          </div>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="single-product.html">
-                          <div class="media">
-                            <img class="media-left media-object" src="img/home/cart-items/cart-item-01.jpg" alt="cart-Image">
-                            <div class="media-body">
-                              <h5 class="media-heading">INCIDIDUNT UT <br><span>2 X $199</span></h5>
-                            </div>
-                          </div>
-                        </a>
-                      </li>
-                      <li>
-                        <div class="btn-group" role="group" aria-label="...">
-                          <button type="button" class="btn btn-default" onclick="location.href='cart-page.html';">Shopping Cart</button>
-                          <button type="button" class="btn btn-default" onclick="location.href='checkout-step-1.html';">Checkout</button>
-                        </div>
                       </li>
                     </ul>
                   </li>
@@ -145,7 +113,7 @@
                     <table>
                         <tr>
                             <td><img src="/static/img/logo-arca.png" alt="logo+"></td>
-                            <td><h2 class="category-title" style="text-align: inherit !important">Arca</h2></td>
+                            <td><h2 class="category-title" style="text-align: inherit !important; color: white">Arca</h2></td>
                         </tr>
                     </table>
                 </a>
@@ -154,86 +122,16 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse" style="background-color: #252525;">
               <ul class="nav navbar-nav navbar-right">
+                {% if auth_empleado %}
                 <li class="dropdown">
-                  <a href="{% url 'arca_index' %}" role="button">Inicio</a>
+                  <a href="{% url 'dashboard_comercio' %}" role="button">Dashboard</a>
                 </li>
-                {% if user.perfil.comercio %}
+                {% endif %}
+                {% if auth_comercio %}
                 <li class="dropdown ">
                   <a href="{% url 'mi_comercio' %}" role="button">Mi Empresa</a>
                 </li>
                 {% endif %}
-                {% comment %}<li class="dropdown megaDropMenu">
-                  <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-close-others="true" aria-expanded="false">Shop</b></a>
-                  <ul class="dropdown-menu row">
-                    <li class="col-sm-3 col-xs-12">
-                      <ul class="list-unstyled">
-                        <li>Products Grid View</li>
-                        <li><a href="product-grid-left-sidebar.html">Products Sidebar Left</a></li>
-                        <li><a href="product-grid-right-sidebar.html">Products Sidebar Right</a></li>
-                        <li><a href="product-grid-3-col-filter.html">Products 3 Columns V1</a></li>
-                        <li><a href="product-grid-3-col.html">Products 3 Columns V2</a></li>
-                        <li><a href="product-grid-4-col.html">Products 4 Columns</a></li>
-                      </ul>
-                    </li>
-                    <li class="col-sm-3 col-xs-12">
-                      <ul class="list-unstyled">
-                        <li>Products List View</li>
-                        <li><a href="product-list-left-sidebar.html">Products Sidebar Left</a></li>
-                        <li><a href="product-list-right-sidebar.html">Products Sidebar Right</a></li>
-                        <li class="listHeading">Others</li>
-                        <li><a href="single-product.html">Single Product</a></li>
-                        <li><a href="cart-page.html">Cart Page</a></li>
-                      </ul>
-                    </li>
-                    <li class="col-sm-3 col-xs-12">
-                      <ul class="list-unstyled">
-                        <li>Checkout</li>
-                        <li><a href="checkout-step-1.html">Step 1 - Address</a></li>
-                        <li><a href="checkout-step-2.html">Step 2 - Shipping</a></li>
-                        <li><a href="checkout-step-3.html">Step 3 - Payment</a></li>
-                        <li><a href="checkout-step-4.html">Step 4 - Payment</a></li>
-                        <li><a href="checkout-complete.html">Order Complete</a></li>
-                      </ul>
-                    </li>
-                    <li class="col-sm-3 col-xs-12">
-                      <a href="#" class="menu-photo"><img src="img/menu-photo.jpg" alt="menu-img"></a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="dropdown">
-                  <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">pages</a>
-                  <ul class="dropdown-menu dropdown-menu-left">
-                    <li><a href="about-us.html">About Us</a></li>
-                    <li><a href="signup.html">Register</a></li>
-                    <li><a href="signup-login.html">Register or Login</a></li>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="lost-password.html">Password Recovery</a></li>
-                    <li><a href="privacy-policy.html">Privacy Policy</a></li>
-                    <li><a href="terms-and-conditions.html">Terms &amp; Conditions</a></li>
-                    <li><a href="404.html">404 Not Found</a></li>
-                    <li><a href="short-code.html">Short Code</a></li>
-                    <li><a href="coming-soon.html">Coming Soon</a></li>
-                  </ul>
-                </li>
-                <li class="dropdown">
-                  <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">blog</a>
-                  <ul class="dropdown-menu dropdown-menu-right">
-                    <li><a href="blog-right-sidebar.html">Right Sidebar</a></li>
-                    <li><a href="blog-left-sidebar.html">Left Sidebar</a></li>
-                    <li><a href="blog-fullwidth.html">Full Width</a></li>
-                    <li><a href="blog-single-fullwidth.html">Single Post</a></li>
-                    <li><a href="blog-single-right-sidebar.html">Single Right Sidebar</a></li>
-                    <li><a href="blog-single-left-sidebar.html">Single Left Sidebar</a></li>
-                  </ul>
-                </li>{% endcomment %}
-                <li class="dropdown active">
-                  <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Mi Cuenta</a>
-                  <ul class="dropdown-menu dropdown-menu-right">
-                    <li><a href="account-dashboard.html">Dashboard</a></li>
-                    <li class="active"><a href="base2.html">Perfil</a></li>
-                    <li><a href="account-all-orders.html">Descuentos</a></li>
-                  </ul>
-                </li>
               </ul>
             </div><!-- /.navbar-collapse -->
           </div>

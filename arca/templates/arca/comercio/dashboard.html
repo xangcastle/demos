@@ -1,0 +1,38 @@
+{% extends "arca/comercio/base3.html" %}
+
+{% block page-tible %}DESCUENTOS{% endblock %}
+{% block style-block%}
+<style>
+  a {
+    color: #337ab7;
+  }
+  a:hover,a:focus {
+    color: #337ab7;
+  }
+</style>
+{% endblock %}
+{% block breadcrumb %}
+<li><a href="{% url 'arca_index' %}">Inicio</a></li>
+<li class="active">Panel de descuentos</li>
+{% endblock %}
+{% block main-content %}
+<div class="row">
+  <div class="col-xs-12 commentsForm">
+
+    <!-- LOGIN MODAL -->
+    <div class="modal fade login-modal" id="signup" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div id="conten-modal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block script-block %}
+
+{% endblock %}
