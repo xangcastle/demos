@@ -16,43 +16,7 @@ from django.views.generic import TemplateView
 from social_django.models import UserSocialAuth
 
 
-class Login(TemplateView):
-    template_name = "arca/login.html"
 
-    def get(self, request, *args, **kwargs):
-
-        next_page = request.GET.get('next', '/arca/')
-        if request.user.is_authenticated():
-            return redirect(next_page)
-        else:
-            context = super(Login, self).get_context_data(**kwargs)
-            return super(Login, self).render_to_response(context)
-
-
-class Index(TemplateView):
-    template_name = "arca/base1.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(Index, self).get_context_data(**kwargs)
-        return context
-
-
-def get_comercio_categorias(request):
-    categorias = Comercio_Categoria.objects.all()
-    data = []
-    for categoria in categorias:
-        obj_json = {}
-        obj_json['id'] = categoria.id
-        obj_json['nombre'] = categoria.nombre
-        data.append(obj_json)
-
-    data = json.dumps(data)
-    response = HttpResponse(data, content_type='application/json')
-    response["Access-Control-Allow-Origin"] = "*"
-    response["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
-    response["Access-Control-Max-Age"] = "1000"
-    response["Access-Control-Allow-Headers"] = "*"
-    return response
 
 
 class account_profile(TemplateView):
@@ -114,7 +78,7 @@ class negocio_form(ModelForm):
 
 
 class registrar_negocio(TemplateView):
-    template_name = "arca/registrar_negocio.html"
+    template_name = "arca/comercio/registrar_negocio.html"
 
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio, self).get_context_data(**kwargs)
@@ -145,7 +109,7 @@ class registrar_negocio(TemplateView):
 
 
 class mi_comercio(TemplateView):
-    template_name = "arca/mi_empresa.html"
+    template_name = "arca/comercio/mi_comercio.html"
 
     def get(self, request, *args, **kwargs):
         context = super(mi_comercio, self).get_context_data(**kwargs)
@@ -161,14 +125,14 @@ def render_descuento(request):
         descuento = Descuento()
 
     descuento.comercio = request.user.perfil.comercio()
-    html = render_to_string('arca/_descuento.html',
+    html = render_to_string('arca/comercio/_descuento.html',
                             {'descuento': descuento})
     return HttpResponse(html)
 
 
 def render_listado_descuento(request):
     descuentos = Descuento.objects.filter(comercio=request.user.perfil.comercio()).order_by('-activo')
-    html = render_to_string('arca/_descuentos.html', {'descuentos': descuentos})
+    html = render_to_string('arca/comercio/_descuentos.html', {'descuentos': descuentos})
     return HttpResponse(html)
 
 
@@ -259,7 +223,7 @@ def render_listado_cupones(request):
     except EmptyPage:
         cupones = paginator.page(paginator.num_pages)
 
-    html = render_to_string('arca/_cupones.html', {'cupones': cupones})
+    html = render_to_string('arca/comercio/_cupones.html', {'cupones': cupones})
     return HttpResponse(html)
 
 
@@ -270,7 +234,7 @@ def render_cupon(request):
     else:
         cupon = Codigo_Descuento()
     descuentos = Descuento.objects.filter(comercio=request.user.perfil.comercio(), activo=True)
-    html = render_to_string('arca/_cupon.html',
+    html = render_to_string('arca/comercio/_cupon.html',
                             {'cupon': cupon, 'descuentos': descuentos})
     return HttpResponse(html)
 

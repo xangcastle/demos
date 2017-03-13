@@ -39,7 +39,8 @@ class Usuario(Login):
     '''
     Este es el usuario de la app de descuentos
     '''
-
+    nombre = models.CharField(max_length=100, null=True, blank=True)
+    apellido = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField(max_length=255, null=True, blank=True)
     foto = models.ImageField(upload_to=get_media_url, null=True)
     telefono = models.CharField(max_length=20, null=True, blank=True)
@@ -87,6 +88,9 @@ class Comercio(Login):
     def __unicode__(self):
         return self.nombre
 
+    def empleados(self):
+        empleados = Empleado.objects.filter(comercio=self)
+        return empleados
 
 class Empleado(Login):
     '''
@@ -94,10 +98,14 @@ class Empleado(Login):
     '''
     comercio = models.ForeignKey(Comercio)
     nombre = models.CharField(max_length=100,null=True, blank=True)
+    apellido = models.CharField(max_length=100, null=True, blank=True)
     direccion = models.CharField(max_length=500,null=True, blank=True)
     telefono = models.CharField(max_length=10, null=True, blank=True)
     fecha_alta = models.DateTimeField(auto_now_add=True)
     fecha_baja = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return "%s %s" % (self.nombre, self.apellido)
 
 
 class Descuento(models.Model):
@@ -162,5 +170,24 @@ class Producto(models.Model):
     precio = models.FloatField()
     descuento = models.FloatField(null=True, blank=True)  # precio promocional
     imagen = models.ImageField(upload_to=get_media_url, null=True, blank=True)
+
+
+def autenticate(instance, username, password):
+    try:
+      return type(instance).objects.get(username=username, password=password)
+    except:
+      return None
+
+
+def authorize(request, context):
+    if 'comercio' in request.COOKIES:
+        comercio = Comercio.objects.get(id=int(request.COOKIES['comercio']))
+        context['comercio'] = comercio
+        context['aut_nombre'] = comercio.nombre
+    if 'usuario' in request.COOKIES:
+        usuario = Usuario.objects.get(id=int(request.COOKIES['usuario']))
+        context['usuario'] = usuario
+        context['aut_nombre'] = "%s %s" % (usuario.nombre, usuario.apellido)
+    return context
 
 

@@ -1,0 +1,71 @@
+{% extends "arca/base2.html" %}
+
+{% block page-tible %}REGISTRO DE NEGOCIO{% endblock %}
+{% block breadcrumb %}
+<li><a href="{% url 'arca_index' %}">Inicio</a></li>
+<li class="active">Registro de negocio</li>
+{% endblock %}
+{% block main-content %}
+<div class="row ">
+    <div class="col-xs-12 stepsWrapper">
+      <div class="innerWrapper clearfix stepsPage">
+        <div class="row progress-wizard" style="border-bottom:0;">
+
+          <div class="col-xs-3 progress-wizard-step complete">
+            <div class="text-center progress-wizard-stepnum">General</div>
+            <div class="progress"><div class="progress-bar"></div></div>
+            <a href="#" class="progress-wizard-dot"></a>
+          </div>
+
+          <div class="col-xs-3 progress-wizard-step disabled">
+            <div class="text-center progress-wizard-stepnum">Detalles</div>
+            <div class="progress"><div class="progress-bar"></div></div>
+            <a href="{% url 'registrar_negocio_st2' %}" class="progress-wizard-dot"></a>
+          </div>
+
+          <div class="col-xs-3 progress-wizard-step disabled">
+            <div class="text-center progress-wizard-stepnum">Autenticación</div>
+            <div class="progress"><div class="progress-bar"></div></div>
+            <a href="{% url 'registrar_negocio_st3' %}" class="progress-wizard-dot"></a>
+          </div>
+
+          <div class="col-xs-3 progress-wizard-step disabled">
+            <div class="text-center progress-wizard-stepnum">Confirmacion</div>
+            <div class="progress"><div class="progress-bar"></div></div>
+            <a href="checkout-step-3.html" class="progress-wizard-dot"></a>
+          </div>
+
+        </div>
+
+        <form id="form-wizar" action="{% url 'registrar_negocio_st2' %}" class="row" method="post" role="form">
+            {% csrf_token %}
+          <div class="col-xs-12">
+            <div class="page-header">
+              <h4>Como se llama tu Empresa?</h4>
+            </div>
+          </div>
+          <div class="form-group col-xs-12">
+            <label for="">Nombre de mi empresa</label>
+            <input class="form-control" id="nombre_empresa" name="nombre_empresa"
+                   value="{{ request.session.nombre_empresa }}" type="text" required>
+          </div>
+          <div class="col-xs-12">
+            <div class="well well-lg clearfix">
+              <ul class="pager">
+                <li class="previous"><a href="#" class="hideContent">back</a></li>
+                <li class="next"><a href="javascript:submit_form()">Continue</a></li>
+              </ul>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+</div>
+{% endblock %}
+{% block script-block %}
+    <script>
+    function submit_form() {
+        $('#form-wizar').submit();
+    }
+    </script>
+{% endblock script-block %}
