@@ -19,6 +19,7 @@
     <link rel="stylesheet" type="text/css" href="/static/plugins/rs-plugin/css/settings.css" media="screen">
     <link rel="stylesheet" type="text/css" href="/static/plugins/owl-carousel/owl.carousel.css" media="screen">
 
+
     <!-- GOOGLE FONT -->
     <link href='https://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>
     
@@ -27,6 +28,20 @@
     <link rel="stylesheet" href="/static/options/animate.css">
     <link rel="stylesheet" href="/static/options/optionswitch.css">
     <link rel="stylesheet" href="/static/css/colors/default.css" id="option_color">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/sweetalert2/6.4.3/sweetalert2.min.css">
+<style>
+    .navbar {
+        border-radius: 0px;
+    }
+    .navbar-default {
+        background-color: #252525;
+        border-top: 5px solid rgb(71, 186, 193);
+        border-bottom: 5px solid rgb(71, 186, 193);
+    }
+    .navbar-default .navbar-collapse li a {
+        color: #E4E4E4;
+    }
+</style>
     {% block style-block %}
 
     {% endblock style-block %}
@@ -56,23 +71,13 @@
               <div class="col-md-6 col-xs-12">
                 <ul class="list-inline pull-right top-right">
                   <li class="account-login">
-                      {% if user.is_authenticated  %}
+                      {% if comercio or usuario  %}
                       <span>
                           <a href="#"> Hola!
-                            {% if user.first_name %}
-                                {{user.first_name}} {{user.last_name}}
-                            {% else %}
-                                {{user.username}}
-                            {% endif %}
+                            {{ aut_nombre }}
                           </a>
                           <small>|</small>
-                          <a data-toggle="modal" href='{% url 'auth:logout' %}?next={{ request.path }}'>Salir</a>
-                      </span>
-                      {% else %}
-                      <span>
-                          <a data-toggle="modal" href='#login'>Log in</a>
-                          <small>or</small>
-                          <a data-toggle="modal" href='#signup'>Create an account</a>
+                          <a data-toggle="modal" href='{% url 'arca_logout_comercio' %}'>Salir</a>
                       </span>
                       {% endif %}
                   </li>
@@ -126,7 +131,7 @@
         </div>
         
         <!-- NAVBAR -->
-        <nav class="navbar navbar-main navbar-default" role="navigation">
+        <nav class="navbar navbar-main navbar-default" role="navigation" >
           <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -147,7 +152,7 @@
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <div class="collapse navbar-collapse navbar-ex1-collapse" style="background-color: #252525;">
               <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
                   <a href="{% url 'arca_index' %}" role="button">Inicio</a>
@@ -280,15 +285,6 @@
             <div class="col-sm-2 col-xs-12">
             </div>
             <div class="col-sm-4 col-xs-12">
-              <div class="newsletter clearfix">
-                <h4>Programa de Afiliación</h4>
-                <h3>Rigistra tu comercio Ahora!</h3>
-                <p>Empieza a gozar de los beneficios de nuestro servicio de afilición de clientes</p>
-                <div class="input-group">
-                  {% comment %}<input type="text" class="form-control" placeholder="your email address" aria-describedby="basic-addon2">{% endcomment %}
-                  <a href="{% url 'arca_login_comercio' %}" class="input-group-addon" style="width: 100% !important;" id="basic-addon2">Ingresar<i class="glyphicon glyphicon-chevron-right"></i></a>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -314,66 +310,6 @@
       </div>
     </div>
     
-    <!-- LOGIN MODAL -->
-    <div class="modal fade login-modal" id="login" tabindex="-1" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 class="modal-title">log in</h3>
-          </div>
-          <div class="modal-body">
-            <form action="#" method="POST" role="form">
-              <div class="form-group">
-                <label for="">Enter Email</label>
-                <input type="email" class="form-control" id="">
-              </div>
-              <div class="form-group">
-                <label for="">Password</label>
-                <input type="password" class="form-control" id="">
-              </div>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox"> Remember Me
-                </label>
-              </div>
-                <button type="submit" class="btn btn-primary btn-block">log in</button>
-                <a class="btn btn-danger btn-block" href="{% url 'social:begin' "google-oauth2" %}?next={{ request.path }}">Iniciar con Google</a>
-                <button type="button" class="btn btn-link btn-block">Forgot Password?</button>
-            </form>  
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SIGN UP MODAL -->
-    <div class="modal fade" id="signup" tabindex="-1" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 class="modal-title">Create an account</h3>
-          </div>
-          <div class="modal-body">
-            <form action="#" method="POST" role="form">
-              <div class="form-group">
-                <label for="">Enter Email</label>
-                <input type="email" class="form-control" id="">
-              </div>
-              <div class="form-group">
-                <label for="">Password</label>
-                <input type="password" class="form-control" id="">
-              </div>
-              <div class="form-group">
-                <label for="">Confirm Password</label>
-                <input type="password" class="form-control" id="">
-              </div>
-              <button type="submit" class="btn btn-primary btn-block">Sign up</button>
-            </form>  
-          </div>
-        </div>
-      </div>
-    </div>
 
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/plugins/jquery-ui/jquery-ui.js"></script>
@@ -385,6 +321,7 @@
     <script src="/static/plugins/countdown/jquery.syotimer.js"></script>
     <script src="/static/options/optionswitcher.js"></script>
     <script src="/static/js/custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/sweetalert2/6.4.3/sweetalert2.min.js"></script>
   {% block script-block %}
 
   {% endblock script-block %}

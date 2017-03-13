@@ -28,18 +28,28 @@
       <div class="panel panel-default">
         <div class="panel-heading"><h3>Ya estas registrado?</h3></div>
         <div class="panel-body">
+            {% if error_message %}
+            <div class="alert alert-warning">
+                {{ error_message }}
+            </div>
+            {% endif %}
           <form action="#" method="POST" role="form">
+              {% csrf_token %}
             <div class="form-group">
-              <label for="">Email</label>
-              <input type="email" class="form-control" id="email" name="email">
+              <label for="">Email / Nombre Usuario</label>
+              <input type="text" class="form-control" id="email" name="email" value="{{ email }}">
             </div>
             <div class="form-group">
               <label for="">Contraseña</label>
-              <input type="password" class="form-control" id="password" name="password">
+              <input type="password" class="form-control" id="password" name="password" value="{{ password }}">
             </div>
             <div class="checkbox">
               <label>
-                <input type="checkbox" name="ckpropietario"> Ingresar como propietario
+                <input type="checkbox" name="ckcomercio"
+                        {% if ckcomercio %}
+                            checked
+                        {% endif %}
+                > Ingresar como propietario
               </label>
             </div>
             <button type="submit" class="btn btn-primary btn-block">Ingresar</button>

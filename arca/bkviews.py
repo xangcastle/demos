@@ -109,7 +109,7 @@ class registrar_negocio(TemplateView):
 
 
 class mi_comercio(TemplateView):
-    template_name = "arca/mi_empresa.html"
+    template_name = "arca/comercio/mi_comercio.html"
 
     def get(self, request, *args, **kwargs):
         context = super(mi_comercio, self).get_context_data(**kwargs)
@@ -125,14 +125,14 @@ def render_descuento(request):
         descuento = Descuento()
 
     descuento.comercio = request.user.perfil.comercio()
-    html = render_to_string('arca/_descuento.html',
+    html = render_to_string('arca/comercio/_descuento.html',
                             {'descuento': descuento})
     return HttpResponse(html)
 
 
 def render_listado_descuento(request):
     descuentos = Descuento.objects.filter(comercio=request.user.perfil.comercio()).order_by('-activo')
-    html = render_to_string('arca/_descuentos.html', {'descuentos': descuentos})
+    html = render_to_string('arca/comercio/_descuentos.html', {'descuentos': descuentos})
     return HttpResponse(html)
 
 
@@ -223,7 +223,7 @@ def render_listado_cupones(request):
     except EmptyPage:
         cupones = paginator.page(paginator.num_pages)
 
-    html = render_to_string('arca/_cupones.html', {'cupones': cupones})
+    html = render_to_string('arca/comercio/_cupones.html', {'cupones': cupones})
     return HttpResponse(html)
 
 
@@ -234,7 +234,7 @@ def render_cupon(request):
     else:
         cupon = Codigo_Descuento()
     descuentos = Descuento.objects.filter(comercio=request.user.perfil.comercio(), activo=True)
-    html = render_to_string('arca/_cupon.html',
+    html = render_to_string('arca/comercio/_cupon.html',
                             {'cupon': cupon, 'descuentos': descuentos})
     return HttpResponse(html)
 
