@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 import datetime
 from string import upper
 
-from arca.models import Comercio, Empleado as Empleado_Arca
 from .numero_letras import numero_a_letras
 from django.db import models
 from django.db.models import Sum, Max
