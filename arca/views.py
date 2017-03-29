@@ -1,9 +1,10 @@
 # coding=utf-8
+from arca.crypter import encrypt_val
 from django.template import Context
 import json
 
 from django import forms
-
+from django.core import serializers
 from arca.models import *
 from django.forms import ModelForm
 from django.http import HttpResponse
@@ -54,7 +55,7 @@ class login_comercio(TemplateView):
             comercio = autenticate(Comercio(), username, password)
             if comercio:
                 response = HttpResponseRedirect("/arca/mi_comercio")
-                response.set_cookie('auth_comercio', comercio.id)
+                response.set_cookie('auth_comercio', encrypt_val(comercio.id))
                 return response
             else:
                 context = super(login_comercio, self).get_context_data(**kwargs)
@@ -68,7 +69,7 @@ class login_comercio(TemplateView):
             empleado = autenticate(Empleado(), username, password)
             if empleado:
                 response = HttpResponseRedirect("/arca/dashboard_comercio")
-                response.set_cookie('auth_empleado', empleado.id)
+                response.set_cookie('auth_empleado', encrypt_val(empleado.id))
                 return response
             else:
                 context = super(login_comercio, self).get_context_data(**kwargs)
@@ -98,9 +99,7 @@ def logout_comercio(request):
 def index_comercio(request):
     if 'comercio' in request.COOKIES:
         comercio = request.COOKIES['comercio']
-
         response = render(request, 'arca2/app.html', {"comercio": comercio})
-
     else:
         response = render(request, 'arca2/comercio.html', {})
 
@@ -121,9 +120,11 @@ class Login(TemplateView):
 class Index(TemplateView):
     template_name = "arca/base1.html"
 
-    def get_context_data(self, **kwargs):
+    def get(self, request, *args, **kwargs):
         context = super(Index, self).get_context_data(**kwargs)
-        return context
+        context = authorize(request, context)
+        context['categorias'] = Comercio_Categoria.objects.all().order_by('nombre')
+        return super(Index, self).render_to_response(context)
 
 
 def get_comercio_categorias(request):
@@ -166,6 +167,40 @@ class account_profile(TemplateView):
         return super(account_profile, self).render_to_response(context)
 
 
+# region USUARIO
+@csrf_exempt
+def createUserAuth(request):
+    obj_json = {}
+    username = request.POST.get("username")
+    nombre = request.POST.get("nombre")
+    apellido = request.POST.get("apellido")
+    email = request.POST.get("email")
+    if not username:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "No es posible autenticar al usuario"
+    else:
+        usuario = Usuario.objects.filter(username=username).first()
+        if usuario:
+            usuario.nombre = nombre
+            usuario.apellido = apellido
+            usuario.email = email
+        else:
+            usuario, create = Usuario.objects.get_or_create(username=username)
+            usuario.nombre = nombre
+            usuario.apellido = apellido
+            usuario.email = email
+        usuario.save()
+        obj_json['id_usuario'] = usuario.id
+        obj_json['code'] = 200
+
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
+
+
+
+
+
+# endregion
 # region COMERCIO ADMIN
 class negocio_form(ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(), required=False)
@@ -177,7 +212,8 @@ class negocio_form(ModelForm):
 
     class Meta:
         model = Comercio
-        fields = ['nombre', 'direccion', 'telefono', 'identificacion', 'categoria', 'logo', 'username', 'password']
+        fields = ['nombre', 'direccion', 'telefono', 'identificacion',
+                  'categoria', 'logo', 'username', 'password', 'position']
 
     def __init__(self, *args, **kwargs):
         super(negocio_form, self).__init__(*args, **kwargs)
@@ -206,9 +242,9 @@ class negocio_form(ModelForm):
         comercio.categoria = categoria
         if self.cleaned_data['logo']:
             comercio.logo = self.cleaned_data['logo']
-        if self.cleaned_data['password'] == comercio.password:
+        if encrypt_val(self.cleaned_data['password']) == comercio.password:
             if len(self.cleaned_data['password_new']) > 0:
-                comercio.password = self.cleaned_data['password_new']
+                comercio.password = encrypt_val(self.cleaned_data['password_new'])
         comercio.direccion = self.cleaned_data['direccion']
         if commit:
             comercio.save()
@@ -227,6 +263,10 @@ class mi_comercio(TemplateView):
             return super(mi_comercio, self).render_to_response(context)
         else:
             return HttpResponseRedirect("/arca/login_comercio")
+
+    #@csrf_exempt
+    #def post(self, request, *args, **kwargs):
+    #    return HttpResponseRedirect("/arca/login_comercio")
 
 
 class edit_comercio(TemplateView):
@@ -255,8 +295,7 @@ class edit_comercio(TemplateView):
         form = negocio_form(request.POST, request.FILES)
         # check whether it's valid:
         if form.is_valid():
-            comercio = form.save(commit=False)
-            comercio.save()
+            comercio = form.save(commit=True)
             context["form"] = form
             context["success_message"] = "Datos actualizados exitosamente!"
             return redirect("mi_comercio")
@@ -265,7 +304,65 @@ class edit_comercio(TemplateView):
 
         return super(edit_comercio, self).render_to_response(context)
 
-#region REGISTRO DEL COMERCIO
+
+def get_comercios(request):
+    comercios = Comercio.objects.all()
+    jcomercios = []
+    for comercio in comercios:
+        jcomercio = {}
+        jcomercio['id'] = comercio.id
+        jcomercio['nombre'] = comercio.nombre
+        jcomercio['direccion'] = comercio.direccion
+        jcomercio['telefono'] = comercio.telefono
+
+        if comercio.position:
+            jcomercio['latitude'] = comercio.position.latitude
+            jcomercio['longitude'] = comercio.position.longitude
+        jcomercio['logo'] = comercio.logo.url
+        jcomercio['categoria'] = {
+            'id': comercio.categoria.id,
+            'nombre': comercio.categoria.nombre}
+        jdescuentos = []
+        for descuento in comercio.descuentos():
+            jdescuento = {
+                'id': descuento.id,
+                'nombre': descuento.nombre,
+                'porcentaje_descuento': descuento.porcentaje_descuento,
+                'vigencia': descuento.vigencia,
+                'desc_dia_vigencia': descuento.desc_dia_vigencia,
+                'desc_dia_vigencia_porc_inf': descuento.desc_dia_vigencia_porc_inf,
+                'desc_dia_vigencia_porc_sup': descuento.desc_dia_vigencia_porc_sup,
+                'desc_compra_minima': descuento.desc_compra_minima,
+                'desc_compra_minima_porc_inf': descuento.desc_compra_minima_porc_inf,
+                'desc_compra_minima_porc_sup': descuento.desc_compra_minima_porc_sup,
+                'tipo_cambio': descuento.tipo_cambio,
+                'activo': descuento.activo,
+            }
+            jdescuentos.append(jdescuento)
+        jcomercio['descuentos'] = jdescuentos
+        jproductos = []
+        for producto in comercio.productos():
+            tmp_producto = {
+                'id': producto.id,
+                'nombre': producto.nombre,
+                'descripcion': producto.descripcion,
+                'precio': producto.precio,
+                'descuento': producto.descuento,
+                'activo': producto.activo
+            }
+            if producto.imagen:
+                tmp_producto['imagen'] = producto.imagen.url
+            else:
+                tmp_producto['imagen'] = None
+
+            jproductos.append(tmp_producto)
+        jcomercio['productos'] = jproductos
+        jcomercios.append(jcomercio)
+    data = json.dumps(jcomercios)
+    return HttpResponse(data, content_type='application/json')
+
+
+# region REGISTRO DEL COMERCIO
 class registrar_negocio_st1(TemplateView):
     template_name = "arca/comercio/registrar_negocio_st1.html"
 
@@ -379,7 +476,7 @@ class registrar_negocio(TemplateView):
         comercio.direccion = direccion_empresa
         comercio.telefono = telefono_empresa
         comercio.username = usuario_email
-        comercio.password = usuario_password
+        comercio.password = encrypt_val(usuario_password)
         comercio.nombre = usuario_nombre + " " + usuario_apellido
         comercio.save()
 
@@ -387,10 +484,12 @@ class registrar_negocio(TemplateView):
 
         response = render(request, 'arca/comercio/mi_comercio.html', {"comercio": comercio})
         if comercio:
-            response.set_cookie('auth_comercio', comercio.id)
+            response.set_cookie('auth_comercio', encrypt_val(comercio.id))
 
         return response
-#endregion
+
+
+# endregion
 
 # endregion
 # region DESCUENTOS
@@ -401,10 +500,15 @@ def render_descuento(request):
     else:
         descuento = Descuento()
 
-    descuento.comercio = request.user.perfil.comercio()
-    html = render_to_string('arca/comercio/_descuento.html',
-                            {'descuento': descuento})
-    return HttpResponse(html)
+    context = Context()
+    context = authorize(request, context)
+    if context.get('auth_comercio'):
+        comercio = context.get('auth_comercio')
+        descuento.comercio = comercio
+
+        html = render_to_string('arca/comercio/_descuento.html',
+                                {'descuento': descuento})
+        return HttpResponse(html)
 
 
 def render_listado_descuento(request):
@@ -435,7 +539,10 @@ def save_descuento(request):
     compra_minima_porc_sup = request.POST.get('compra_minima_porc_sup')
 
     id = request.POST.get('id')
-    comercio = request.user.perfil.comercio()
+    context = Context()
+    context = authorize(request, context)
+    if context.get('auth_comercio'):
+        comercio = context.get('auth_comercio')
 
     if not comercio:
         obj_json['code'] = 400
@@ -451,8 +558,7 @@ def save_descuento(request):
                 comercio=comercio,
                 nombre=nombre,
                 porcentaje_descuento=porcentaje,
-                vigencia=vigencia,
-                creado_por=request.user
+                vigencia=vigencia
             )
         descuento.nombre = nombre
         descuento.porcentaje_descuento = porcentaje
@@ -485,8 +591,72 @@ def save_descuento(request):
     return HttpResponse(data, content_type='application/json')
 
 
+def get_descuentos(request):
+    obj_json = {}
+    id_comercio = request.GET.get("id_comercio")
+    if not id_comercio:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Comercio invalido"
+    else:
+        comercio = Comercio.objects.filter(id=id_comercio).first()
+        if not comercio:
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Comercio no encontrado"
+        else:
+            descuentos = Descuento.objects.filter(comercio=comercio)
+            obj_descuentos = []
+            for descuento in descuentos:
+                obj_descuento = {
+                    'id': descuento.id,
+                    'nombre': descuento.nombre,
+                    'porcentaje_descuento': descuento.porcentaje_descuento,
+                    'vigencia': descuento.vigencia,
+                    'desc_dia_vigencia': descuento.desc_dia_vigencia,
+                    'desc_dia_vigencia_porc_inf': descuento.desc_dia_vigencia_porc_inf,
+                    'desc_dia_vigencia_porc_sup': descuento.desc_dia_vigencia_porc_sup,
+                    'desc_compra_minima': descuento.desc_compra_minima,
+                    'desc_compra_minima_porc_inf': descuento.desc_compra_minima_porc_inf,
+                    'desc_compra_minima_porc_sup': descuento.desc_compra_minima_porc_sup
+                }
+                obj_descuentos.append(obj_descuento)
+            obj_json['code'] = 200
+            obj_json['mensaje'] = "OK"
+            obj_json['descuentos'] = obj_descuentos
+
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
+
+
 # endregion
 # region CUPONES
+def get_cupones(request):
+    obj_json = {}
+    username = request.GET.get("username")
+    usuario = Usuario.objects.filter(username=username).first()
+    obj_cupnes = []
+    if usuario:
+        cupones = usuario.cupones()
+        for cupon in cupones:
+            obj_cupnes.append({
+                'id': cupon.id,
+                'codigo': cupon.codigo,
+                'canjeado': cupon.canjeado,
+                'creado': str(cupon.creado),
+                'creado_por': {
+                    'id': cupon.creado_por.id,
+                    'nombre': "%s %s" % (cupon.creado_por.nombre, cupon.creado_por.apellido)
+                },
+                'id_descuento': cupon.descuento.id,
+            })
+        obj_json['cupones'] = obj_cupnes
+        obj_json['code'] = 200
+    else:
+        obj_json['mensaje'] = "Usuario invalido"
+        obj_json['code'] = 400
+
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
+
 def render_listado_cupones(request):
     context = Context()
     context = authorize(request, context)
@@ -520,7 +690,15 @@ def render_cupon(request):
         cupon = Codigo_Descuento.objects.filter(id=id).first()
     else:
         cupon = Codigo_Descuento()
-    descuentos = Descuento.objects.filter(comercio=request.user.perfil.comercio(), activo=True)
+
+    context = Context()
+    context = authorize(request, context)
+    if context.get('auth_comercio'):
+        comercio = context.get('auth_comercio')
+    elif context.get('aut_empleado'):
+        comercio = context.get('auth_empleado').comercio
+
+    descuentos = Descuento.objects.filter(comercio=comercio, activo=True)
     html = render_to_string('arca/comercio/_cupon.html',
                             {'cupon': cupon, 'descuentos': descuentos})
     return HttpResponse(html)
@@ -528,17 +706,25 @@ def render_cupon(request):
 
 @csrf_exempt
 def save_cupon(request):
-    data = []
+    context = Context()
+    context = authorize(request, context)
     obj_json = {}
     id_descuento = request.POST.get('descuento')
+    id_empleado = request.POST.get('id_empleado')
     codigo = request.POST.get('codigo')
-
+    creado = request.POST.get('creado', '')
     id = request.POST.get('id')
-    comercio = request.user.perfil.comercio()
-    usuario = request.user
-    if not usuario:
+
+    if id_empleado:
+        empleado = Empleado.objects.filter(id=id_empleado).first()
+
+    if not empleado:
+        if context.get('aut_empleado'):
+            empleado = context.get('auth_empleado')
+
+    if not empleado:
         obj_json['code'] = 400
-        obj_json['mensaje'] = "Usuario invalido"
+        obj_json['mensaje'] = "Empleado invalido"
     if not codigo:
         obj_json['code'] = 400
         obj_json['mensaje'] = "Codigo invalido"
@@ -554,16 +740,54 @@ def save_cupon(request):
             if id:
                 cupon = Codigo_Descuento.objects.filter(codigo=codigo).first()
                 cupon.descuento = descuento
+                cupon.actualizado_por = empleado
                 cupon.save()
+                obj_json['code'] = 200
+                obj_json['mensaje'] = "Descuento actualizado exitosamente!"
             else:
-                cupon, create = Codigo_Descuento.objects.get_or_create(codigo=codigo, descuento=descuento,
-                                                                       creado_por=usuario)
+                if not creado:
+                    obj_json['code'] = 400
+                    obj_json['mensaje'] = "Fecha de creacion invalida"
+                else:
+                    cupon, create = Codigo_Descuento.objects.get_or_create(codigo=codigo,
+                                                                           descuento=descuento,
+                                                                           creado_por=empleado)
+                    cupon.creado = creado
+                    cupon.save()
+                    obj_json['id_cupon'] = cupon.id
+                    obj_json['code'] = 200
+                    obj_json['mensaje'] = "Descuento registrado exitosamente!"
 
-            obj_json['code'] = 200
-            obj_json['mensaje'] = "Descuento registrado exitosamente!"
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
 
-    data.append(obj_json)
-    data = json.dumps(data)
+
+def generar_cupon(request):
+    data = []
+    obj_json = {}
+
+    id_descuento = request.POST.get('descuento')
+    id_empleado = request.POST.get('id_empleado')
+    if id_empleado:
+        empleado = Empleado.objects.filter(id=id_empleado).first()
+
+    if not empleado:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Empleado invalido"
+    elif not id_descuento:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Descuento invalido"
+    else:
+        descuento = Descuento.objects.filter(id=id_descuento).first()
+        if not descuento:
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Descuento no encontrado"
+        else:
+            cupon, create = Codigo_Descuento.objects.get_or_create(descuento=descuento,
+                                                                   creado_por=empleado)
+            obj_json['codigo'] = cupon.codigo
+
+    data = json.dumps(obj_json)
     return HttpResponse(data, content_type='application/json')
 
 
@@ -640,7 +864,7 @@ def save_empleado(request):
                 empleado.direccion = direccion
                 empleado.telefono = telefono
                 if password:
-                    empleado.password = password
+                    empleado.password = encrypt_val(password)
                 if not request.POST.get("ckactivo"):
                     empleado.fecha_baja = datetime.datetime.now()
                 else:
@@ -670,7 +894,7 @@ def save_empleado(request):
                                                                           direccion=direccion,
                                                                           telefono=telefono,
                                                                           username=username,
-                                                                          password=password)
+                                                                          password=encrypt_val(password))
 
                         obj_json['code'] = 200
                         obj_json['mensaje'] = "Empleado registrado exitosamente!"
@@ -678,6 +902,75 @@ def save_empleado(request):
     data.append(obj_json)
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
+
+
+def get_empleado(request):
+    obj_json = {}
+    username = request.GET.get("username", "")
+    password = request.GET.get("password", "")
+    empleado = autenticate(Empleado(), username, password)
+    if not empleado:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Empleado no encontrado"
+    else:
+        obj_empleado = {}
+        obj_empleado["id"] = empleado.id
+        obj_empleado["nombre"] = empleado.nombre
+        obj_empleado["apellido"] = empleado.apellido
+        obj_empleado["direccion"] = empleado.direccion
+        obj_empleado["telefono"] = empleado.telefono
+        obj_empleado["fecha_alta"] = str(empleado.fecha_alta)
+        obj_empleado["fecha_baja"] = str(empleado.fecha_baja)
+
+        obj_comercio = {}
+        obj_comercio["id"] = empleado.comercio.id
+        obj_comercio["nombre"] = empleado.comercio.nombre
+
+        obj_empleado["comercio"] = obj_comercio
+
+        obj_json['empleado'] = obj_empleado
+
+        obj_json['code'] = 200
+        obj_json['mensaje'] = "Empleado encontrado"
+
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
+
+
+def get_empleado_descuentos(request):
+    obj_json = {}
+    id_empleado = request.GET.get("id_empleado")
+
+    if not id_empleado:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Empleado no encontrado"
+    else:
+        empleado = Empleado.objects.filter(id=id_empleado).first()
+        if not empleado:
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Empleado no encontrado"
+        else:
+            obj_cupones = []
+            for cupon in empleado.codigos_descuento():
+                obj_cupon = {}
+                obj_cupon["id"] = cupon.id
+                obj_cupon["codigo"] = empleado.nombre
+                obj_cupon["canjeado"] = empleado.apellido
+                obj_cupon["creado"] = empleado.direccion
+                obj_cupon["actualizado"] = empleado.telefono
+                obj_cupon["creado_por"] = serializers.serialize('json', cupon.creado_por)
+                obj_cupon["actualizado_por"] = serializers.serialize('json', cupon.actualizado_por)
+                obj_cupon["cliente"] = serializers.serialize('json', cupon.cliente)
+                obj_cupon["descuento"] = serializers.serialize('json', cupon.descuento)
+                obj_cupones.append(obj_cupon)
+
+            obj_json['cupones'] = obj_cupones
+            obj_json['code'] = 200
+            obj_json['mensaje'] = "Empleado encontrado"
+
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
+
 
 # endregion
 
@@ -691,3 +984,170 @@ class dashboard_comercio(TemplateView):
             return HttpResponseRedirect("/arca/login_comercio")
         else:
             return super(dashboard_comercio, self).render_to_response(context)
+
+
+# region producto
+def render__producto(request):
+    context = Context()
+    context = authorize(request, context)
+    if context.get('auth_comercio'):
+        id = request.GET.get('id')
+        producto = None
+        if id:
+            producto = Producto.objects.filter(id=id).first()
+        html = render_to_string('arca/comercio/_producto.html',
+                                {'producto': producto})
+        return HttpResponse(html)
+
+
+@csrf_exempt
+def save_producto(request):
+    context = Context()
+    context = authorize(request, context)
+    if context.get('auth_comercio'):
+        data = []
+        obj_json = {'mensaje': 'ok', 'code': 200}
+        codigo = request.POST.get('id')
+        nombre = request.POST.get('nombre')
+        descripcion = request.POST.get('descripcion')
+        precio = request.POST.get('precio')
+        descuento = request.POST.get('descuento')
+        activo = request.POST.get('activo')
+
+        if not nombre:
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Nombre invalido"
+        elif not descripcion:
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Descripcion invalido"
+        elif not precio:
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Precio invalido"
+        elif not descuento:
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Descuento invalido"
+        else:
+            try:
+                producto = Producto.objects.get(pk=int(codigo))
+            except Exception, e:
+                producto = Producto.objects.create(nombre=nombre, precio=precio)
+            try:
+                if producto:
+                    comercio = context.get('auth_comercio')
+                    producto.nombre = str(nombre)
+                    producto.descripcion = str(descripcion)
+                    producto.descuento = descuento
+                    if len(request.FILES) > 0:
+                        producto.imagen = request.FILES['imagen']
+                    if not activo:
+                        producto.activo = False
+                    else:
+                        producto.activo = True
+                    producto.comercio = comercio
+                    producto.save()
+            except Exception, e:
+                print e.message
+                obj_json['code'] = 500
+                obj_json['mensaje'] = "Ocurrio un error valido"
+        data.append(obj_json)
+        data = json.dumps(data)
+        return HttpResponse(data, content_type='application/json')
+
+
+@csrf_exempt
+def render_producto(request):
+    context = Context()
+    context = authorize(request, context)
+    if context.get('auth_comercio'):
+        data = []
+        obj_json = {}
+        nombre = request.POST.get('nombre')
+        porcentaje = request.POST.get('porcentaje')
+        vigencia = request.POST.get('vigencia')
+
+        vigencia_param = request.POST.get('vigencia_param')
+        vigencia_porc_inf = request.POST.get('vigencia_porc_inf')
+        vigencia_porc_sup = request.POST.get('vigencia_porc_sup')
+
+        compra_min_param = request.POST.get('compra_min_param')
+        compra_minima_porc_inf = request.POST.get('compra_minima_porc_inf')
+        compra_minima_porc_sup = request.POST.get('compra_minima_porc_sup')
+
+        id = request.POST.get('id')
+        comercio = context.get('auth_comercio')
+
+        if not comercio:
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Comercio invalido"
+        elif not nombre:
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Nombre invalido"
+        else:
+            if id:
+                descuento = Descuento.objects.filter(id=id).first()
+            else:
+                descuento, create = Descuento.objects.get_or_create(
+                    comercio=comercio,
+                    nombre=nombre,
+                    porcentaje_descuento=porcentaje,
+                    vigencia=vigencia,
+                    creado_por=request.user
+                )
+            descuento.nombre = nombre
+            descuento.porcentaje_descuento = porcentaje
+            descuento.vigencia = vigencia
+
+            if vigencia_param:
+                descuento.desc_dia_vigencia = vigencia_param
+                descuento.desc_dia_vigencia_porc_inf = vigencia_porc_inf
+                descuento.desc_dia_vigencia_porc_sup = vigencia_porc_sup
+            else:
+                descuento.desc_dia_vigencia = None
+                descuento.desc_dia_vigencia_porc_inf = None
+                descuento.desc_dia_vigencia_porc_sup = None
+
+            if compra_min_param:
+                descuento.desc_compra_minima = compra_min_param
+                descuento.desc_compra_minima_porc_inf = compra_minima_porc_inf
+                descuento.desc_compra_minima_porc_sup = compra_minima_porc_sup
+            else:
+                descuento.desc_compra_minima = None
+                descuento.desc_compra_minima_porc_inf = None
+                descuento.desc_compra_minima_porc_sup = None
+
+            descuento.save()
+            obj_json['code'] = 200
+            obj_json['mensaje'] = "Descuento registrado exitosamente!"
+
+        data.append(obj_json)
+        data = json.dumps(data)
+        return HttpResponse(data, content_type='application/json')
+
+
+@csrf_exempt
+def render_listado_productos(request):
+    context = Context()
+    context = authorize(request, context)
+    if context.get('auth_comercio'):
+        comercio = context.get('auth_comercio')
+        productos = Producto.objects.filter(comercio=comercio).order_by('-activo')
+        html = render_to_string('arca/comercio/_productos.html', {'productos': productos})
+        return HttpResponse(html)
+
+# endregion
+
+
+class render_comercio_categoria(TemplateView):
+    template_name = "arca/categoria_comercios.html"
+
+    def get(self, request, *args, **kwargs):
+        context = super(render_comercio_categoria, self).get_context_data(**kwargs)
+        context = authorize(request, context)
+        if not context.get('auth_comercio') and not context.get('auth_empleado'):
+            return HttpResponseRedirect("/arca/login_comercio")
+        else:
+            categoria = request.GET.get('id')
+            if categoria:
+                c = Comercio_Categoria.objects.get(pk=int(categoria))
+                context['comercios'] = Comercio.objects.filter(categoria=c)
+            return super(render_comercio_categoria, self).render_to_response(context)

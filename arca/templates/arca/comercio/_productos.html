@@ -2,22 +2,24 @@
     <table class="table">
         <thead>
         <tr>
+            <th>#</th>
             <th>Nombre</th>
-            <th>Configuración</th>
-            <th>Creado</th>
-            <th class="col-xs-1">Activo</th>
+            <th>Descripcion</th>
+            <th>Precio</th>
+            <th>Activo</th>
         </tr>
         </thead>
         <tbody>
-        {% for descuento in descuentos %}
+        {% for producto in productos %}
             <tr>
-                <td><a href="{% url 'render_descuento' %}?id={{ descuento.id }}"
-                       class="modal-triguer">{{ descuento.nombre }}</a></td>
-                <td>{{ descuento.nombre }}</td>
-                <td>{{ descuento.creado }}</td>
+                <td>{{ forloop.counter }}</td>
+                <td><a href="{% url 'render__producto' %}?id={{ producto.id }}"
+                       class="modal-triguer">{{ producto.nombre }}</a></td>
+                <td>{{ producto.descripcion }}</td>
+                <td>{{ producto.precio }}</td>
                 <td>
                     <div class="checkboxArea">
-                        {% if descuento.activo %}
+                        {% if producto.activo %}
                             <input id="checkbox1" type="checkbox" name="checkbox" value="1" checked="checked"
                                    disabled="disabled">
                         {% else %}

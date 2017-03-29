@@ -185,11 +185,11 @@ SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.social_auth.auth_allowed',
     'social_core.pipeline.social_auth.social_user',
     'social_core.pipeline.user.get_username',
-    'social_core.pipeline.user.create_user',
+    #'social_core.pipeline.user.create_user',
     'arca.pipeline.save_profile',
-    'social_core.pipeline.social_auth.associate_user',
-    'social_core.pipeline.social_auth.load_extra_data',
-    'social_core.pipeline.user.user_details',
+    #'social_core.pipeline.social_auth.associate_user',
+    #'social_core.pipeline.social_auth.load_extra_data',
+    #'social_core.pipeline.user.user_details',
 ]
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '730334026573-r34fa81bs1tb9rljf9jss17p44jkt6fc.apps.googleusercontent.com'

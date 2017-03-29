@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-  
+
 <!-- Mirrored from themes.iamabdus.com/bigbag/1.1/account-profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 03 Mar 2017 03:00:51 GMT -->
-<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<!-- Added by HTTrack -->
+<meta http-equiv="content-type" content="text/html;charset=utf-8"/><!-- /Added by HTTrack -->
 <head>
 
     <!-- SITE TITTLE -->
@@ -10,7 +11,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Profile - BIGBAG Store</title>
-    
+
     <!-- PLUGINS CSS STYLE -->
     <link href="/static/plugins/jquery-ui/jquery-ui.css" rel="stylesheet">
     <link href="/static/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +22,7 @@
 
     <!-- GOOGLE FONT -->
     <link href='https://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>
-    
+
     <!-- CUSTOM CSS -->
     <link href="/static/css/style.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/options/animate.css">
@@ -37,127 +38,137 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-  </head>
+</head>
 
-  <body class="body-wrapper">
+<body class="body-wrapper">
 
 
-    <div class="main-wrapper">
+<div class="main-wrapper">
 
-      <!-- HEADER -->
-      <div class="header clearfix">
+    <!-- HEADER -->
+    <div class="header clearfix">
 
         <!-- TOPBAR -->
         <div class="topBar">
-          <div class="container">
-            <div class="row">
-              <div class="col-md-6 hidden-sm hidden-xs">
-              </div>
-              <div class="col-md-6 col-xs-12">
-                <ul class="list-inline pull-right top-right">
-                  <li class="account-login">
-                      {% if user.is_authenticated  %}
-                      <span>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 hidden-sm hidden-xs">
+                    </div>
+                    <div class="col-md-6 col-xs-12">
+                        <ul class="list-inline pull-right top-right">
+                            <li class="account-login">
+                                {% if user.is_authenticated %}
+                                    <span>
                           <a href="#"> Hola!
-                            {% if user.first_name %}
-                                {{user.first_name}} {{user.last_name}}
-                            {% else %}
-                                {{user.username}}
-                            {% endif %}
+                              {% if user.first_name %}
+                                  {{ user.first_name }} {{ user.last_name }}
+                              {% else %}
+                                  {{ user.username }}
+                              {% endif %}
                           </a>
                           <small>|</small>
                           <a data-toggle="modal" href='{% url 'auth:logout' %}?next={{ request.path }}'>Salir</a>
                       </span>
-                      {% else %}
-                      <span>
+                                {% else %}
+                                    <span>
                           <a data-toggle="modal" href='#login'>Log in</a>
                           <small>or</small>
                           <a data-toggle="modal" href='#signup'>Create an account</a>
                       </span>
-                      {% endif %}
-                  </li>
-                  <li class="searchBox">
-                    <a href="#"><i class="fa fa-search"></i></a>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                      <li>
+                                {% endif %}
+                            </li>
+                            <li class="searchBox">
+                                <a href="#"><i class="fa fa-search"></i></a>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li>
                         <span class="input-group">
                           <input type="text" class="form-control" placeholder="Search…" aria-describedby="basic-addon2">
                           <button type="submit" class="input-group-addon">Submit</button>
                         </span>
-                      </li>
-                    </ul>
-                  </li>
-                  <li class="dropdown cart-dropdown">
-                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-shopping-cart"></i>$0</a>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                      <li>Item(s) in your cart</li>
-                      <li>
-                        <a href="single-product.html">
-                          <div class="media">
-                            <img class="media-left media-object" src="img/home/cart-items/cart-item-01.jpg" alt="cart-Image">
-                            <div class="media-body">
-                              <h5 class="media-heading">INCIDIDUNT UT <br><span>2 X $199</span></h5>
-                            </div>
-                          </div>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="single-product.html">
-                          <div class="media">
-                            <img class="media-left media-object" src="img/home/cart-items/cart-item-01.jpg" alt="cart-Image">
-                            <div class="media-body">
-                              <h5 class="media-heading">INCIDIDUNT UT <br><span>2 X $199</span></h5>
-                            </div>
-                          </div>
-                        </a>
-                      </li>
-                      <li>
-                        <div class="btn-group" role="group" aria-label="...">
-                          <button type="button" class="btn btn-default" onclick="location.href='cart-page.html';">Shopping Cart</button>
-                          <button type="button" class="btn btn-default" onclick="location.href='checkout-step-1.html';">Checkout</button>
-                        </div>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </div>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown cart-dropdown">
+                                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><i
+                                        class="fa fa-shopping-cart"></i>$0</a>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li>Item(s) in your cart</li>
+                                    <li>
+                                        <a href="single-product.html">
+                                            <div class="media">
+                                                <img class="media-left media-object"
+                                                     src="img/home/cart-items/cart-item-01.jpg" alt="cart-Image">
+                                                <div class="media-body">
+                                                    <h5 class="media-heading">INCIDIDUNT UT <br><span>2 X $199</span>
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="single-product.html">
+                                            <div class="media">
+                                                <img class="media-left media-object"
+                                                     src="img/home/cart-items/cart-item-01.jpg" alt="cart-Image">
+                                                <div class="media-body">
+                                                    <h5 class="media-heading">INCIDIDUNT UT <br><span>2 X $199</span>
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            <button type="button" class="btn btn-default"
+                                                    onclick="location.href='cart-page.html';">Shopping Cart
+                                            </button>
+                                            <button type="button" class="btn btn-default"
+                                                    onclick="location.href='checkout-step-1.html';">Checkout
+                                            </button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-          </div>    
         </div>
-        
+
         <!-- NAVBAR -->
         <nav class="navbar navbar-main navbar-default" role="navigation">
-          <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="" href="javascript:void(0)">
-                    <table>
-                        <tr>
-                            <td><img src="/static/img/logo-arca.png" alt="logo+"></td>
-                            <td><h2 class="category-title" style="text-align: inherit !important">Arca</h2></td>
-                        </tr>
-                    </table>
-                </a>
-            </div>
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse"
+                            data-target=".navbar-ex1-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="" href="javascript:void(0)">
+                        <table>
+                            <tr>
+                                <td><img src="/static/img/logo-arca.png" alt="logo+"></td>
+                                <td><h2 class="category-title" style="text-align: inherit !important">Arca</h2></td>
+                            </tr>
+                        </table>
+                    </a>
+                </div>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
-              <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                  <a href="{% url 'arca_index' %}" role="button">Inicio</a>
-                </li>
-                {% if user.perfil.comercio %}
-                <li class="dropdown ">
-                  <a href="{% url 'mi_comercio' %}" role="button">Mi Empresa</a>
-                </li>
-                {% endif %}
-                {% comment %}<li class="dropdown megaDropMenu">
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="{% url 'arca_index' %}" role="button">Inicio</a>
+                        </li>
+                        {% if user.perfil.comercio %}
+                            <li class="dropdown ">
+                                <a href="{% url 'mi_comercio' %}" role="button">Mi Empresa</a>
+                            </li>
+                        {% endif %}
+                        {% comment %}<li class="dropdown megaDropMenu">
                   <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-close-others="true" aria-expanded="false">Shop</b></a>
                   <ul class="dropdown-menu row">
                     <li class="col-sm-3 col-xs-12">
@@ -221,174 +232,181 @@
                     <li><a href="blog-single-left-sidebar.html">Single Left Sidebar</a></li>
                   </ul>
                 </li>{% endcomment %}
-                <li class="dropdown active">
-                  <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Mi Cuenta</a>
-                  <ul class="dropdown-menu dropdown-menu-right">
-                    <li><a href="account-dashboard.html">Dashboard</a></li>
-                    <li class="active"><a href="base2.html">Perfil</a></li>
-                    <li><a href="account-all-orders.html">Descuentos</a></li>
-                  </ul>
-                </li>
-              </ul>
-            </div><!-- /.navbar-collapse -->
-          </div>
+                        <li class="dropdown active">
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false">Mi Cuenta</a>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li><a href="account-dashboard.html">Dashboard</a></li>
+                                <li class="active"><a href="base2.html">Perfil</a></li>
+                                <li><a href="account-all-orders.html">Descuentos</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div>
         </nav>
 
-      </div>
-      
-      <!-- LIGHT SECTION -->
-      <section class="lightSection clearfix pageHeader">
-        <div class="container">
-          <div class="row">
-            <div class="col-xs-6">
-              <div class="page-title">
-                <h2>{% block page-tible %}{% endblock %}</h2>
-              </div>
-            </div>
-            <div class="col-xs-6">
-              <ol class="breadcrumb pull-right">
-                {% block breadcrumb %}
-                <li>
-                  <a href="index.html">Home</a>
-                </li>
-                <li class="active">PROFILE</li>
-                {% endblock %}
-              </ol>
-            </div>
-          </div>
-        </div>
-      </section>
-      <!-- MAIN CONTENT SECTION -->
-      <section class="mainContent clearfix {% block main-class %}userProfile{% endblock main-class %}">
-        <div class="container">
-          {% block main-content %}
+    </div>
 
-          {% endblock main-content %}
-        </div>
-      </section>
-      
-      <!-- FOOTER -->
-      <div class="footer clearfix">
+    <!-- LIGHT SECTION -->
+    <section class="lightSection clearfix pageHeader">
         <div class="container">
-          <div class="row">
-            <div class="col-sm-2 col-xs-12">
-            </div>
-            <div class="col-sm-2 col-xs-12">
-            </div>
-            <div class="col-sm-2 col-xs-12">
-            </div>
-            <div class="col-sm-2 col-xs-12">
-            </div>
-            <div class="col-sm-4 col-xs-12">
-              <div class="newsletter clearfix">
-                <h4>Programa de Afiliación</h4>
-                <h3>Rigistra tu comercio Ahora!</h3>
-                <p>Empieza a gozar de los beneficios de nuestro servicio de afilición de clientes</p>
-                <div class="input-group">
-                  {% comment %}<input type="text" class="form-control" placeholder="your email address" aria-describedby="basic-addon2">{% endcomment %}
-                  <a href="{% url 'arca_login_comercio' %}" class="input-group-addon" style="width: 100% !important;" id="basic-addon2">Ingresar<i class="glyphicon glyphicon-chevron-right"></i></a>
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="page-title">
+                        <h2>{% block page-tible %}{% endblock %}</h2>
+                    </div>
                 </div>
-              </div>
+                <div class="col-xs-6">
+                    <ol class="breadcrumb pull-right">
+                        {% block breadcrumb %}
+                            <li>
+                                <a href="index.html">Home</a>
+                            </li>
+                            <li class="active">PROFILE</li>
+                        {% endblock %}
+                    </ol>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-      <!-- COPY RIGHT -->
-      <div class="copyRight clearfix">
+    </section>
+    <!-- MAIN CONTENT SECTION -->
+    <section class="mainContent clearfix {% block main-class %}userProfile{% endblock main-class %}">
         <div class="container">
-          <div class="row">
-            <div class="col-sm-7 col-xs-12">
-              <p>&copy; 2016 Copyright Bigbag Store Bootstrap Template by <a target="_blank" href="http://www.iamabdus.com/">Abdus</a>.</p>
+            {% block main-content %}
+
+            {% endblock main-content %}
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="footer clearfix">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-2 col-xs-12">
+                </div>
+                <div class="col-sm-2 col-xs-12">
+                </div>
+                <div class="col-sm-2 col-xs-12">
+                </div>
+                <div class="col-sm-2 col-xs-12">
+                </div>
+                <div class="col-sm-4 col-xs-12">
+                    <div class="newsletter clearfix">
+                        <h4>Programa de Afiliación</h4>
+                        <h3>Rigistra tu comercio Ahora!</h3>
+                        <p>Empieza a gozar de los beneficios de nuestro servicio de afilición de clientes</p>
+                        <div class="input-group">
+                            {% comment %}<input type="text" class="form-control" placeholder="your email address" aria-describedby="basic-addon2">{% endcomment %}
+                            <a href="{% url 'arca_login_comercio' %}" class="input-group-addon"
+                               style="width: 100% !important;" id="basic-addon2">Ingresar<i
+                                    class="glyphicon glyphicon-chevron-right"></i></a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-sm-5 col-xs-12">
-              <ul class="list-inline">
-                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
-                <li><a href="#"><i class="fa fa-vimeo"></i></a></li>
-                <li><a href="#"><i class="fa fa-tumblr"></i></a></li>
-              </ul>  
+        </div>
+    </div>
+    <!-- COPY RIGHT -->
+    <div class="copyRight clearfix">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-7 col-xs-12">
+                    <p>&copy; 2016 Copyright Bigbag Store Bootstrap Template by <a target="_blank"
+                                                                                   href="http://www.iamabdus.com/">Abdus</a>.
+                    </p>
+                </div>
+                <div class="col-sm-5 col-xs-12">
+                    <ul class="list-inline">
+                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+                        <li><a href="#"><i class="fa fa-vimeo"></i></a></li>
+                        <li><a href="#"><i class="fa fa-tumblr"></i></a></li>
+                    </ul>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-    
-    <!-- LOGIN MODAL -->
-    <div class="modal fade login-modal" id="login" tabindex="-1" role="dialog">
-      <div class="modal-dialog">
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal fade login-modal" id="login" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 class="modal-title">log in</h3>
-          </div>
-          <div class="modal-body">
-            <form action="#" method="POST" role="form">
-              <div class="form-group">
-                <label for="">Enter Email</label>
-                <input type="email" class="form-control" id="">
-              </div>
-              <div class="form-group">
-                <label for="">Password</label>
-                <input type="password" class="form-control" id="">
-              </div>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox"> Remember Me
-                </label>
-              </div>
-                <button type="submit" class="btn btn-primary btn-block">log in</button>
-                <a class="btn btn-danger btn-block" href="{% url 'social:begin' "google-oauth2" %}?next={{ request.path }}">Iniciar con Google</a>
-                <button type="button" class="btn btn-link btn-block">Forgot Password?</button>
-            </form>  
-          </div>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title">log in</h3>
+            </div>
+            <div class="modal-body">
+                <form action="#" method="POST" role="form">
+                    <div class="form-group">
+                        <label for="">Enter Email</label>
+                        <input type="email" class="form-control" id="">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Password</label>
+                        <input type="password" class="form-control" id="">
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox"> Remember Me
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">log in</button>
+                    <a class="btn btn-danger btn-block"
+                       href="{% url 'social:begin' "google-oauth2" %}?next={{ request.path }}">Iniciar con Google</a>
+                    <button type="button" class="btn btn-link btn-block">Forgot Password?</button>
+                </form>
+            </div>
         </div>
-      </div>
     </div>
+</div>
 
-    <!-- SIGN UP MODAL -->
-    <div class="modal fade" id="signup" tabindex="-1" role="dialog">
-      <div class="modal-dialog">
+<!-- SIGN UP MODAL -->
+<div class="modal fade" id="signup" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 class="modal-title">Create an account</h3>
-          </div>
-          <div class="modal-body">
-            <form action="#" method="POST" role="form">
-              <div class="form-group">
-                <label for="">Enter Email</label>
-                <input type="email" class="form-control" id="">
-              </div>
-              <div class="form-group">
-                <label for="">Password</label>
-                <input type="password" class="form-control" id="">
-              </div>
-              <div class="form-group">
-                <label for="">Confirm Password</label>
-                <input type="password" class="form-control" id="">
-              </div>
-              <button type="submit" class="btn btn-primary btn-block">Sign up</button>
-            </form>  
-          </div>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title">Create an account</h3>
+            </div>
+            <div class="modal-body">
+                <form action="#" method="POST" role="form">
+                    <div class="form-group">
+                        <label for="">Enter Email</label>
+                        <input type="email" class="form-control" id="">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Password</label>
+                        <input type="password" class="form-control" id="">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Confirm Password</label>
+                        <input type="password" class="form-control" id="">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Sign up</button>
+                </form>
+            </div>
         </div>
-      </div>
     </div>
+</div>
 
-    <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/plugins/jquery-ui/jquery-ui.js"></script>
-    <script src="/static/plugins/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/plugins/rs-plugin/js/jquery.themepunch.tools.min.js"></script>
-    <script src="/static/plugins/rs-plugin/js/jquery.themepunch.revolution.min.js"></script>
-    <script src="/static/plugins/owl-carousel/owl.carousel.js"></script>
-    <script src="/static/plugins/selectbox/jquery.selectbox-0.1.3.min.js"></script>
-    <script src="/static/plugins/countdown/jquery.syotimer.js"></script>
-    <script src="/static/options/optionswitcher.js"></script>
-    <script src="/static/js/custom.js"></script>
-  {% block script-block %}
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/plugins/jquery-ui/jquery-ui.js"></script>
+<script src="/static/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="/static/plugins/rs-plugin/js/jquery.themepunch.tools.min.js"></script>
+<script src="/static/plugins/rs-plugin/js/jquery.themepunch.revolution.min.js"></script>
+<script src="/static/plugins/owl-carousel/owl.carousel.js"></script>
+<script src="/static/plugins/selectbox/jquery.selectbox-0.1.3.min.js"></script>
+<script src="/static/plugins/countdown/jquery.syotimer.js"></script>
+<script src="/static/options/optionswitcher.js"></script>
+<script src="/static/js/custom.js"></script>
+<script src="/static/js/numeric.min.js"></script>
+{% block script-block %}
 
-  {% endblock script-block %}
-  </body>
+{% endblock script-block %}
+</body>
 
 <!-- Mirrored from themes.iamabdus.com/bigbag/1.1/account-profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 03 Mar 2017 03:00:52 GMT -->
 </html>
