@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 import datetime
 import uuid
 
+from django.db.models import Avg
+
 from arca.crypter import *
 from django.db import models
 from django.utils.timezone import utc
@@ -77,12 +79,14 @@ class Comercio(Login):
     Este es el usuario dueno de negocio
     '''
     nombre = models.CharField(max_length=100, null=True, blank=True)
+    nombre_propietario = models.CharField(max_length=100, null=True, blank=True)
     direccion = models.CharField(max_length=500, null=True, blank=True)
     position = GeopositionField(null=True, blank=True)
     telefono = models.CharField(max_length=10, null=True, blank=True)
     categoria = models.ForeignKey(Comercio_Categoria, null=True, blank=True, related_name="rel_comercio_categoria")
     identificacion = models.CharField(max_length=50, null=True, blank=True)
     logo = models.ImageField(upload_to=get_media_url, null=True, blank=True)
+    baner = models.ImageField(upload_to=get_media_url, null=True, blank=True)
     tiene_descuento_vigencia = models.BooleanField(default=False)
     tiene_descuento_compra_minima = models.BooleanField(default=False)
     tiene_servicio_afiliacion = models.BooleanField(default=False)
@@ -100,6 +104,19 @@ class Comercio(Login):
 
     def productos(self):
         return Producto.objects.filter(comercio=self)
+
+    def rating(self):
+        valoracion = Comercio_Rating.objects.filter(comercio=self).aggregate(Avg('rating'))
+        if not valoracion or  valoracion['rating__avg'] is None or valoracion<1:
+            return 1
+        else:
+            return int(valoracion['rating__avg'])
+
+class Comercio_Rating(models.Model):
+    comercio=models.ForeignKey(Comercio)
+    usuario=models.ForeignKey(Usuario)
+    rating=models.IntegerField(default=1)
+
 
 
 class Empleado(Login):
@@ -123,6 +140,7 @@ class Empleado(Login):
 
 class Descuento(models.Model):
     comercio = models.ForeignKey(Comercio)
+    es_gratuito= models.BooleanField(default=False)
     nombre = models.CharField(max_length=100, null=True, blank=True)
     porcentaje_descuento = models.FloatField()
     vigencia = models.IntegerField()  # VIGENIA DEL DESCUENTO EN DIAS ANTES DE VENCIMIENTO

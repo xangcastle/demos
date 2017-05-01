@@ -309,19 +309,28 @@ def get_comercios(request):
     comercios = Comercio.objects.all()
     jcomercios = []
     for comercio in comercios:
-        jcomercio = {}
-        jcomercio['id'] = comercio.id
-        jcomercio['nombre'] = comercio.nombre
-        jcomercio['direccion'] = comercio.direccion
-        jcomercio['telefono'] = comercio.telefono
+        jcomercio = {'id': comercio.id, 'nombre': comercio.nombre, 'direccion': comercio.direccion,
+                     'telefono': comercio.telefono, 'rating': comercio.rating()}
 
         if comercio.position:
-            jcomercio['latitude'] = comercio.position.latitude
-            jcomercio['longitude'] = comercio.position.longitude
-        jcomercio['logo'] = comercio.logo.url
-        jcomercio['categoria'] = {
-            'id': comercio.categoria.id,
-            'nombre': comercio.categoria.nombre}
+            jcomercio['latitude'] = float(comercio.position.latitude)
+            jcomercio['longitude'] = float(comercio.position.longitude)
+
+        if comercio.logo:
+            jcomercio['logo'] = comercio.logo.url
+
+        if comercio.baner:
+            jcomercio['baner'] = comercio.baner.url
+
+        if comercio.categoria:
+            jcomercio['categoria'] = {
+                'id': comercio.categoria.id,
+                'nombre': comercio.categoria.nombre}
+        else:
+            jcomercio['categoria'] = {
+                'id': 0,
+                'nombre': 'Sin categoria'}
+
         jdescuentos = []
         for descuento in comercio.descuentos():
             jdescuento = {
@@ -336,7 +345,7 @@ def get_comercios(request):
                 'desc_compra_minima_porc_inf': descuento.desc_compra_minima_porc_inf,
                 'desc_compra_minima_porc_sup': descuento.desc_compra_minima_porc_sup,
                 'tipo_cambio': descuento.tipo_cambio,
-                'activo': descuento.activo,
+                'activo': descuento.activo
             }
             jdescuentos.append(jdescuento)
         jcomercio['descuentos'] = jdescuentos
@@ -477,7 +486,7 @@ class registrar_negocio(TemplateView):
         comercio.telefono = telefono_empresa
         comercio.username = usuario_email
         comercio.password = encrypt_val(usuario_password)
-        comercio.nombre = usuario_nombre + " " + usuario_apellido
+        comercio.nombre_propietario = usuario_nombre + " " + usuario_apellido
         comercio.save()
 
         comercio = autenticate(Comercio(), usuario_email, usuario_password)
@@ -516,7 +525,7 @@ def render_listado_descuento(request):
     context = authorize(request, context)
     if context.get('auth_comercio'):
         comercio = context.get('auth_comercio')
-        descuentos = Descuento.objects.filter(comercio=comercio).order_by('-activo')
+        descuentos = Descuento.objects.filter(comercio=comercio).order_by('-activo', '-actualizado')
         context['descuentos'] = descuentos
         html = render_to_string('arca/comercio/_descuentos.html', context)
         return HttpResponse(html)
@@ -529,6 +538,11 @@ def save_descuento(request):
     nombre = request.POST.get('nombre')
     porcentaje = request.POST.get('porcentaje')
     vigencia = request.POST.get('vigencia')
+    activo = request.POST.get('activo')
+    if activo=='on':
+        activo=True
+    else:
+        activo=False
 
     vigencia_param = request.POST.get('vigencia_param')
     vigencia_porc_inf = request.POST.get('vigencia_porc_inf')
@@ -563,6 +577,7 @@ def save_descuento(request):
         descuento.nombre = nombre
         descuento.porcentaje_descuento = porcentaje
         descuento.vigencia = vigencia
+        descuento.activo= activo
 
         if vigencia_param:
             descuento.desc_dia_vigencia = vigencia_param

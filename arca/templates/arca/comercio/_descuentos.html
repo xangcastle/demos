@@ -10,9 +10,17 @@
         </thead>
         <tbody>
         {% for descuento in descuentos %}
+            {% if descuento.es_gratuito %}
+            <tr class="success">
+            {% else %}
             <tr>
+            {% endif %}
                 <td><a href="{% url 'render_descuento' %}?id={{ descuento.id }}"
-                       class="modal-triguer">{{ descuento.nombre }}</a></td>
+                       class="modal-triguer">{{ descuento.nombre }}
+                    {% if descuento.es_gratuito %}
+                        (Gratuito)
+                    {% endif %}
+                </a></td>
                 <td>{{ descuento.nombre }}</td>
                 <td>{{ descuento.creado }}</td>
                 <td>

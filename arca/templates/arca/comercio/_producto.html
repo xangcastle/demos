@@ -42,9 +42,9 @@
             <div class="form-group col-sm-4 col-xs-4">
                 <label for="activo">Activo</label>
                 {% if producto.activo or not producto.nombre %}
-                    <input type="checkbox" class="form-control" id="activo" name="activo" checked>
+                    <input type="checkbox" id="activo" name="activo" checked>
                 {% else %}
-                    <input type="checkbox" class="form-control" id="activo" name="activo">
+                    <input type="checkbox" id="activo" name="activo">
                 {% endif %}
             </div>
         </div>
