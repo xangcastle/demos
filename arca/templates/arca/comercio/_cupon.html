@@ -17,7 +17,11 @@
             <select class="form-control" id="descuento" name="descuento" required="required">
                 <option value="0">--Descuentos--</option>
                 {% for descuento in descuentos %}
-                    <option value="{{ descuento.id }}">{{ descuento.nombre }}</option>
+                    {% if cupon.descuento.id == descuento.id %}
+                        <option selected="selected" value="{{ descuento.id }}">{{ descuento.nombre }}</option>
+                    {% else %}
+                        <option value="{{ descuento.id }}">{{ descuento.nombre }}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
         </div>

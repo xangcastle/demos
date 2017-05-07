@@ -40,6 +40,7 @@ urlpatterns = [
 
 
     url(r'^get_cupones/', get_cupones, name="get_cupones"),
+    url(r'^get_cupones_empleado/', get_cupones_empleado, name="get_cupones_empleado"),
     url(r'^render_listado_cupones/', render_listado_cupones, name="render_listado_cupones"),
     url(r'^render_cupon/', render_cupon, name="render_cupon"),
     url(r'^save_cupon/', save_cupon,  name="save_cupon"),

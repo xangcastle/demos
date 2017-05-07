@@ -190,6 +190,7 @@ def createUserAuth(request):
             usuario.apellido = apellido
             usuario.email = email
         usuario.save()
+        obj_json['codigo'] = usuario.codigo
         obj_json['id_usuario'] = usuario.id
         obj_json['code'] = 200
 
@@ -672,6 +673,35 @@ def get_cupones(request):
     data = json.dumps(obj_json)
     return HttpResponse(data, content_type='application/json')
 
+def get_cupones_empleado(request):
+    obj_json = {}
+    id_empleado = request.GET.get("id_empleado")
+    empleado = Empleado.objects.filter(id=id_empleado).first()
+    obj_cupnes = []
+    if empleado:
+        cupones = empleado.codigos_descuento()
+        for cupon in cupones:
+            obj_cupnes.append({
+                'id': cupon.id,
+                'codigo': cupon.codigo,
+                'canjeado': cupon.canjeado,
+                'creado': str(cupon.creado),
+                'creado_por': {
+                    'id': cupon.creado_por.id,
+                    'nombre': "%s %s" % (cupon.creado_por.nombre, cupon.creado_por.apellido)
+                },
+                'id_descuento': cupon.descuento.id,
+            })
+        obj_json['cupones'] = obj_cupnes
+        obj_json['code'] = 200
+    else:
+        obj_json['mensaje'] = "Empleado invalido"
+        obj_json['code'] = 400
+
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
+
+
 def render_listado_cupones(request):
     context = Context()
     context = authorize(request, context)
@@ -726,12 +756,18 @@ def save_cupon(request):
     obj_json = {}
     id_descuento = request.POST.get('descuento')
     id_empleado = request.POST.get('id_empleado')
+    codigo_usurio = request.POST.get('codigo_usuario')
     codigo = request.POST.get('codigo')
     creado = request.POST.get('creado', '')
     id = request.POST.get('id')
 
     if id_empleado:
         empleado = Empleado.objects.filter(id=id_empleado).first()
+
+    usuario=None
+    if codigo_usurio:
+        usuario = Usuario.objects.filter(codigo=codigo_usurio).first()
+
 
     if not empleado:
         if context.get('aut_empleado'):
@@ -740,7 +776,10 @@ def save_cupon(request):
     if not empleado:
         obj_json['code'] = 400
         obj_json['mensaje'] = "Empleado invalido"
-    if not codigo:
+    elif not usuario:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Codigo de usuario invalido"
+    elif not codigo:
         obj_json['code'] = 400
         obj_json['mensaje'] = "Codigo invalido"
     elif not id_descuento:
@@ -766,6 +805,7 @@ def save_cupon(request):
                 else:
                     cupon, create = Codigo_Descuento.objects.get_or_create(codigo=codigo,
                                                                            descuento=descuento,
+                                                                           cliente=usuario,
                                                                            creado_por=empleado)
                     cupon.creado = creado
                     cupon.save()

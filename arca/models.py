@@ -48,6 +48,7 @@ class Usuario(Login):
     foto = models.ImageField(upload_to=get_media_url, null=True)
     telefono = models.CharField(max_length=20, null=True, blank=True)
     direccion = models.CharField(max_length=500, null=True, blank=True)
+    codigo = models.CharField(max_length=100, blank=True, unique=True, default=uuid.uuid4)
 
     def imagen_url(self):
         if self.foto:
@@ -136,6 +137,10 @@ class Empleado(Login):
 
     def codigos_descuento(self):
         return Codigo_Descuento.objects.filter(descuento__in=self.comercio.descuentos())
+
+    def cupones(self):
+        return Codigo_Descuento.objects.filter(descuento__in=self.comercio.descuentos(),
+                                                creado_por=self)
 
 
 class Descuento(models.Model):

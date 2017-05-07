@@ -13,7 +13,7 @@
       <tbody>
         {% for cupon in cupones %}
         <tr>
-          <td ><a href="{% url 'render_descuento' %}?id={{ cupon.id }}" class="modal-triguer">{{ cupon.codigo }}</a></td>
+          <td ><a href="{% url 'render_cupon' %}?id={{ cupon.id }}" class="modal-triguer">{{ cupon.codigo }}</a></td>
           <td>{{ cupon.creado_por }}</td>
           <td>{{ cupon.creado }}</td>
           <td>{{ cupon.vence_en }}</td>
