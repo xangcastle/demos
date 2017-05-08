@@ -179,6 +179,7 @@ def createUserAuth(request):
     age = request.POST.get("age")
     gender = request.POST.get("gender")
     email = request.POST.get("email")
+    telefono = request.POST.get("telefono")
     if not username:
         obj_json['code'] = 400
         obj_json['mensaje'] = "No es posible autenticar al usuario"
@@ -190,6 +191,7 @@ def createUserAuth(request):
             usuario.age = age
             usuario.gender = gender
             usuario.email = email
+            usuario.telefono = telefono
         else:
             usuario, create = Usuario.objects.get_or_create(username=username)
             usuario.nombre = nombre
@@ -197,6 +199,7 @@ def createUserAuth(request):
             usuario.age = age
             usuario.gender = gender
             usuario.email = email
+            usuario.telefono = telefono
         usuario.save()
         obj_json['codigo'] = usuario.codigo
         obj_json['id_usuario'] = usuario.id
