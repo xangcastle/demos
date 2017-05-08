@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import datetime
 import uuid
-
+from django.utils.html import mark_safe
 from django.db.models import Avg
 
 from arca.crypter import *
@@ -10,6 +10,15 @@ from django.db import models
 from django.utils.timezone import utc
 from geoposition.fields import GeopositionField
 
+
+def ifnull(var, opt, oth=None):
+    if not var:
+        return opt
+    else:
+        if oth:
+            return oth
+        else:
+            return var
 
 def get_media_url(self, filename):
     clase = self.__class__.__name__
@@ -45,7 +54,9 @@ class Usuario(Login):
     nombre = models.CharField(max_length=100, null=True, blank=True)
     apellido = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField(max_length=255, null=True, blank=True)
-    foto = models.ImageField(upload_to=get_media_url, null=True)
+    age = models.PositiveIntegerField(null=True)
+    gender = models.CharField(max_length=15, null=True)
+    foto = models.ImageField(upload_to=get_media_url, null=True, blank=True)
     telefono = models.CharField(max_length=20, null=True, blank=True)
     direccion = models.CharField(max_length=500, null=True, blank=True)
     codigo = models.CharField(max_length=100, blank=True, default=uuid.uuid4)
@@ -81,7 +92,7 @@ class Comercio(Login):
     '''
     nombre = models.CharField(max_length=100, null=True, blank=True)
     nombre_propietario = models.CharField(max_length=100, null=True, blank=True)
-    direccion = models.CharField(max_length=500, null=True, blank=True)
+    direccion = models.TextField(max_length=500, null=True, blank=True)
     position = GeopositionField(null=True, blank=True)
     telefono = models.CharField(max_length=10, null=True, blank=True)
     categoria = models.ForeignKey(Comercio_Categoria, null=True, blank=True, related_name="rel_comercio_categoria")
@@ -112,6 +123,12 @@ class Comercio(Login):
             return 1
         else:
             return int(valoracion['rating__avg'])
+
+    def thumbnai(self):
+        if self.logo:
+            return mark_safe('<img src="%s"></img>' % self.logo.url)
+        else:
+            return mark_safe('<img src="%s"></img>' % '/media/no_image.jpg')
 
 class Comercio_Rating(models.Model):
     comercio=models.ForeignKey(Comercio)
@@ -144,8 +161,11 @@ class Empleado(Login):
 
 
 class Descuento(models.Model):
+    '''
+    Es el tipo de descuento que oferta el comercio
+    '''
     comercio = models.ForeignKey(Comercio)
-    es_gratuito= models.BooleanField(default=False)
+    es_gratuito = models.BooleanField(default=False)
     nombre = models.CharField(max_length=100, null=True, blank=True)
     porcentaje_descuento = models.FloatField()
     vigencia = models.IntegerField()  # VIGENIA DEL DESCUENTO EN DIAS ANTES DE VENCIMIENTO
@@ -169,6 +189,10 @@ class Descuento(models.Model):
 
 
 class Codigo_Descuento(models.Model):
+    '''
+    Cada cupon que se ha generado para los usuarios de la app
+    si importar de que tipo sean
+    '''
     codigo = models.CharField(max_length=100, blank=True, unique=True, default=uuid.uuid4)
     descuento = models.ForeignKey(Descuento)
     canjeado = models.BooleanField(default=False)  # indica si este codigo ya fue canjeado por el cliente

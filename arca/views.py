@@ -176,6 +176,8 @@ def createUserAuth(request):
     username = request.POST.get("username")
     nombre = request.POST.get("nombre")
     apellido = request.POST.get("apellido")
+    age = request.POST.get("age")
+    gender = request.POST.get("gender")
     email = request.POST.get("email")
     if not username:
         obj_json['code'] = 400
@@ -185,11 +187,15 @@ def createUserAuth(request):
         if usuario:
             usuario.nombre = nombre
             usuario.apellido = apellido
+            usuario.age = age
+            usuario.gender = gender
             usuario.email = email
         else:
             usuario, create = Usuario.objects.get_or_create(username=username)
             usuario.nombre = nombre
             usuario.apellido = apellido
+            usuario.age = age
+            usuario.gender = gender
             usuario.email = email
         usuario.save()
         obj_json['codigo'] = usuario.codigo
