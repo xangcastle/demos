@@ -1,4 +1,6 @@
 # coding=utf-8
+from django.urls import reverse
+
 from arca.crypter import encrypt_val
 from django.template import Context
 import json
@@ -379,7 +381,9 @@ class registrar_negocio_st1(TemplateView):
     @csrf_exempt
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio_st1, self).get_context_data(**kwargs)
-
+        if request.session['categoria_empresa']:
+            context['categoriaactual'] = int(request.session['categoria_empresa'])
+        context['categorias'] = Comercio_Categoria.objects.all()
         return super(registrar_negocio_st1, self).render_to_response(context)
 
     @csrf_exempt
@@ -412,8 +416,11 @@ class registrar_negocio_st2(TemplateView):
         context = super(registrar_negocio_st2, self).get_context_data(**kwargs)
         if not request.POST.get('nombre_empresa'):
             super(registrar_negocio_st1, self).render_to_response(context)
+        elif not request.POST.get('categoria_empresa', None):
+            super(registrar_negocio_st1, self).render_to_response(context)
         else:
-            request.session['nombre_empresa'] = request.POST.get('nombre_empresa')
+            request.session['categoria_empresa'] = request.POST.get('categoria_empresa', None)
+            request.session['nombre_empresa'] = request.POST.get('nombre_empresa', None)
             return super(registrar_negocio_st2, self).render_to_response(context)
 
 
@@ -445,6 +452,10 @@ class registrar_negocio_st4(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio_st4, self).get_context_data(**kwargs)
+        if request.session['categoria_empresa']:
+            context['categoria'] = Comercio_Categoria.objects.filter(
+                id=int(request.session['categoria_empresa'])).first()
+
         return super(registrar_negocio_st4, self).render_to_response(context)
 
     @csrf_exempt
@@ -481,22 +492,41 @@ class registrar_negocio(TemplateView):
         usuario_email = request.session['usuario_email']
         usuario_password = request.session['usuario_password']
 
-        comercio, create = Comercio.objects.get_or_create(identificacion=identificacion_empresa)
-        comercio.nombre = nombre_empresa
-        comercio.direccion = direccion_empresa
-        comercio.telefono = telefono_empresa
-        comercio.username = usuario_email
-        comercio.password = encrypt_val(usuario_password)
-        comercio.nombre_propietario = usuario_nombre + " " + usuario_apellido
-        comercio.save()
+        if Comercio.objects.filter(username=usuario_email).exists():
+            context["error_message"] = "Ya existe un comercio registrado con esa dirección de correo electronico"
 
-        comercio = autenticate(Comercio(), usuario_email, usuario_password)
+            categoria=None
+            if request.session['categoria_empresa']:
+                categoria = Comercio_Categoria.objects.filter(
+                    id=int(request.session['categoria_empresa'])).first()
 
-        response = render(request, 'arca/comercio/mi_comercio.html', {"comercio": comercio})
-        if comercio:
-            response.set_cookie('auth_comercio', encrypt_val(comercio.id))
+            html = render_to_string('arca/comercio/registrar_negocio_st4.html',context)
+            return HttpResponse(html)
 
-        return response
+            #, kwargs={'error_message':
+            #                                                      "Ya existe un comercio registrado con esa dirección de correo electronico"})
+            #return redirect(registrar_negocio_st4())
+        else:
+
+            categoria = Comercio_Categoria.objects.filter(id=request.session['categoria_empresa']).first()
+
+            comercio, create = Comercio.objects.get_or_create(identificacion=identificacion_empresa)
+            comercio.nombre = nombre_empresa
+            comercio.direccion = direccion_empresa
+            comercio.telefono = telefono_empresa
+            comercio.username = usuario_email
+            comercio.password = encrypt_val(usuario_password)
+            comercio.nombre_propietario = usuario_nombre + " " + usuario_apellido
+            comercio.categoria=categoria
+            comercio.save()
+
+            comercio = autenticate(Comercio(), usuario_email, usuario_password)
+
+            response = render(request, 'arca/comercio/mi_comercio.html', {"comercio": comercio})
+            if comercio:
+                response.set_cookie('auth_comercio', encrypt_val(comercio.id))
+
+            return response
 
 
 # endregion

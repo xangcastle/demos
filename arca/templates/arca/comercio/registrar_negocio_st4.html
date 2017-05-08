@@ -36,6 +36,16 @@
           </div>
 
         </div>
+          {% if error_message %}
+          <div class="row">
+              <div class="col-xs-12">
+                  <div class="alert alert-danger fade in alert-dismissable">
+                      <a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>
+                      {{ error_message }}
+                  </div>
+              </div>
+          </div>
+          {% endif %}
         <form id="form-wizar" action="{% url 'registrar_negocio' %}" class="row" method="post" role="form">
             {% csrf_token %}
           <div class="col-xs-12">
@@ -52,6 +62,8 @@
                 <address>
                   <strong style="font-weight: bold !important;">Nombre</strong><br>
                   {{ request.session.nombre_empresa }}<br>
+                  <strong style="font-weight: bold !important;">Categoria</strong><br>
+                  {{ categoria.nombre }}<br>
                   <strong style="font-weight: bold !important;">Identificacion</strong><br>
                   {{ request.session.identificacion_empresa }}<br>
                   <strong style="font-weight: bold !important;">Dirección</strong><br>

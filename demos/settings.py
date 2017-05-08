@@ -91,7 +91,8 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': 'ABC123#$',
         # 'PASSWORD': 'N3wd3v3l0p',
-        'HOST': 'localhost',
+        #'HOST': 'localhost',
+        'HOST': 'demos.deltacopiers.com',
         'PORT': '5432',
     },
 }

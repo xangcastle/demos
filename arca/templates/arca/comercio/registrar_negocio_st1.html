@@ -34,7 +34,6 @@
             <div class="progress"><div class="progress-bar"></div></div>
             <a href="checkout-step-3.html" class="progress-wizard-dot"></a>
           </div>
-
         </div>
 
         <form id="form-wizar" action="{% url 'registrar_negocio_st2' %}" class="row" method="post" role="form">
@@ -48,6 +47,20 @@
             <label for="">Nombre de mi empresa</label>
             <input class="form-control" id="nombre_empresa" name="nombre_empresa"
                    value="{{ request.session.nombre_empresa }}" type="text" required>
+          </div>
+          <div class="form-group col-xs-12">
+              <label for="">Categoria</label>
+              <select class="form-control" id="categoria_empresa" name="categoria_empresa">
+                <option selected disabled value="0">--SELECCIONE UNA CATEGORIA--</option>
+                  {% for categoria in categorias %}
+                      {% ifequal categoriaactual categoria.id %}
+                          <option selected value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                      {% else %}
+                          <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                      {% endifequal %}
+
+                  {% endfor %}
+              </select>
           </div>
           <div class="col-xs-12">
             <div class="well well-lg clearfix">
