@@ -31,8 +31,8 @@ class Base(models.Model):
     def to_json(self):
         return model_to_dict(self)
 
-    def json_update(self, obj):
-        obj = json.loads(obj, cls=Codec)
+    def json_update(self, dict):
+        obj = json.loads(dict, cls=Codec)
         for k, v in obj.items():
             self.k = v
             self.save()
