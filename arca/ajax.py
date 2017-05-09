@@ -55,7 +55,7 @@ class Filter(object):
         final_filter = []
         for f in filters:
             if f[0].find('__like') > -1:
-                final_filter = self._like(f, final_filter)
+                final_filter = self._like(f[1], f[0], filters=final_filter)
             else:
                 final_filter.append(f)
         return [Q(x) for x in final_filter]
