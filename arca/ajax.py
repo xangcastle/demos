@@ -1,8 +1,10 @@
 import datetime
 import decimal
+from django.db.models.fields.files import ImageFieldFile, FileField
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 
 class Codec(json.JSONEncoder):
@@ -24,10 +26,23 @@ class Codec(json.JSONEncoder):
             return obj.strftime('%Y-%m-%dT%H:%M:%SZ')
         elif isinstance(obj, datetime.date):
             return obj.strftime('%Y-%m-%d')
+        elif isinstance(obj, ImageFieldFile):
+            try:
+                return obj.url
+            except:
+                return 'null'
+        elif isinstance(obj, FileField):
+            try:
+                return obj.url
+            except:
+                return 'null'
+        elif obj == None:
+            return 'null'
         else:
             return json.JSONEncoder.default(self, obj)
 
 
+@csrf_exempt
 def get_object(request):
     """
     Get Object
@@ -46,9 +61,10 @@ def get_object(request):
     model = ContentType.objects.get(app_label=request.POST.get('app_label', ''),
                                     model=request.POST.get('model', ''))
     instance = model.get_object_for_this_type(id=int(request.POST.get('id', '')))
-    return HttpResponse(json.dumps(instance.to_json, cls=Codec), content_type='application/json')
+    return HttpResponse(json.dumps(instance.to_json(), cls=Codec), content_type='application/json')
 
 
+@csrf_exempt
 def get_collection(request):
     """
     Misma Idea, pero todos los objetos,

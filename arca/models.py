@@ -4,10 +4,12 @@ import datetime
 import uuid
 from django.utils.html import mark_safe
 from django.db.models import Avg
+from django.forms.models import model_to_dict
 from arca.crypter import *
 from django.db import models
 from django.utils.timezone import utc
 from geoposition.fields import GeopositionField
+from .ajax import Codec, json
 
 
 def ifnull(var, opt, oth=None):
@@ -27,7 +29,13 @@ def get_media_url(self, filename):
 
 class Base(models.Model):
     def to_json(self):
-        return models.model_to_dic(self)
+        return model_to_dict(self)
+
+    def json_update(self, obj):
+        obj = json.loads(obj, cls=Codec)
+        for k, v in obj.items():
+            self.k = v
+            self.save()
 
     class Meta:
         abstract = True
