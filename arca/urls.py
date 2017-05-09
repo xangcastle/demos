@@ -1,6 +1,7 @@
 from django.conf.urls import include, url
 from django.contrib.auth.decorators import login_required
 from .views import *
+from .ajax import *
 
 
 urlpatterns = [
@@ -66,5 +67,6 @@ urlpatterns = [
 
     url(r'^render_comercio_categoria/', render_comercio_categoria.as_view(),
         name="render_comercio_categoria"),
-
+    url(r'^ajax/get_object/', get_object, name="admin_ajax_model"),
+    url(r'^ajax/get_collection/', get_collection, name="admin_ajax_collection")# better to use with jquery.datatables :)
 ]

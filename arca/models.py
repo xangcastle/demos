@@ -4,7 +4,6 @@ import datetime
 import uuid
 from django.utils.html import mark_safe
 from django.db.models import Avg
-
 from arca.crypter import *
 from django.db import models
 from django.utils.timezone import utc
@@ -26,7 +25,15 @@ def get_media_url(self, filename):
     return '%s/%s/%s' % (clase, code, filename)
 
 
-class Login(models.Model):
+class Base(models.Model):
+    def to_json(self):
+        return models.model_to_dic(self)
+
+    class Meta:
+        abstract = True
+
+
+class Login(Base):
     username = models.CharField(max_length=255, null=True, blank=True)
     password = models.CharField(max_length=255, null=True, blank=True)
 
@@ -74,7 +81,7 @@ class Usuario(Login):
         return Codigo_Descuento.objects.filter(cliente=self)
 
 
-class Comercio_Categoria(models.Model):
+class Comercio_Categoria(Base):
     nombre = models.CharField(max_length=100)
     activo = models.BooleanField(default=True)
 
@@ -130,7 +137,7 @@ class Comercio(Login):
         else:
             return mark_safe('<img src="%s"></img>' % '/media/no_image.jpg')
 
-class Comercio_Rating(models.Model):
+class Comercio_Rating(Base):
     comercio=models.ForeignKey(Comercio)
     usuario=models.ForeignKey(Usuario)
     rating=models.IntegerField(default=1)
@@ -160,7 +167,7 @@ class Empleado(Login):
                                                 creado_por=self)
 
 
-class Descuento(models.Model):
+class Descuento(Base):
     '''
     Es el tipo de descuento que oferta el comercio
     '''
@@ -188,7 +195,7 @@ class Descuento(models.Model):
     actualizado = models.DateTimeField(auto_now=True)
 
 
-class Codigo_Descuento(models.Model):
+class Codigo_Descuento(Base):
     '''
     Cada cupon que se ha generado para los usuarios de la app
     si importar de que tipo sean
@@ -219,7 +226,7 @@ class Codigo_Descuento(models.Model):
             return "vencido hace %s dias" % dias_vence
 
 
-class Publicidad(models.Model):
+class Publicidad(Base):
     nombre = models.CharField(max_length=100)
     banner = models.ImageField(upload_to=get_media_url, null=True, blank=True)
     commercio = models.ForeignKey(Comercio)
@@ -231,7 +238,7 @@ class Publicidad(models.Model):
     baja = models.DateTimeField(null=True, blank=True)
 
 
-class Producto(models.Model):
+class Producto(Base):
     nombre = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=500)
     precio = models.FloatField()
@@ -241,7 +248,7 @@ class Producto(models.Model):
     activo = models.BooleanField(default=True)
 
 
-class Factura(models.Model):
+class Factura(Base):
     documento = models.TextField(null=True, blank=True)
     comercio = models.ForeignKey(Comercio, null=True, blank=True)
     monto = models.FloatField(null=True, blank=True)
