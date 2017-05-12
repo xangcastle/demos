@@ -29,7 +29,7 @@ class base_tabular(admin.TabularInline):
 
 class cliente_admin(ImportExportModelAdmin):
     list_display = ('identificacion', 'nombre', 'telefono', 'direccion')
-    list_filter = ('identificacion', 'nombre', 'telefono')
+    search_fields = ('nombre', 'identificacion')
 
     def get_actions(self, request):
         actions = super(cliente_admin, self).get_actions(request)
