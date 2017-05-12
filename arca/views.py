@@ -176,10 +176,17 @@ def createUserAuth(request):
     username = request.POST.get("username")
     nombre = request.POST.get("nombre")
     apellido = request.POST.get("apellido")
-    age = request.POST.get("age")
-    gender = request.POST.get("gender")
-    email = request.POST.get("email")
-    telefono = request.POST.get("telefono")
+    age = request.POST.get("age", "0")
+    gender = request.POST.get("gender", None)
+    email = request.POST.get("email", None)
+    telefono = request.POST.get("telefono", None)
+    if age == "null":
+        age = 0
+    if telefono == "null":
+        telefono = None
+    if gender == "null":
+        gender = None
+
     if not username:
         obj_json['code'] = 400
         obj_json['mensaje'] = "No es posible autenticar al usuario"
@@ -188,7 +195,7 @@ def createUserAuth(request):
         if usuario:
             usuario.nombre = nombre
             usuario.apellido = apellido
-            usuario.age = age
+            usuario.age = int(age)
             usuario.gender = gender
             usuario.email = email
             usuario.telefono = telefono
@@ -196,20 +203,17 @@ def createUserAuth(request):
             usuario, create = Usuario.objects.get_or_create(username=username)
             usuario.nombre = nombre
             usuario.apellido = apellido
-            usuario.age = age
+            usuario.age = int(age)
             usuario.gender = gender
             usuario.email = email
             usuario.telefono = telefono
         usuario.save()
-        obj_json['codigo'] = usuario.codigo
+        obj_json['codigo'] = str(usuario.codigo)
         obj_json['id_usuario'] = usuario.id
         obj_json['code'] = 200
 
     data = json.dumps(obj_json)
     return HttpResponse(data, content_type='application/json')
-
-
-
 
 
 # endregion
@@ -276,9 +280,9 @@ class mi_comercio(TemplateView):
         else:
             return HttpResponseRedirect("/arca/login_comercio")
 
-    #@csrf_exempt
-    #def post(self, request, *args, **kwargs):
-    #    return HttpResponseRedirect("/arca/login_comercio")
+            # @csrf_exempt
+            # def post(self, request, *args, **kwargs):
+            #    return HttpResponseRedirect("/arca/login_comercio")
 
 
 class edit_comercio(TemplateView):
@@ -504,17 +508,17 @@ class registrar_negocio(TemplateView):
         if Comercio.objects.filter(username=usuario_email).exists():
             context["error_message"] = "Ya existe un comercio registrado con esa dirección de correo electronico"
 
-            categoria=None
+            categoria = None
             if request.session['categoria_empresa']:
                 categoria = Comercio_Categoria.objects.filter(
                     id=int(request.session['categoria_empresa'])).first()
 
-            html = render_to_string('arca/comercio/registrar_negocio_st4.html',context)
+            html = render_to_string('arca/comercio/registrar_negocio_st4.html', context)
             return HttpResponse(html)
 
-            #, kwargs={'error_message':
+            # , kwargs={'error_message':
             #                                                      "Ya existe un comercio registrado con esa dirección de correo electronico"})
-            #return redirect(registrar_negocio_st4())
+            # return redirect(registrar_negocio_st4())
         else:
 
             categoria = Comercio_Categoria.objects.filter(id=request.session['categoria_empresa']).first()
@@ -526,7 +530,7 @@ class registrar_negocio(TemplateView):
             comercio.username = usuario_email
             comercio.password = encrypt_val(usuario_password)
             comercio.nombre_propietario = usuario_nombre + " " + usuario_apellido
-            comercio.categoria=categoria
+            comercio.categoria = categoria
             comercio.save()
 
             comercio = autenticate(Comercio(), usuario_email, usuario_password)
@@ -579,10 +583,10 @@ def save_descuento(request):
     porcentaje = request.POST.get('porcentaje')
     vigencia = request.POST.get('vigencia')
     activo = request.POST.get('activo')
-    if activo=='on':
-        activo=True
+    if activo == 'on':
+        activo = True
     else:
-        activo=False
+        activo = False
 
     vigencia_param = request.POST.get('vigencia_param')
     vigencia_porc_inf = request.POST.get('vigencia_porc_inf')
@@ -617,7 +621,7 @@ def save_descuento(request):
         descuento.nombre = nombre
         descuento.porcentaje_descuento = porcentaje
         descuento.vigencia = vigencia
-        descuento.activo= activo
+        descuento.activo = activo
 
         if vigencia_param:
             descuento.desc_dia_vigencia = vigencia_param
@@ -712,6 +716,7 @@ def get_cupones(request):
     data = json.dumps(obj_json)
     return HttpResponse(data, content_type='application/json')
 
+
 def get_cupones_empleado(request):
     obj_json = {}
     id_empleado = request.GET.get("id_empleado")
@@ -803,10 +808,9 @@ def save_cupon(request):
     if id_empleado:
         empleado = Empleado.objects.filter(id=id_empleado).first()
 
-    usuario=None
+    usuario = None
     if codigo_usurio:
         usuario = Usuario.objects.filter(codigo=codigo_usurio).first()
-
 
     if not empleado:
         if context.get('aut_empleado'):
@@ -1227,6 +1231,7 @@ def render_listado_productos(request):
         productos = Producto.objects.filter(comercio=comercio).order_by('-activo')
         html = render_to_string('arca/comercio/_productos.html', {'productos': productos})
         return HttpResponse(html)
+
 
 # endregion
 
