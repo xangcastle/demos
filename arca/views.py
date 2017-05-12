@@ -120,7 +120,7 @@ class Login(TemplateView):
 
 
 class Index(TemplateView):
-    template_name = "arca/base1.html"
+    template_name = "arca/indexnew.html"
 
     def get(self, request, *args, **kwargs):
         context = super(Index, self).get_context_data(**kwargs)
