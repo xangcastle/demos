@@ -195,10 +195,13 @@ def createUserAuth(request):
         if usuario:
             usuario.nombre = nombre
             usuario.apellido = apellido
-            usuario.age = int(age)
-            usuario.gender = gender
+            if int(age)>0:
+                usuario.age = int(age)
+            if gender:
+                usuario.gender = gender
             usuario.email = email
-            usuario.telefono = telefono
+            if telefono:
+                usuario.telefono = telefono
         else:
             usuario, create = Usuario.objects.get_or_create(username=username)
             usuario.nombre = nombre
