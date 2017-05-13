@@ -210,6 +210,9 @@ def createUserAuth(request):
         usuario.save()
         obj_json['codigo'] = str(usuario.codigo)
         obj_json['id_usuario'] = usuario.id
+        obj_json['age'] = usuario.age
+        obj_json['gender'] = usuario.gender
+        obj_json['telefono'] = usuario.telefono
         obj_json['code'] = 200
 
     data = json.dumps(obj_json)
