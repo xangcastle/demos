@@ -42,11 +42,15 @@ urlpatterns = [
 
 
     url(r'^get_cupones/', get_cupones, name="get_cupones"),
+    url(r'^get_facturas/', get_facturas, name="get_facturas"),
     url(r'^get_cupones_empleado/', get_cupones_empleado, name="get_cupones_empleado"),
+    url(r'^get_facturas_empleado/', get_facturas_empleado, name="get_facturas_empleado"),
     url(r'^render_listado_cupones/', render_listado_cupones, name="render_listado_cupones"),
     url(r'^render_cupon/', render_cupon, name="render_cupon"),
     url(r'^save_cupon/', save_cupon,  name="save_cupon"),
     url(r'^generar_cupon/', generar_cupon,  name="generar_cupon"),
+    url(r'^canjear_cupon/', canjear_cupon,  name="canjear_cupon"),
+
 
     url(r'^render_listado_empleado/', render_listado_empleado, name="render_listado_empleado"),
     url(r'^render_empleado/', render_empleado, name="render_empleado"),

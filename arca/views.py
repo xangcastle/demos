@@ -195,7 +195,7 @@ def createUserAuth(request):
         if usuario:
             usuario.nombre = nombre
             usuario.apellido = apellido
-            if int(age)>0:
+            if int(age) > 0:
                 usuario.age = int(age)
             if gender:
                 usuario.gender = gender
@@ -702,21 +702,57 @@ def get_cupones(request):
     if usuario:
         cupones = usuario.cupones()
         for cupon in cupones:
-            obj_cupnes.append({
+            obj_cupon = {
                 'id': cupon.id,
                 'codigo': cupon.codigo,
                 'canjeado': cupon.canjeado,
                 'creado': str(cupon.creado),
+                'actualizado': str(cupon.actualizado),
                 'creado_por': {
                     'id': cupon.creado_por.id,
                     'nombre': "%s %s" % (cupon.creado_por.nombre, cupon.creado_por.apellido)
                 },
                 'id_descuento': cupon.descuento.id,
-            })
+            }
+
+            if cupon.actualizado_por:
+                obj_cupon['actualizado_por'] = {
+                                                   'id': cupon.actualizado_por.id,
+                                                   'nombre': "%s %s" % (
+                                                       cupon.actualizado_por.nombre, cupon.actualizado_por.apellido)
+                                               },
+            obj_cupnes.append(obj_cupon)
         obj_json['cupones'] = obj_cupnes
         obj_json['code'] = 200
     else:
         obj_json['mensaje'] = "Usuario invalido"
+        obj_json['code'] = 400
+
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
+
+
+def get_facturas(request):
+    obj_json = {}
+    username = request.GET.get("username")
+    usuario = Usuario.objects.filter(username=username).first()
+    obj_detalle = []
+    if usuario:
+        facturas = usuario.facturas()
+        for factura in facturas:
+            obj_detalle.append({
+                'id': factura.id,
+                'documento': factura.documento,
+                'comercio_id': factura.comercio.id,
+                'monto': factura.monto,
+                'descuento': factura.descuento,
+                'cupon_id': factura.cupon.id,
+                'fecha': str(factura.fecha),
+            })
+        obj_json['facturas'] = obj_detalle
+        obj_json['code'] = 200
+    else:
+        obj_json['mensaje'] = "Empleado invalido"
         obj_json['code'] = 400
 
     data = json.dumps(obj_json)
@@ -743,6 +779,33 @@ def get_cupones_empleado(request):
                 'id_descuento': cupon.descuento.id,
             })
         obj_json['cupones'] = obj_cupnes
+        obj_json['code'] = 200
+    else:
+        obj_json['mensaje'] = "Empleado invalido"
+        obj_json['code'] = 400
+
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
+
+
+def get_facturas_empleado(request):
+    obj_json = {}
+    id_empleado = request.GET.get("id_empleado")
+    empleado = Empleado.objects.filter(id=id_empleado).first()
+    obj_detalle = []
+    if empleado:
+        facturas = empleado.facturas()
+        for factura in facturas:
+            obj_detalle.append({
+                'id': factura.id,
+                'documento': factura.documento,
+                'comercio_id': factura.comercio.id,
+                'monto': factura.monto,
+                'descuento': factura.descuento,
+                'cupon_id': factura.cupon.id,
+                'fecha': str(factura.fecha),
+            })
+        obj_json['facturas'] = obj_detalle
         obj_json['code'] = 200
     else:
         obj_json['mensaje'] = "Empleado invalido"
@@ -864,6 +927,54 @@ def save_cupon(request):
 
     data = json.dumps(obj_json)
     return HttpResponse(data, content_type='application/json')
+
+
+@csrf_exempt
+def canjear_cupon(request):
+    obj_json = {}
+    codigo_cupon = request.POST.get("codigo_cupon", None)
+    numer_factura = request.POST.get("factura", None)
+    monto = request.POST.get("monto", 0)
+    descuento = request.POST.get("descuento", 0)
+    actualizado = request.POST.get('actualizado', '')
+    id_empleado = request.POST.get('id_empleado')
+
+    if id_empleado:
+        empleado = Empleado.objects.filter(id=id_empleado).first()
+
+    cupon = Codigo_Descuento.objects.filter(codigo=codigo_cupon).first()
+
+    if not empleado:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Empleado invalido"
+    elif not cupon:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Cupon invalido"
+    elif not numer_factura:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Factura invalido"
+    elif monto <= 0:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Monto invalido"
+    elif descuento <= 0 or descuento > monto:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Descuento invalido"
+    else:
+        factura, c = Factura.objects.get_or_create(
+            cupon=cupon,
+            comercio=cupon.descuento.comercio
+        )
+        factura.monto = monto
+        factura.descuento = descuento
+        factura.documento = numer_factura
+        cupon.actualizado_por = empleado
+        cupon.actualizado = actualizado
+        cupon.cajeado = True
+        cupon.save()
+        factura.save()
+        obj_json['code'] = 200
+        obj_json['id_factura'] = factura.id
+        obj_json['mensaje'] = "Descuento canjeado exitosamente"
 
 
 def generar_cupon(request):

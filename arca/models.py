@@ -88,6 +88,9 @@ class Usuario(Login):
     def cupones(self):
         return Codigo_Descuento.objects.filter(cliente=self)
 
+    def facturas(self):
+        return Factura.objects.filter(cupon__cliente=self)
+
 
 class Comercio_Categoria(Base):
     nombre = models.CharField(max_length=100)
@@ -169,6 +172,9 @@ class Empleado(Login):
 
     def codigos_descuento(self):
         return Codigo_Descuento.objects.filter(descuento__in=self.comercio.descuentos())
+
+    def facturas(self):
+        return Factura.objects.filter(comercio=self.comercio)
 
     def cupones(self):
         return Codigo_Descuento.objects.filter(descuento__in=self.comercio.descuentos(),
