@@ -15,8 +15,8 @@ class Index(TemplateView):
         context = super(Index, self).get_context_data(**kwargs)
         context['apps'] = get_aplications(self.request.user)
         context['options'] = get_options(self.request.user)
-        actualizar_cliente()
-        actualizar_inventario()
+        #actualizar_cliente()
+        #actualizar_inventario()
         return context
 
 
