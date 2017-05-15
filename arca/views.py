@@ -767,17 +767,26 @@ def get_cupones_empleado(request):
     if empleado:
         cupones = empleado.codigos_descuento()
         for cupon in cupones:
-            obj_cupnes.append({
+            obj_cupon = {
                 'id': cupon.id,
                 'codigo': cupon.codigo,
                 'canjeado': cupon.canjeado,
                 'creado': str(cupon.creado),
+                'actualizado': str(cupon.actualizado),
                 'creado_por': {
                     'id': cupon.creado_por.id,
                     'nombre': "%s %s" % (cupon.creado_por.nombre, cupon.creado_por.apellido)
                 },
                 'id_descuento': cupon.descuento.id,
-            })
+            }
+
+            if cupon.actualizado_por:
+                obj_cupon['actualizado_por'] = {
+                                                   'id': cupon.actualizado_por.id,
+                                                   'nombre': "%s %s" % (
+                                                       cupon.actualizado_por.nombre, cupon.actualizado_por.apellido)
+                                               },
+            obj_cupnes.append(obj_cupon)
         obj_json['cupones'] = obj_cupnes
         obj_json['code'] = 200
     else:
