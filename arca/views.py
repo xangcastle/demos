@@ -953,7 +953,10 @@ def canjear_cupon(request):
 
     cupon = Codigo_Descuento.objects.filter(codigo=codigo_cupon).first()
 
-    if not empleado:
+    if cupon.canjeado:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Cupon ya fue canjeado"
+    elif not empleado:
         obj_json['code'] = 400
         obj_json['mensaje'] = "Empleado invalido"
     elif not cupon:
