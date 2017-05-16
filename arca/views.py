@@ -969,21 +969,36 @@ def canjear_cupon(request):
         obj_json['code'] = 400
         obj_json['mensaje'] = "Descuento invalido"
     else:
-        factura, c = Factura.objects.get_or_create(
-            cupon=cupon,
-            comercio=cupon.descuento.comercio
+
+        nuevo_cupon, c = Codigo_Descuento.objects.get_or_create(
+            descuento=cupon.descuento,
+            canjeado=False,
+            cliente=cupon.cliente,
+            creado_por=empleado
         )
-        factura.monto = monto
-        factura.descuento = descuento
-        factura.documento = numer_factura
-        cupon.actualizado_por = empleado
-        cupon.actualizado = actualizado
-        cupon.cajeado = True
-        cupon.save()
-        factura.save()
-        obj_json['code'] = 200
-        obj_json['id_factura'] = factura.id
-        obj_json['mensaje'] = "Descuento canjeado exitosamente"
+        if not nuevo_cupon:
+            obj_json['code'] = 500
+            obj_json['mensaje'] = "No fue posible generar el nuvo cupon"
+        else:
+            factura, c = Factura.objects.get_or_create(
+                cupon=cupon,
+                comercio=cupon.descuento.comercio
+            )
+            factura.monto = monto
+            factura.descuento = descuento
+            factura.documento = numer_factura
+            cupon.actualizado_por = empleado
+            cupon.actualizado = actualizado
+            cupon.cajeado = True
+            cupon.save()
+            factura.save()
+
+            obj_json['code'] = 200
+            obj_json['id_factura'] = factura.id
+            obj_json['mensaje'] = "Descuento canjeado exitosamente"
+
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
 
 
 def generar_cupon(request):
