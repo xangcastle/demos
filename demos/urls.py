@@ -22,6 +22,7 @@ from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     url(r'^$', login_required(Index.as_view()), name="control_index"),
+    url(r'^agregar_registro/',agregar_registro, name="agregar_registro"),
     url(r'^calculator/', login_required(Calculator.as_view()), name="control_calculator"),
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', admin.site.urls),

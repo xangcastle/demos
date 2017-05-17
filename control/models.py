@@ -21,6 +21,7 @@ def get_options(user):
     except:
         return Opcion(user=user)
 
+
 def get_permission():
     perms = []
     for a in Aplicacion.objects.all():
@@ -41,7 +42,6 @@ class Aplicacion(models.Model):
     label = models.CharField(max_length=25, blank=True, null=True, verbose_name="etiqueta de la aplicacion")
     icono = models.ImageField(upload_to="iconos", null=True, blank=True)
     background_color = ColorField(default='#FF0000')
-
 
     class Meta:
         verbose_name_plural = "aplicaciones"
@@ -65,8 +65,17 @@ class Aplicacion(models.Model):
     background_tag.short_description = 'Fondo'
 
 
-
 class Permiso(models.Model):
     class Meta:
         pass
-        #permissions = get_permission()
+        # permissions = get_permission()
+
+
+class Registro(models.Model):
+    tag = models.CharField(max_length=100, null=False, blank=False)
+    mensaje = models.TextField(null=False, blank=False)
+    fecha = models.DateTimeField(null=False, blank=False)
+    usuario = models.CharField(max_length=100, null=True, blank=True)
+
+    def __unicode__(self):
+        return  "%s %s" % (self.tag, self.usuario)

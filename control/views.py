@@ -1,6 +1,10 @@
+import json
+
 from background_task import background
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView
 
 from inblensa.models import Import_Imventario, Import
@@ -15,8 +19,8 @@ class Index(TemplateView):
         context = super(Index, self).get_context_data(**kwargs)
         context['apps'] = get_aplications(self.request.user)
         context['options'] = get_options(self.request.user)
-        #actualizar_cliente()
-        #actualizar_inventario()
+        # actualizar_cliente()
+        # actualizar_inventario()
         return context
 
 
@@ -24,7 +28,7 @@ class Calculator(TemplateView):
     template_name = "control/calculator.html"
 
 
-#@background(schedule=3)
+# @background(schedule=3)
 def actualizar_inventario():
     url = 'http://inblensa.ddns.net:7779/Home/get_data_from_server'
     params = {'vista': 'view_info_migration'}
@@ -63,6 +67,7 @@ def actualizar_inventario():
                                                 producto_medida=d["producto_medida"],
                                                 bodega=d["bodega"])
 
+
 def actualizar_cliente():
     url = 'http://inblensa.ddns.net:7779/Home/get_data_from_server'
     params = {'vista': 'view_info_migration_cliente'}
@@ -83,3 +88,39 @@ def actualizar_cliente():
                                          direccion=d["direccion"],
                                          contacto=d["contacto"])
 
+
+@csrf_exempt
+def agregar_registro(request):
+    obj_json = {}
+    tag = request.POST.get("tag", None)
+    mensaje = request.POST.get("mensaje", None)
+    fecha = request.POST.get("fecha", None)
+    usuario = request.POST.get("usuario", None)
+
+    if not tag:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "TAG no encontrada"
+    elif not mensaje:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Mensaje no encontrado"
+    elif not fecha:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Fecha no encontrado"
+    elif not usuario:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Fecha no encontrado"
+    else:
+        registro, c = Registro.objects.get_or_create(
+            tag=tag,
+            mensaje=mensaje,
+            fecha=fecha,
+            usuario=usuario
+        )
+        if not registro:
+            obj_json['code'] = 500
+            obj_json['mensaje'] = "No fue posible crear el registro"
+        else:
+            obj_json['code'] = 200
+            obj_json['mensaje'] = "Registro creado exitosamente"
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
