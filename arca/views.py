@@ -136,6 +136,7 @@ def get_comercio_categorias(request):
         obj_json = {}
         obj_json['id'] = categoria.id
         obj_json['nombre'] = categoria.nombre
+        obj_json['icono'] = str(categoria.icono)
         data.append(obj_json)
 
     data = json.dumps(data)
@@ -294,6 +295,7 @@ class mi_comercio(TemplateView):
 class edit_comercio(TemplateView):
     template_name = "arca/comercio/registrar_negocio.html"
 
+        # check whether it's valid:
     @csrf_exempt
     def get(self, request, *args, **kwargs):
 
@@ -326,7 +328,7 @@ class edit_comercio(TemplateView):
 
         return super(edit_comercio, self).render_to_response(context)
 
-
+@csrf_exempt
 def get_comercios(request):
     comercios = Comercio.objects.all()
     jcomercios = []
@@ -347,9 +349,8 @@ def get_comercios(request):
         if comercio.categoria:
             jcomercio['categoria'] = {
                 'id': comercio.categoria.id,
-                'nombre': comercio.categoria.nombre}
-        if comercio.icono:
-            jcomercio['icono'] = str(comercio.icono)
+                'nombre': comercio.categoria.nombre,
+                'icono': str(comercio.categoria.icono)}
         else:
             jcomercio['categoria'] = {
                 'id': 0,
