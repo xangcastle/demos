@@ -30,7 +30,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'adminactions',
-    'grappelli_dynamic_navbar',
+    'background_task',
+    #'grappelli_dynamic_navbar',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
