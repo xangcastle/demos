@@ -10,6 +10,7 @@ from django.db import models
 from django.utils.timezone import utc
 from geoposition.fields import GeopositionField
 from .ajax import Codec, json
+from fontawesome.fields import IconField
 
 
 def ifnull(var, opt, oth=None):
@@ -91,6 +92,7 @@ class Usuario(Login):
 
 class Comercio_Categoria(Base):
     nombre = models.CharField(max_length=100)
+    icono = IconField(null=True, blank=True)
     activo = models.BooleanField(default=True)
 
     class Meta:
