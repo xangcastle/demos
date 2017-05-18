@@ -141,8 +141,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
 
 # default uses locally shipped version at 'fontawesome/css/font-awesome.min.css'
-FONTAWESOME_CSS_URL = '//cdn.example.com/fontawesome-min.css'  # absolute url
-FONTAWESOME_CSS_URL = 'myapp/css/fontawesome.min.css'  # relative url
+FONTAWESOME_CSS_URL = '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'  # absolute url
 
 GEOPOSITION_GOOGLE_MAPS_API_KEY = 'AIzaSyCqPdfjM76erNHpC9HR3azDso29bBX6L_c'
 
@@ -205,3 +204,4 @@ SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/arca/'
 SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/arca/'
 SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/arca/'
 SOCIAL_AUTH_INACTIVE_USER_URL = '/arca/'
+
