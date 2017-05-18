@@ -1148,6 +1148,49 @@ def save_empleado(request):
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
 
+@csrf_exempt
+def actualizar_empleado(request):
+    data = []
+    obj_json = {}
+    id_empleado = request.POST.get('id')
+    nombre = request.POST.get('nombre')
+    apellido = request.POST.get('apellido')
+    direccion = request.POST.get('direccion')
+    telefono = request.POST.get('telefono')
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    password_conf = request.POST.get('password_conf')
+
+
+    if not nombre:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Nombre invalido"
+    if not apellido:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Apellido invalido"
+    elif not username:
+        obj_json['code'] = 400
+        obj_json['mensaje'] = "Nombre de Usuario invalido"
+    else:
+
+        if password != password_conf:
+            obj_json['code'] = 500
+            obj_json['mensaje'] = "Contraseña y confirmacion no coinciden"
+        else:
+            empleado = Empleado.objects.filter(id=id_empleado).first()
+            empleado.nombre = nombre
+            empleado.apellido = apellido
+            empleado.direccion = direccion
+            empleado.telefono = telefono
+            if password:
+                empleado.password = encrypt_val(password)
+            empleado.save()
+            obj_json['code'] = 200
+            obj_json['mensaje'] = "Empleado actualizado exitosamente!"
+
+    data.append(obj_json)
+    data = json.dumps(data)
+    return HttpResponse(data, content_type='application/json')
 
 def get_empleado(request):
     obj_json = {}
