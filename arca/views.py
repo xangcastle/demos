@@ -348,6 +348,8 @@ def get_comercios(request):
             jcomercio['categoria'] = {
                 'id': comercio.categoria.id,
                 'nombre': comercio.categoria.nombre}
+        if comercio.icono:
+            jcomercio['icono'] = str(comercio.icono)
         else:
             jcomercio['categoria'] = {
                 'id': 0,
