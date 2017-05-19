@@ -713,7 +713,8 @@ def get_cupones(request):
                 'actualizado': str(cupon.actualizado),
                 'creado_por': {
                     'id': cupon.creado_por.id,
-                    'nombre': "%s %s" % (cupon.creado_por.nombre, cupon.creado_por.apellido)
+                    'nombre': cupon.creado_por.nombre,
+                    'apellido': cupon.creado_por.apellido
                 },
                 'id_descuento': cupon.descuento.id,
             }
@@ -721,8 +722,8 @@ def get_cupones(request):
             if cupon.actualizado_por:
                 obj_cupon['actualizado_por'] = {
                                                    'id': cupon.actualizado_por.id,
-                                                   'nombre': "%s %s" % (
-                                                       cupon.actualizado_por.nombre, cupon.actualizado_por.apellido)
+                                                   'nombre': cupon.actualizado_por.nombre,
+                                                    'apellido': cupon.actualizado_por.apellido
                                                },
             obj_cupnes.append(obj_cupon)
         obj_json['cupones'] = obj_cupnes
@@ -778,7 +779,8 @@ def get_cupones_empleado(request):
                 'actualizado': str(cupon.actualizado),
                 'creado_por': {
                     'id': cupon.creado_por.id,
-                    'nombre': "%s %s" % (cupon.creado_por.nombre, cupon.creado_por.apellido)
+                    'nombre': cupon.creado_por.nombre,
+                    'apellido': cupon.creado_por.apellido
                 },
                 'id_descuento': cupon.descuento.id,
             }
@@ -786,8 +788,8 @@ def get_cupones_empleado(request):
             if cupon.actualizado_por:
                 obj_cupon['actualizado_por'] = {
                                                    'id': cupon.actualizado_por.id,
-                                                   'nombre': "%s %s" % (
-                                                       cupon.actualizado_por.nombre, cupon.actualizado_por.apellido)
+                                                   'nombre': cupon.actualizado_por.nombre,
+                                                   'apellido': cupon.actualizado_por.apellido
                                                },
             obj_cupnes.append(obj_cupon)
         obj_json['cupones'] = obj_cupnes
