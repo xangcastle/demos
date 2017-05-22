@@ -1,0 +1,99 @@
+{% extends "arca/comercio/base3.html" %}
+
+{% block page-tible %}REGISTRO DE NEGOCIO{% endblock %}
+{% block breadcrumb %}
+<li><a href="{% url 'arca_index' %}">Inicio</a></li>
+    <li><a href="{% url 'mi_comercio' %}">Mi Comercio</a></li>
+<li class="active">Registro de comercio</li>
+{% endblock %}
+{% block main-content %}
+    <style>
+    .gllpMap	{ width: 500px; height: 250px; }
+    </style>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12 logIn">
+          <div class="panel panel-default">
+            <div class="panel-heading"><h3>Registro</h3></div>
+            <div class="panel-body">
+              <form action="#" method="POST" role="form" enctype="multipart/form-data">
+                  {% csrf_token %}
+
+
+                  {% if success_message %}
+                      <div class="alert alert-success alert-dismissible" role="alert">
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <strong>En hora buena!</strong> {{ success_message }}
+                      </div>
+                  {% endif %}
+                  {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <strong>Upss ...!</strong> {{ form.errors }}
+                    </div>
+                  {% endif %}
+                  {% for field in form %}
+                      {% if field.errors %}
+                          <div class="form-group error">
+                            <label class="control-label">{{ field.label }}</label>
+                            <div class="controls">{{ field }}
+                                {% if field.help_text %}
+                                    <p class="help-inline"><small>{{ field.help_text }}</small></p>
+                                {% endif %}
+                                 <span class="help-inline">
+                                    {% for error in  field.errors %}{{ error }}{% endfor %}
+                                </span>
+                            </div>
+                          </div>
+                      {% else %}
+                          <div class="form-group">
+                            <label class="control-label">{{ field.label }}</label>
+                            <div class="controls">{{ field }}
+                                {% if field.help_text %}
+                                    <p class="help-inline"><small>{{ field.help_text }}</small></p>
+                                {% endif %}
+                            </div>
+                          </div>
+                      {% endif %}
+                  {% endfor %}
+                  <fieldset class="gllpLatlonPicker">
+                    <input type="text" class="gllpSearchField">
+                    <input type="button" class="gllpSearchButton" value="search">
+                    <div class="gllpMap">Google Maps</div>
+                    <input type="hidden" class="gllpLatitude" value="20"/>
+                    <input type="hidden" class="gllpLongitude" value="20"/>
+                    <input type="hidden" class="gllpZoom" value="3"/>
+                  </fieldset>
+                <button type="submit" class="btn btn-primary btn-block">Registrar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script-block %}
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCqPdfjM76erNHpC9HR3azDso29bBX6L_c&sensor=false"></script>
+    <script src="/static/js/jquery-gmaps-latlon-picker.js"></script>
+    <script>
+        $.gMapsLatLonPickerNoAutoInit = 1;
+    </script>
+    <script>
+        $(document).ready(function () {
+            listado_categoria();
+        });
+        function listado_categoria() {
+            $.ajax({
+                url:"{% url 'get_comercio_categorias' %}",
+                type: "get",
+                success: function (data) {
+                    $("#categoria option").remove();
+                    $("#categoria").append($("<option disabled='disabled' selected='selected'></option>").text("---Seleccione una Categoria---").val(0));
+                    $.each(data, function(index, item) {
+                        $("#categoria").append($("<option></option>").text(item.nombre).val(item.id));
+                    });
+                    $("#categoria").append($("<option ></option>").text("Otra").val(0));
+
+                }
+            });
+        }
+    </script>
+{% endblock script-block %}

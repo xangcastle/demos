@@ -1,0 +1,57 @@
+
+ <div class="row">
+    <div class="form-group">
+        <label class="col-sm-4 control-label">Vendedor:</label>
+        <div class="col-sm-8">
+            <select name="vendedor_select" class="form-control select2" disabled="disabled">
+                <option selected="selected" disabled="disabled">--seleccione vendedor--</option>
+                {% for vendedor in vendedores %}
+                    {% if vendedor.usuario == actual_vendedor %}
+                        <option selected="selected" value="{{ vendedor.id }}">{{ vendedor.usuario.get_username }}; {{ vendedor.usuario.get_full_name }}</option>
+                    {% else %}
+                        <option value="{{ vendedor.id }}">{{ vendedor.usuario.get_username }}; {{ vendedor.usuario.get_full_name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <input name="vendedor" type="hidden" value="{{ actual_vendedor.id }}">
+        </div>
+    </div>
+</div>
+
+<div class="hr-line-dashed"></div>
+ <div class="row">
+    <div class="form-group">
+        <label class="col-sm-4 control-label">Cliente:</label>
+        <div class="col-sm-8">
+            <select name="cliente" class="form-control select2" type="text">
+                <option selected="selected" disabled="disabled">--seleccione cliente--</option>
+                {% for cliente in clientes %}
+                <option value="{{ cliente.id }}">{{ cliente.identificacion }}; {{ cliente.nombre }}; {{ cliente.telefono }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="hr-line-dashed"></div>
+ <div class="row">
+    <div class="col-sm-12">
+        <button id="addProducto" onclick="showaddProducto()"><i class="fa fa-plus fa-fw"></i> Agregar Producto</button>
+        <table id="table_factura_detalle" class="table table-bordered tablesaw-swipe table-responsive" >
+            <thead>
+            <tr>
+                <th width="100%">Producto</th>
+                <th width="90px">Existencia</th>
+                <th width="90px">Cantidad</th>
+                <th width="50px">P/U</th>
+                <th width="90px">Total</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<input type="hidden" id="factura-accion" value="add" >

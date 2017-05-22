@@ -1,0 +1,35 @@
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Descripcion</th>
+            <th>Precio</th>
+            <th>Activo</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for producto in productos %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><a href="{% url 'render__producto' %}?id={{ producto.id }}"
+                       class="modal-triguer">{{ producto.nombre }}</a></td>
+                <td>{{ producto.descripcion }}</td>
+                <td>{{ producto.precio }}</td>
+                <td>
+                    <div class="checkboxArea">
+                        {% if producto.activo %}
+                            <input id="checkbox1" type="checkbox" name="checkbox" value="1" checked="checked"
+                                   disabled="disabled">
+                        {% else %}
+                            <input id="checkbox1" type="checkbox" name="checkbox" value="1" disabled="disabled">
+                        {% endif %}
+                        <label for="checkbox1"><span></span></label>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

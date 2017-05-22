@@ -1,0 +1,39 @@
+<div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th class="col-xs-2">Creado por</th>
+          <th>Creado</th>
+          <th class="col-xs-2">Estado</th>
+          <th>Cupon</th>
+          <th>Canjeado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cupon in cupones %}
+        <tr>
+          <td ><a href="{% url 'render_cupon' %}?id={{ cupon.id }}" class="modal-triguer">{{ cupon.codigo }}</a></td>
+          <td>{{ cupon.creado_por }}</td>
+          <td>{{ cupon.creado }}</td>
+          <td>{{ cupon.vence_en }}</td>
+          <td>
+              <span class="cartImage">
+                <img src="http://chart.googleapis.com/chart?cht=qr&chs=100x100&chl={{ cupon.codigo }}"
+                     class="img-responsive img-thumbnail" alt="image">
+              </span>
+          </td>
+          <td>
+              <div class="checkboxArea">
+                {% if cupon.canjeado %}
+                    <input id="checkbox1" type="checkbox" name="checkbox" value="1" checked="checked" disabled="disabled">
+                {% else %}
+                    <input id="checkbox1" type="checkbox" name="checkbox" value="1" disabled="disabled">
+                {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>

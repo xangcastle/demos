@@ -1,0 +1,6 @@
+*.pyc
+*.pyo
+/venv
+/.idea
+/media
+/venv/*

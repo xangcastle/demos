@@ -1,0 +1,580 @@
+
+{% extends "app/index.html" %}
+
+{% comment %}{% block static-navbar %}{% endblock static-navbar %}
+
+{% block aside-bar %}{% endblock aside-bar %}
+{% endcomment %}
+{% block css-content %}
+    <link href="/static/app/css/sweetalert.css" rel="stylesheet">
+    <link href="/static/app/css/bootstrap-datetimepicker.css" rel="stylesheet">
+{% endblock css-content %}
+{% block breadcrums %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title" style="margin-bottom: 0px;">
+                <h1>Cobranza al Cliente {{ cliente.nombre }}<small></small></h1>
+                <ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-money"></i></a></li>
+                    <li><a href="../cobranza">Cobranza</a></li>
+                    <li class="active">Cliente</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+{% endblock breadcrums %}
+
+{% block cuerpo %}
+    <div class="row">
+        <div class="col-md-4">
+            <input type="hidden" name="clienteid" id="clienteid" value="{{ cliente.id }}">
+            <div class="panel panel-white border-top-blue">
+                  <div class="panel-heading">
+                    <h3>Datos Generales <a class="pull-right" href="#" onclick="mostrarComentarios({{ cliente.id }}); return false;" class="tooltipstered" title="Agregue su comentario"> <i class="fa fa-comment fa-2x"></i></a></h3>
+                    <h4>{{ cliente.nombre }}</h4>
+
+                  </div>
+                  <div class="panel-body" style="height:370px">
+                    <ul id="profile-page-about-details" class="collection z-depth-1">
+                          <li class="collection-item">
+                            <div class="row">
+                              <div class="col-sm-5 grey-text darken-1"><i class="mdi-action-wallet-travel"></i> Identificación</div>
+                              <div class="col-sm-7 grey-text text-darken-4 right-align">{{ cliente.identificacion }}</div>
+                            </div>
+                          </li>
+                          <li class="collection-item">
+                            <div class="row">
+                              <div class="col-sm-5 grey-text darken-1"><i class="mdi-social-poll"></i> Telefono</div>
+                              <div class="col-sm-7 grey-text text-darken-4 right-align">{{ cliente.telefono }}</div>
+                            </div>
+                          </li>
+                          <li class="collection-item">
+                            <div class="row">
+                              <div class="col-sm-5 grey-text darken-1"><i class="mdi-social-domain"></i> Celular</div>
+                              <div class="col-sm-7 grey-text text-darken-4 right-align">{{ cliente.celular }}</div>
+                            </div>
+                          </li>
+                          <li class="collection-item">
+                            <div class="row">
+                              <div class="col-sm-5 grey-text darken-1"><i class="mdi-social-cake"></i> Dirección</div>
+                              <div class="col-sm-7 grey-text text-darken-4 right-align">{{ cliente.direccion }}</div>
+                            </div>
+                          </li>
+                            <li class="collection-item">
+                            <div class="row">
+                              <div class="col-sm-5 grey-text darken-1"><i class="mdi-social-cake"></i> Contacto</div>
+                              <div class="col-sm-7 grey-text text-darken-4 right-align">{{ cliente.contacto }}</div>
+                            </div>
+                          </li>
+                        </ul>
+                  </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            {% comment %}<div class="panel panel-card recent-activites border-top-orange panel-collapsed">
+                <!-- Start .panel -->
+                <div class="panel-heading">
+                    <h4 class="panel-title">Comentarios</h4>
+                    <div class="panel-actions">
+                        <a href="#" class="panel-action panel-action-toggle" data-panel-toggle></a>
+                        <a href="#" class="panel-action panel-action-dismiss" data-panel-dismiss></a>
+                    </div>
+                </div>
+                <div class="panel-body" style="display: none">
+                    <div class="nano has-scrollbar" style="height:290px">
+                        <div class="nano-content pad-all" tabindex="0" style="right: -17px;">
+                            <div id="conten-comentarios"></div>
+                            <hr>
+                            <div class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <textarea id="post-comment" name="post-comment" rows="2" placeholder="Su comentario aquí.." class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <a href="javascript:void(0)" id="comentar" class="btn btn-effect-ripple btn-primary"> <i class="fa fa-comment fa-fw"></i> Enviar comentario</a>
+                            </div>
+                        </div>
+                    </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>{% endcomment %}
+            <div class="panel panel-card recent-activites border-top-orange panel-collapsed">
+                <!-- Start .panel -->
+                <div class="panel-heading">
+                    <h4 class="panel-title">Gestiones</h4>
+                    <div class="panel-actions">
+                        <a href="#" class="panel-action panel-action-toggle" data-panel-toggle></a>
+                        <a href="#" class="panel-action panel-action-dismiss" data-panel-dismiss></a>
+                    </div>
+                </div>
+                <div class="panel-body">
+
+                    <div class="float-right right align-right">
+                         <a id="btnAgregarGestion" style="float: right" class="btn btn-success btn-3d" href="javascript:void(0)"><i class="fa fa-plus fa-fw"></i> Agregar gestion</a>
+                    </div>
+                    <hr/>
+                    <div class="nano has-scrollbar" style="height:300px">
+                        <div class="nano-content pad-all" tabindex="0" style="right: -17px;">
+                            <div id="content-gestiones"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-card recent-activites border-top-green">
+                <!-- Start .panel -->
+                <div class="panel-heading">
+                    <h4 class="panel-title">Documentos x Cobrar</h4>
+                    <div class="panel-actions">
+                        <a href="#" class="panel-action panel-action-toggle" data-panel-toggle></a>
+                        <a href="#" class="panel-action panel-action-dismiss" data-panel-dismiss></a>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="nano has-scrollbar" style="height:340px">
+                        <div class="nano-content pad-all" tabindex="0" style="right: -17px;">
+                            <div id="content-facturas-pendientes"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 col-sm12">
+
+        </div>
+        <div class="col-lg-6 col-sm12">
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+
+        </div>
+    </div>
+
+    <div class="modal fade in" id="modal_pago" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title">Pago a factura</h4>
+                    <small>Detalle de la factura</small>
+                </div>
+                <div class="modal-body">
+                    <div id="content-pago-facutua"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="btn-aplicar-pago" type="button" class="btn btn-primary">Aplicar pago</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade in" id="modal_gestion" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title">Gestion</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="content-detalle-gestion"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button id="btn-guardar-gestion" type="button" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade in" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title">Comentarios</h4>
+                <small>Registre su comentario en la parte inferior</small>
+            </div>
+            <div class="modal-body">
+                <div class="nano has-scrollbar" style="height:240px">
+                    <div class="nano-content pad-all" tabindex="0" style="right: -17px;">
+                        <div id="conten-comentarios"></div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <textarea id="post-comment" name="post-comment" rows="2" placeholder="Su comentario aquí.." class="form-control"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <button id="comentar" class="btn btn-effect-ripple btn-primary">Enviar comentario</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+    <input id="clienteid" type="hidden">
+</div>
+{% endblock cuerpo %}
+{% block scripts-block %}
+    <script src="/static/app/js/data-tables/jquery.dataTables.js"></script>
+    <script src="/static/app/js/data-tables/dataTables.tableTools.js"></script>
+    <script src="/static/app/js/data-tables/dataTables.bootstrap.js"></script>
+    <script src="/static/app/js/data-tables/dataTables.responsive.js"></script>
+    <script src="/static/app/js/data-tables/tables-data.js"></script>
+    <script src="/static/app/js/sweet-alert/sweetalert.min.js"></script>
+    <script src="/static/app/js/bootstrap-datetimepicker.js"></script>
+    <script>
+    $(document).ready(function () {
+        $("#comentar").on('click',function () {
+            comentar();
+        });
+        $(".tooltipstered").tooltip();
+
+        cargarComentarios();
+        cargarFacturasPendientes();
+        cargarGestiones();
+        $("#btn-aplicar-pago").on('click',function () {
+            aplicarPagoFactura();
+        })
+        $("#btnAgregarGestion").on('click',function () {
+            cargarAgregarGestion();
+        })
+        $("#btn-guardar-gestion").on('click',function () {
+            guardarGestion();
+        })
+        $('body').addClass("mini-navbar");
+    });
+
+    function cargarComentarios() {
+        $.ajax({
+            url:"../get_comentario_cliente/?id={{ cliente.id }}",
+            type:"GET",
+            success:function (result) {
+                $("#conten-comentarios").empty().html(result);
+            }
+        });
+    }
+    function mostrarComentarios(id_cliente) {
+            $("#clienteid").val(id_cliente);
+            $.ajax({
+                url:"../get_comentario_cliente/?id=" + id_cliente,
+                type:"GET",
+                success:function (result) {
+                    $("#conten-comentarios").empty().html(result);
+                    $("#myModal").modal('show')
+                }
+            });
+    }
+    function comentar() {
+        var comment= $("#post-comment").val();
+        var cliente = $("#clienteid").val();
+        $.ajax({
+            url:"../add_comentario_cliente/",
+            type:"POST",
+            dataType: 'json',
+            data: {comentario:comment,id_cliente:cliente, csrfmiddlewaretoken: '{{ csrf_token }}'},
+            success: function (result) {
+                data=result[0];
+                $("#post-comment").val("");
+                cargarComentarios();
+            }
+        });
+    }
+
+    function cargarFacturasPendientes() {
+        $.ajax({
+            url:"../get_facturas_pendientes/?id={{ cliente.id }}",
+            type:"GET",
+            success:function (result) {
+                $("#content-facturas-pendientes").empty().html(result);
+            }
+        });
+    }
+    function cargarPagoFactura(factura, iscacelacion) {
+        if(iscacelacion){
+            var URL="../render_add_abono_factura/?id_factura=" + factura + "&is_cacelacion=" + iscacelacion + "&id_usuario=" + {{ user.id }};
+        }else {
+            var URL="../render_add_abono_factura/?id_factura=" + factura + "&id_usuario=" + {{ user.id }};
+        }
+        $.ajax({
+            url:URL,
+            type:"GET",
+            success:function (result) {
+                $("#content-pago-facutua").empty().html(result);
+                $("#modal_pago").modal('show')
+            }
+        });
+    }
+    function aplicarPagoFactura() {
+        var id_factura = $("#id_factura_pago").val();
+        var monto_pago = parseFloat($("#monto_factura_pago").val());
+        var monto_pendiente = parseFloat($("#monto_factura_saldo").val());
+
+        if(isNaN(monto_pago)){
+            swal({
+                 title: "Upss. ha ocurrido un error",
+                text: "El monto del pago es invalido",
+                type: "warning",
+                showCancelButton: true
+            });
+            return;
+        }
+        var usuario = {{ user.id }};
+        if(monto_pago<=monto_pendiente){
+            if(monto_pago==monto_pendiente)
+                var text_info = "La factura sera cancelada por un monto igual al saldo pendiente actual, estas seguro de realizar esta operación?";
+            else
+                var text_info = "La factura sera abonada por un monto de " + monto_pago + ", estas seguro de realizar esta operación?";
+            swal({
+                title: "Estas seguro?",
+                text: text_info,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#4286f4",
+                confirmButtonText: "Si, aplicar pago",
+                closeOnConfirm: true
+            },
+            function(){
+                $.ajax({
+                    url:"../add_abono_factura/",
+                    data: {id_doc:id_factura,monto:monto_pago,id_usuario:usuario, csrfmiddlewaretoken: '{{ csrf_token }}' },
+                    type:"POST",
+                    success:function (result) {
+                        data=result[0];
+                        if(data.code==200){
+                            cargarFacturasPendientes() ;
+                            $("#modal_pago").modal('hide')
+                            swal({
+                                 title: "Exito!",
+                                text: data.mensaje,
+                                type: "success"
+                            });
+                        }else {
+                            swal({
+                                title: "Upss. ha ocurrido un error",
+                                text: data.mensaje,
+                                type: "success"
+                            });
+                        }
+                    }
+                });
+            });
+        }else {
+            swal({
+                 title: "Upss. ha ocurrido un error",
+                text: "El monto del pago supera el saldo de la factura",
+                type: "warning",
+                showCancelButton: true
+            });
+        }
+
+    }
+
+
+    function cargarGestiones() {
+        $.ajax({
+            url: "../render_gestiones/?id_cliente={{ cliente.id }}",
+            type:"GET",
+            success: function (result) {
+                $("#content-gestiones").empty().html(result);
+            }
+        });
+    }
+    function cargarAgregarGestion() {
+        $.ajax({
+            url:"../render_add_gestion/",
+            type:"GET",
+            success:function (result) {
+                $("#content-detalle-gestion").empty().html(result);
+                $("#modal_gestion").modal('show');
+                loadDatePicker();
+            }
+        });
+    }
+    function cargarEditarGestion(id_gestion) {
+        $.ajax({
+            url:"../render_edit_gestion/?id_gestion=" + id_gestion,
+            type:"GET",
+            success:function (result) {
+                $("#content-detalle-gestion").empty().html(result);
+                $("#modal_gestion").modal('show');
+                loadDatePicker();
+            }
+        });
+    }
+    function cargarFinalizarGestion(id_gestion) {
+        $.ajax({
+            url:"../render_finish_gestion/?id_gestion=" + id_gestion,
+            type:"GET",
+            success:function (result) {
+                $("#content-detalle-gestion").empty().html(result);
+                $("#modal_gestion").modal('show');
+                loadDatePicker();
+            }
+        });
+    }
+    function get_resultados(id_tipo) {
+        $.ajax({
+                url:"../get_tipo_gestion_resultado/",
+                data:{id_tipo:id_tipo},
+                type:"POST",
+                success: function (result) {
+                    $("#resultado_gestion").empty();
+                     $.each(result, function (index, value) {
+                         $("#resultado_gestion").append($("<option></option>")
+                                                        .attr("value",value.pk)
+                                                        .text(value.fields.nombre));
+                     });
+
+                }
+            });
+    }
+    function guardarGestion() {
+
+        var accion =  $("#gestion-accion").val();
+        var text_info =""
+        if(accion == "add"){
+            text_info="Estas seguro que deseas registrar esta nueva gestión?"
+        }
+        if(accion == "edit"){
+            text_info="Estas seguro que deseas modificar esta gestión?"
+        }
+        if(accion == "finish"){
+           text_info="Estas seguro que deseas finalizar esta gestión?"
+        }
+        swal({
+                title: "Estas seguro?",
+                text: text_info,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#4286f4",
+                confirmButtonText: "Si",
+                closeOnConfirm: true
+            },
+            function(){
+                if(accion == "add"){
+                    var cliente = $("#clienteid").val();
+                    var tipo_gestion = $("#tipo_gestion").val();
+                    var descripcion = $("#gestion_descripcion").val();
+                    var programacion = $("#gestion_programacion").val();
+
+                    $.ajax({
+                        url:"../add_new_cliente_gestion/",
+                        data:{id_cliente:cliente, id_tipo_gestion:tipo_gestion, descripcion:descripcion,
+                            programacion:programacion, id_usuario:{{ user.id }}, csrfmiddlewaretoken: '{{ csrf_token }}'},
+                        type:"POST",
+                        success:function (result) {
+                            data=result[0];
+                            if(data.code==200){
+                                cargarGestiones() ;
+                                $("#modal_gestion").modal('hide')
+                                swal({
+                                     title: "Exito!",
+                                    text: data.mensaje,
+                                    type: "success"
+                                });
+                            }else {
+                                swal({
+                                    title: "Upss. ha ocurrido un error",
+                                    text: data.mensaje,
+                                    type: "error"
+                                });
+                            }
+                        }
+                    });
+                }
+                if(accion=="edit"){
+                    var cliente = $("#clienteid").val();
+                    var tipo_gestion = $("#tipo_gestion").val();
+                    var descripcion = $("#gestion_descripcion").val();
+                    var programacion = $("#gestion_programacion").val();
+                    var id_gestion = $("#gestion-edit-id").val();
+
+                    $.ajax({
+                        url:"../edit_cliente_gestion/",
+                        data:{id_cliente:cliente, id_tipo_gestion:tipo_gestion, descripcion:descripcion, id_gestion:id_gestion,
+                            programacion:programacion, id_usuario:{{ user.id }}, csrfmiddlewaretoken: '{{ csrf_token }}'},
+                        type:"POST",
+                        success:function (result) {
+                            data=result[0];
+                            if(data.code==200){
+                                cargarGestiones() ;
+                                $("#modal_gestion").modal('hide')
+                                swal({
+                                     title: "Exito!",
+                                    text: data.mensaje,
+                                    type: "success"
+                                });
+                            }else {
+                                swal({
+                                    title: "Upss. ha ocurrido un error",
+                                    text: data.mensaje,
+                                    type: "warning"
+                                });
+                            }
+                        }
+                    });
+                }
+                if(accion=="finish"){
+                    var resultado = $("#tipo_resultado").val();
+                    var descripcion = $("#gestion_descripcion-resultado").val();
+                    var id_gestion = $("#gestion-edit-id").val();
+
+                    $.ajax({
+                        url:"../finish_cliente_gestion/",
+                        data:{id_resultado:resultado, descripcion:descripcion, id_gestion:id_gestion,
+                            id_usuario:{{ user.id }}, csrfmiddlewaretoken: '{{ csrf_token }}'},
+                        type:"POST",
+                        success:function (result) {
+                            data=result[0];
+                            if(data.code==200){
+                                cargarGestiones() ;
+                                $("#modal_gestion").modal('hide')
+                                swal({
+                                     title: "Exito!",
+                                    text: data.mensaje,
+                                    type: "success"
+                                });
+                            }else {
+                                swal({
+                                    title: "Upss. ha ocurrido un error",
+                                    text: data.mensaje,
+                                    type: "warning"
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        );
+
+    }
+    function programarGestion() {
+        var value = $('#gestion_programar').is(':checked')
+        if(value){
+            $("#gestion_programacion").removeAttr('disabled');
+        }else{
+            $("#gestion_programacion").val("");
+            $("#gestion_programacion").attr('disabled','disabled');
+        }
+    }
+    </script>
+{% endblock %}
