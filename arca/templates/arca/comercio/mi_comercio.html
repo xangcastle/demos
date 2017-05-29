@@ -206,7 +206,7 @@
                 data: data,
                 success: function (result) {
                     var data = result[0];
-                    if (data.code == 200) {
+                    if (data.code === 200) {
                         $("#signup").modal('hide');
                         mostrarDescuentos();
                     } else {
@@ -269,7 +269,7 @@
                 data: data,
                 success: function (result) {
                     var data = result[0];
-                    if (data.code == 200) {
+                    if (data.code === 200) {
                         $("#signup").modal('hide');
                         mostrarCupones();
                     } else {
@@ -328,7 +328,7 @@
                 data: data,
                 success: function (result) {
                     var data = result[0];
-                    if (data.code == 200) {
+                    if (data.code === 200) {
                         $("#signup").modal('hide');
                         mostrarEmpleados();
                     } else {
@@ -391,7 +391,7 @@
                     processData: false,
                     success: function (result) {
                         var data = result[0];
-                        if (data.code == 200) {
+                        if (data.code === 200) {
                             $(".modal").modal('hide');
                             mostrarProductos();
                         } else {

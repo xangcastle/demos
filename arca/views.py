@@ -262,6 +262,8 @@ class negocio_form(ModelForm):
 
         comercio.nombre = self.cleaned_data['nombre']
         comercio.telefono = self.cleaned_data['telefono']
+        comercio.username = self.cleaned_data['username']
+
         comercio.categoria = categoria
         if self.cleaned_data['logo']:
             comercio.logo = self.cleaned_data['logo']
@@ -295,7 +297,7 @@ class mi_comercio(TemplateView):
 class edit_comercio(TemplateView):
     template_name = "arca/comercio/registrar_negocio.html"
 
-        # check whether it's valid:
+    # check whether it's valid:
     @csrf_exempt
     def get(self, request, *args, **kwargs):
 
@@ -317,9 +319,8 @@ class edit_comercio(TemplateView):
     def post(self, request, *args, **kwargs):
         context = super(edit_comercio, self).get_context_data(**kwargs)
         form = negocio_form(request.POST, request.FILES)
-        # check whether it's valid:
         if form.is_valid():
-            comercio = form.save(commit=True)
+            form.save(commit=True)
             context["form"] = form
             context["success_message"] = "Datos actualizados exitosamente!"
             return redirect("mi_comercio")
@@ -327,6 +328,7 @@ class edit_comercio(TemplateView):
             context["form"] = form
 
         return super(edit_comercio, self).render_to_response(context)
+
 
 @csrf_exempt
 def get_comercios(request):
@@ -400,30 +402,117 @@ def get_comercios(request):
 class registrar_negocio_st1(TemplateView):
     template_name = "arca/comercio/registrar_negocio_st1.html"
 
-    @csrf_exempt
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio_st1, self).get_context_data(**kwargs)
-        if request.session['categoria_empresa']:
+        try:
             context['categoriaactual'] = int(request.session['categoria_empresa'])
+        except:
+            pass
         context['categorias'] = Comercio_Categoria.objects.all()
         return super(registrar_negocio_st1, self).render_to_response(context)
 
     @csrf_exempt
     def post(self, request, *args, **kwargs):
-        context = super(registrar_negocio, self).get_context_data(**kwargs)
-        form = negocio_form(request.POST, request.FILES)
-        # check whether it's valid:
-        if form.is_valid():
-            comercio = form.save(commit=False, user=request.user)
-            comercio.propietario = request.user
-            comercio.save()
-            context["form"] = form
-            context["success_message"] = "Datos actualizados exitosamente!"
-            return redirect("mi_comercio")
-        else:
-            context["form"] = form
+        response=None
+        obj_json = {}
+        nombre_empresa = request.POST.get('nombre_empresa', None)
+        identificacion_empresa = request.POST.get('identificacion', None)
+        direccion_empresa = request.POST.get('direccion', None)
+        telefono_empresa = request.POST.get('telefono', None)
+        usuario_nombre = request.POST.get('usuario_nombre', None)
+        usuario_apellido = request.POST.get('usuario_apellido', None)
+        usuario_email = request.POST.get('email', None)
+        usuario_password = request.POST.get('password', None)
+        categoria_id = request.POST.get('categoria_empresa', None)
 
-        return super(registrar_negocio, self).render_to_response(context)
+        if Comercio.objects.filter(username=usuario_email).exists():
+            obj_json['code'] = 500
+            obj_json['mensaje'] = "Ya existe un comercio registrado con esa dirección de correo electronico"
+            obj_json['paso'] = 3
+        elif not nombre_empresa or nombre_empresa == "":
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Nombre de empresa requerido"
+            obj_json['paso'] = 1
+        elif not categoria_id:
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Categoria del compercio requerida"
+            obj_json['paso'] = 1
+        elif not identificacion_empresa or identificacion_empresa == "":
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Identificacion de empresa requerido"
+            obj_json['paso'] = 2
+        elif not direccion_empresa or direccion_empresa == "":
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Dirección de empresa requerida"
+            obj_json['paso'] = 2
+        elif not telefono_empresa or telefono_empresa == "":
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Telefono de empresa requerido"
+            obj_json['paso'] = 2
+        elif not usuario_nombre or usuario_nombre == "":
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Nombre del propietario requerido"
+            obj_json['paso'] = 3
+        elif not usuario_apellido or usuario_apellido == "":
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Apellido del propietario requerido"
+            obj_json['paso'] = 3
+        elif not usuario_email or usuario_email == "":
+            obj_json['code'] = 400
+            obj_json['mensaje'] = "Correo electrónico del propietario requerido"
+            obj_json['paso'] = 3
+
+        else:
+            categoria = Comercio_Categoria.objects.filter(id=categoria_id).first()
+
+            comercio, create = Comercio.objects.get_or_create(identificacion=identificacion_empresa)
+            comercio.nombre = nombre_empresa
+            comercio.direccion = direccion_empresa
+            comercio.telefono = telefono_empresa
+            comercio.username = usuario_email
+            comercio.password = encrypt_val(usuario_password)
+            comercio.nombre_propietario = usuario_nombre + " " + usuario_apellido
+            comercio.categoria = categoria
+            comercio.save()
+
+            comercio = autenticate(Comercio(), usuario_email, usuario_password)
+
+
+
+            if comercio:
+                obj_json['code'] = 200
+                obj_json['mensaje'] = "Comecio registrado exitosamente!"
+                data = json.dumps(obj_json)
+                response = HttpResponse(data, content_type='application/json')
+                response.set_cookie('auth_comercio', encrypt_val(comercio.id))
+
+            else:
+                obj_json['code'] = 500
+                obj_json['mensaje'] = "No fue posible atenticar el comercio"
+                data = json.dumps(obj_json)
+                response = HttpResponse(data, content_type='application/json')
+
+        if not response:
+            data = json.dumps(obj_json)
+            response = HttpResponse(data, content_type='application/json')
+
+        return response
+
+
+        # context = super(registrar_negocio, self).get_context_data(**kwargs)
+        # form = negocio_form(request.POST, request.FILES)
+        # # check whether it's valid:
+        # if form.is_valid():
+        #     comercio = form.save(commit=False, user=request.user)
+        #     comercio.propietario = request.user
+        #     comercio.save()
+        #     context["form"] = form
+        #     context["success_message"] = "Datos actualizados exitosamente!"
+        #     return redirect("mi_comercio")
+        # else:
+        #     context["form"] = form
+        #
+        # return super(registrar_negocio, self).render_to_response(context)
 
 
 class registrar_negocio_st2(TemplateView):
@@ -723,7 +812,7 @@ def get_cupones(request):
                 obj_cupon['actualizado_por'] = {
                                                    'id': cupon.actualizado_por.id,
                                                    'nombre': cupon.actualizado_por.nombre,
-                                                    'apellido': cupon.actualizado_por.apellido
+                                                   'apellido': cupon.actualizado_por.apellido
                                                },
             obj_cupnes.append(obj_cupon)
         obj_json['cupones'] = obj_cupnes
@@ -1150,6 +1239,7 @@ def save_empleado(request):
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
 
+
 @csrf_exempt
 def actualizar_empleado(request):
     data = []
@@ -1162,7 +1252,6 @@ def actualizar_empleado(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
     password_conf = request.POST.get('password_conf')
-
 
     if not nombre:
         obj_json['code'] = 400
@@ -1193,6 +1282,7 @@ def actualizar_empleado(request):
     data.append(obj_json)
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
+
 
 def get_empleado(request):
     obj_json = {}
