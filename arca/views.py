@@ -447,6 +447,10 @@ class registrar_negocio_st1(TemplateView):
             obj_json['code'] = 400
             obj_json['mensaje'] = "Telefono de empresa requerido"
             obj_json['paso'] = 2
+        elif (telefono_empresa)>10:
+            obj_json['code'] = 500
+            obj_json['mensaje'] = "Telefono invalido, verifique porfavor."
+            obj_json['paso'] = 2
         elif not usuario_nombre or usuario_nombre == "":
             obj_json['code'] = 400
             obj_json['mensaje'] = "Nombre del propietario requerido"
@@ -1025,6 +1029,7 @@ def canjear_cupon(request):
     actualizado = request.POST.get('actualizado', '')
     id_empleado = request.POST.get('id_empleado')
 
+    empleado=None
     if id_empleado:
         empleado = Empleado.objects.filter(id=id_empleado).first()
 
@@ -1049,13 +1054,24 @@ def canjear_cupon(request):
         obj_json['code'] = 400
         obj_json['mensaje'] = "Descuento invalido"
     else:
-
-        nuevo_cupon, c = Codigo_Descuento.objects.get_or_create(
+        nuevo_cupon = Codigo_Descuento.objects.filter(
             descuento=cupon.descuento,
             canjeado=False,
             cliente=cupon.cliente,
-            creado_por=empleado
-        )
+        ).exclude(codigo=codigo_cupon).first()
+
+        if not nuevo_cupon:
+            Codigo_Descuento.objects.create(
+                descuento=cupon.descuento,
+                canjeado=False,
+                cliente=cupon.cliente,
+                creado_por=empleado
+            )
+            nuevo_cupon = Codigo_Descuento.objects.filter(
+                descuento=cupon.descuento,
+                canjeado=False,
+                cliente=cupon.cliente,
+            ).exclude(codigo=codigo_cupon).first()
         if not nuevo_cupon:
             obj_json['code'] = 500
             obj_json['mensaje'] = "No fue posible generar el nuvo cupon"
