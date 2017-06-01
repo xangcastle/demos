@@ -334,7 +334,11 @@ def get_comercios(request):
     jcomercios = []
     for comercio in comercios:
         jcomercio = {'id': comercio.id, 'nombre': comercio.nombre, 'direccion': comercio.direccion,
-                     'telefono': comercio.telefono, 'rating': comercio.rating()}
+                     'telefono': comercio.telefono, 'rating': comercio.rating(),
+                     'tiene_descuento_compra_minima':comercio.tiene_descuento_compra_minima,
+                     'tiene_descuento_vigencia': comercio.tiene_descuento_vigencia,
+                     'tiene_servicio_afiliacion': comercio.tiene_servicio_afiliacion,
+                     'tiene_servicio_crm': comercio.tiene_servicio_crm}
 
         if comercio.position:
             jcomercio['latitude'] = float(comercio.position.latitude)
