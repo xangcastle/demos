@@ -178,9 +178,13 @@ def createUserAuth(request):
     nombre = request.POST.get("nombre")
     apellido = request.POST.get("apellido")
     age = request.POST.get("age", "0")
+    fecha_nacimiento = request.POST.get("fecha_nacimiento", None)
     gender = request.POST.get("gender", None)
     email = request.POST.get("email", None)
     telefono = request.POST.get("telefono", None)
+
+    if fecha_nacimiento == "null" or fecha_nacimiento=="":
+        fecha_nacimiento = None
     if age == "null":
         age = 0
     if telefono == "null":
@@ -198,6 +202,8 @@ def createUserAuth(request):
             usuario.apellido = apellido
             if int(age) > 0:
                 usuario.age = int(age)
+            if fecha_nacimiento:
+                usuario.fecha_nacimiento = fecha_nacimiento
             if gender:
                 usuario.gender = gender
             usuario.email = email
@@ -208,6 +214,7 @@ def createUserAuth(request):
             usuario.nombre = nombre
             usuario.apellido = apellido
             usuario.age = int(age)
+            usuario.fecha_nacimiento = fecha_nacimiento
             usuario.gender = gender
             usuario.email = email
             usuario.telefono = telefono
@@ -215,6 +222,7 @@ def createUserAuth(request):
         obj_json['codigo'] = str(usuario.codigo)
         obj_json['id_usuario'] = usuario.id
         obj_json['age'] = usuario.age
+        obj_json['fecha_nacimiento'] = usuario.fecha_nacimiento
         obj_json['gender'] = usuario.gender
         obj_json['telefono'] = usuario.telefono
         obj_json['code'] = 200
@@ -328,6 +336,7 @@ class edit_comercio(TemplateView):
 
         return super(edit_comercio, self).render_to_response(context)
 
+
 @csrf_exempt
 def get_comercios(request):
     comercios = Comercio.objects.all()
@@ -335,7 +344,7 @@ def get_comercios(request):
     for comercio in comercios:
         jcomercio = {'id': comercio.id, 'nombre': comercio.nombre, 'direccion': comercio.direccion,
                      'telefono': comercio.telefono, 'rating': comercio.rating(),
-                     'tiene_descuento_compra_minima':comercio.tiene_descuento_compra_minima,
+                     'tiene_descuento_compra_minima': comercio.tiene_descuento_compra_minima,
                      'tiene_descuento_vigencia': comercio.tiene_descuento_vigencia,
                      'tiene_servicio_afiliacion': comercio.tiene_servicio_afiliacion,
                      'tiene_servicio_crm': comercio.tiene_servicio_crm}
@@ -415,7 +424,7 @@ class registrar_negocio_st1(TemplateView):
 
     @csrf_exempt
     def post(self, request, *args, **kwargs):
-        response=None
+        response = None
         obj_json = {}
         nombre_empresa = request.POST.get('nombre_empresa', None)
         identificacion_empresa = request.POST.get('identificacion', None)
@@ -451,7 +460,7 @@ class registrar_negocio_st1(TemplateView):
             obj_json['code'] = 400
             obj_json['mensaje'] = "Telefono de empresa requerido"
             obj_json['paso'] = 2
-        elif (telefono_empresa)>10:
+        elif (telefono_empresa) > 10:
             obj_json['code'] = 500
             obj_json['mensaje'] = "Telefono invalido, verifique porfavor."
             obj_json['paso'] = 2
@@ -483,8 +492,6 @@ class registrar_negocio_st1(TemplateView):
 
             comercio = autenticate(Comercio(), usuario_email, usuario_password)
 
-
-
             if comercio:
                 obj_json['code'] = 200
                 obj_json['mensaje'] = "Comecio registrado exitosamente!"
@@ -503,7 +510,6 @@ class registrar_negocio_st1(TemplateView):
             response = HttpResponse(data, content_type='application/json')
 
         return response
-
 
 
 class registrar_negocio_st2(TemplateView):
@@ -803,7 +809,7 @@ def get_cupones(request):
                 obj_cupon['actualizado_por'] = {
                                                    'id': cupon.actualizado_por.id,
                                                    'nombre': cupon.actualizado_por.nombre,
-                                                    'apellido': cupon.actualizado_por.apellido
+                                                   'apellido': cupon.actualizado_por.apellido
                                                },
             obj_cupnes.append(obj_cupon)
         obj_json['cupones'] = obj_cupnes
@@ -1033,7 +1039,7 @@ def canjear_cupon(request):
     actualizado = request.POST.get('actualizado', '')
     id_empleado = request.POST.get('id_empleado')
 
-    empleado=None
+    empleado = None
     if id_empleado:
         empleado = Empleado.objects.filter(id=id_empleado).first()
 
@@ -1285,6 +1291,7 @@ def actualizar_empleado(request):
     data.append(obj_json)
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
+
 
 def get_empleado(request):
     obj_json = {}
