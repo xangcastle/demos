@@ -128,6 +128,14 @@ class Index(TemplateView):
         context['categorias'] = Comercio_Categoria.objects.all().order_by('nombre')
         return super(Index, self).render_to_response(context)
 
+class IndexFinal(TemplateView):
+    template_name = "arca/basenew.html"
+
+    def get(self, request, *args, **kwargs):
+        context = super(IndexFinal, self).get_context_data(**kwargs)
+        context = authorize(request, context)
+        context['categorias'] = Comercio_Categoria.objects.all().order_by('nombre')
+        return super(IndexFinal, self).render_to_response(context)
 
 def get_comercio_categorias(request):
     categorias = Comercio_Categoria.objects.all()
