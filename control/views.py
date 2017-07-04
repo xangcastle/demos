@@ -78,7 +78,7 @@ def actualizar_cliente():
         i += 1
         print d["CLAVE"]
         if d['CLAVE'] == '96':
-            print 'encontrado!'
+            print 'cliente perdido encontrado!'
         Import.objects.get_or_create(id=i,
                                      razon_social=d["razon_social"],
                                      numero_ruc=d["numero_ruc"],
