@@ -262,11 +262,7 @@ class negocio_form(ModelForm):
 
         comercio.nombre = self.cleaned_data['nombre']
         comercio.telefono = self.cleaned_data['telefono']
-<<<<<<< HEAD
-=======
         comercio.username = self.cleaned_data['username']
-
->>>>>>> 89101f29c2167759bb1a887ff5df43b90f257542
         comercio.categoria = categoria
         if self.cleaned_data['logo']:
             comercio.logo = self.cleaned_data['logo']
@@ -300,11 +296,6 @@ class mi_comercio(TemplateView):
 class edit_comercio(TemplateView):
     template_name = "arca/comercio/registrar_negocio.html"
 
-<<<<<<< HEAD
-        # check whether it's valid:
-=======
-    # check whether it's valid:
->>>>>>> 89101f29c2167759bb1a887ff5df43b90f257542
     @csrf_exempt
     def get(self, request, *args, **kwargs):
 
@@ -326,14 +317,10 @@ class edit_comercio(TemplateView):
     def post(self, request, *args, **kwargs):
         context = super(edit_comercio, self).get_context_data(**kwargs)
         form = negocio_form(request.POST, request.FILES)
-<<<<<<< HEAD
-        # check whether it's valid:
         if form.is_valid():
             comercio = form.save(commit=True)
-=======
         if form.is_valid():
             form.save(commit=True)
->>>>>>> 89101f29c2167759bb1a887ff5df43b90f257542
             context["form"] = form
             context["success_message"] = "Datos actualizados exitosamente!"
             return redirect("mi_comercio")
@@ -342,10 +329,6 @@ class edit_comercio(TemplateView):
 
         return super(edit_comercio, self).render_to_response(context)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 89101f29c2167759bb1a887ff5df43b90f257542
 @csrf_exempt
 def get_comercios(request):
     comercios = Comercio.objects.all()
@@ -418,26 +401,22 @@ def get_comercios(request):
 class registrar_negocio_st1(TemplateView):
     template_name = "arca/comercio/registrar_negocio_st1.html"
 
-<<<<<<< HEAD
     @csrf_exempt
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio_st1, self).get_context_data(**kwargs)
         if request.session['categoria_empresa']:
             context['categoriaactual'] = int(request.session['categoria_empresa'])
-=======
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio_st1, self).get_context_data(**kwargs)
         try:
             context['categoriaactual'] = int(request.session['categoria_empresa'])
         except:
             pass
->>>>>>> 89101f29c2167759bb1a887ff5df43b90f257542
         context['categorias'] = Comercio_Categoria.objects.all()
         return super(registrar_negocio_st1, self).render_to_response(context)
 
     @csrf_exempt
     def post(self, request, *args, **kwargs):
-<<<<<<< HEAD
         context = super(registrar_negocio, self).get_context_data(**kwargs)
         form = negocio_form(request.POST, request.FILES)
         # check whether it's valid:
@@ -452,7 +431,6 @@ class registrar_negocio_st1(TemplateView):
             context["form"] = form
 
         return super(registrar_negocio, self).render_to_response(context)
-=======
         response=None
         obj_json = {}
         nombre_empresa = request.POST.get('nombre_empresa', None)
@@ -553,7 +531,7 @@ class registrar_negocio_st1(TemplateView):
         #     context["form"] = form
         #
         # return super(registrar_negocio, self).render_to_response(context)
->>>>>>> 89101f29c2167759bb1a887ff5df43b90f257542
+
 
 
 class registrar_negocio_st2(TemplateView):
@@ -850,14 +828,9 @@ def get_cupones(request):
             }
 
             if cupon.actualizado_por:
-                obj_cupon['actualizado_por'] = {
-                                                   'id': cupon.actualizado_por.id,
+                obj_cupon['actualizado_por'] = {'id': cupon.actualizado_por.id,
                                                    'nombre': cupon.actualizado_por.nombre,
-<<<<<<< HEAD
                                                     'apellido': cupon.actualizado_por.apellido
-=======
-                                                   'apellido': cupon.actualizado_por.apellido
->>>>>>> 89101f29c2167759bb1a887ff5df43b90f257542
                                                },
             obj_cupnes.append(obj_cupon)
         obj_json['cupones'] = obj_cupnes
@@ -1284,10 +1257,7 @@ def save_empleado(request):
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 89101f29c2167759bb1a887ff5df43b90f257542
 @csrf_exempt
 def actualizar_empleado(request):
     data = []
@@ -1301,10 +1271,6 @@ def actualizar_empleado(request):
     password = request.POST.get('password')
     password_conf = request.POST.get('password_conf')
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 89101f29c2167759bb1a887ff5df43b90f257542
     if not nombre:
         obj_json['code'] = 400
         obj_json['mensaje'] = "Nombre invalido"
@@ -1335,10 +1301,7 @@ def actualizar_empleado(request):
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 89101f29c2167759bb1a887ff5df43b90f257542
 def get_empleado(request):
     obj_json = {}
     username = request.GET.get("username", "")

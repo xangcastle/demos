@@ -28,7 +28,6 @@ class Calculator(TemplateView):
     template_name = "control/calculator.html"
 
 
-# @background(schedule=3)
 def actualizar_inventario():
     url = 'http://inblensa.ddns.net:7779/Home/get_data_from_server'
     params = {'vista': 'view_info_migration'}
@@ -75,18 +74,19 @@ def actualizar_cliente():
     assert response.status_code == 200
     json_data = response.json()
     i = 321
-
     for d in json_data:
         i += 1
-        if d["identificacion"]:
-            Import.objects.get_or_create(id=i,
-                                         razon_social=d["razon_social"],
-                                         numero_ruc=d["numero_ruc"],
-                                         nombre=d["nombre"],
-                                         identificacion=d["identificacion"],
-                                         telefono=d["telefono"],
-                                         direccion=d["direccion"],
-                                         contacto=d["contacto"])
+        print d["CLAVE"]
+        if d['CLAVE'] == '96':
+            print 'encontrado!'
+        Import.objects.get_or_create(id=i,
+                                     razon_social=d["razon_social"],
+                                     numero_ruc=d["numero_ruc"],
+                                     nombre=d["nombre"],
+                                     identificacion=d["identificacion"],
+                                     telefono=d["telefono"],
+                                     direccion=d["direccion"],
+                                     contacto=d["contacto"])
 
 
 @csrf_exempt
