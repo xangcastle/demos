@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import requests
+from background_task import background
 from django.utils.encoding import smart_str
 from .dbmanager import sql_exec
 from .html_to_pdf import render_to_pdf, render_to_excel
@@ -653,3 +655,83 @@ def pedidos(request):
     for p in queryset:
         data.append((p.no_pedido, format_fecha(p.fecha_creacion), p.cliente.nombre, p.comentario, p.total))
     return render_to_excel("Pedidos al Dia.xls", data)
+
+def get_actualizar_inventario(request):
+    obj_json = {}
+
+    actualizar_inventario()
+
+    obj_json['code'] = 200
+    obj_json['mensaje'] = "Solicitud de actualizacion exitosa!"
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
+
+#@background(schedule=3)
+def actualizar_inventario():
+    url = 'http://inblensa.ddns.net:7779/Home/get_data_from_server'
+    params = {'vista': 'view_info_migration'}
+    response = requests.post(url, params=params)
+    assert response.status_code == 200
+    json_data = response.json()
+    i = 321
+    if json_data:
+        for d in json_data:
+            i += 1
+
+            if not d["producto_existencia"]:
+                existencia = 0
+            else:
+                existencia = d["producto_existencia"]
+
+            if not d["producto_costo"]:
+                costo = 0
+            else:
+                costo = d["producto_costo"]
+
+            if not d["producto_precio"]:
+                precio = 0
+            else:
+                precio = d["producto_precio"]
+            Import_Imventario.objects.get_or_create(id=i,
+                                                    razon_social=d["razon_social"],
+                                                    producto_codigo=d["producto_codigo"],
+                                                    producto_serie=d["producto_serie"],
+                                                    producto_nombre=d["producto_nombre"],
+                                                    producto_existencia=existencia,
+                                                    producto_costo=costo,
+                                                    producto_precio=precio,
+                                                    producto_marca=d["producto_marca"],
+                                                    producto_categoria=d["producto_categoria"],
+                                                    producto_medida=d["producto_medida"],
+                                                    bodega=d["bodega"])
+
+def get_actualizar_cliente(request):
+    obj_json = {}
+
+    actualizar_cliente()
+
+    obj_json['code'] = 200
+    obj_json['mensaje'] = "Solicitud de actualizacion exitosa!"
+    data = json.dumps(obj_json)
+    return HttpResponse(data, content_type='application/json')
+
+#@background(schedule=3)
+def actualizar_cliente():
+    url = 'http://inblensa.ddns.net:7779/Home/get_data_from_server'
+    params = {'vista': 'view_info_migration_cliente'}
+    response = requests.post(url, params=params)
+    assert response.status_code == 200
+    json_data = response.json()
+    i = 321
+    if json_data:
+        for d in json_data:
+            i += 1
+            if d["identificacion"]:
+                Import.objects.get_or_create(id=i,
+                                             razon_social=d["razon_social"],
+                                             numero_ruc=d["numero_ruc"],
+                                             nombre=d["nombre"],
+                                             identificacion=d["identificacion"],
+                                             telefono=d["telefono"],
+                                             direccion=d["direccion"],
+                                             contacto=d["contacto"])

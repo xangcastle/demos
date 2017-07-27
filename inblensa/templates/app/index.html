@@ -27,6 +27,7 @@
         <link href="/static/app/css/fullcalendar.min.css" rel="stylesheet">
         <link href="/static/app/css/select.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css" rel="stylesheet">
+        <link href="/static/app/css/sweetalert.css" rel="stylesheet">
         {% block css-content %}
         {% endblock css-content %}
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -290,6 +291,7 @@
                                             <li>
                                                 {% comment %}<li><a href="/app/facturacion/"><i class="fa fa-shopping-cart"></i> Facturción</a></li>{% endcomment %}
                                                 <li><a href="{% url 'catalogo_productos' %}"><i class="fa fa-product-hunt"></i> Productos</a></li>
+                                                <li><a href="javascript:void(0)" onclick="get_actualizar_inventario(event)"><i class="fa fa-refresh"></i> Sincronizar</a></li>
                                             </li>
                                         </ul>
                                     </li>
@@ -299,7 +301,8 @@
                                             <li>
                                                 {% comment %}<li><a href="/app/cobranza/"><i class="fa fa-usd"></i> Cobranza</a></li>{% endcomment %}
                                                 <li><a href="{% url 'lrecibo_provicional' %}" style="font-size: 12px;"><i class="fa fa-file-text"></i> Recibos Provicionales</a></li>
-                                            </li>
+                                                 <li><a href="javascript:void(0)" onclick="get_actualizar_cliente(event)"><i class="fa fa-refresh"></i> Sincronizar</a></li>
+                                          </li>
                                         </ul>
                                     </li>
 
@@ -815,6 +818,7 @@
         <script src="/static/app/js/fullcalendar.min.js"></script>
         <script src="/static/app/js/select/select2.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
+        <script src="/static/app/js/sweet-alert/sweetalert.min.js"></script>
 {#        <script src="/static/app/js/index2.js"></script>#}
         <script>
             function loadDatePicker() {
@@ -831,12 +835,48 @@
                     }
                 });
             }
+
             function reset_inventario_facturacion() {
+                icon = $(e.target).find('i');
+                icon.toggleClass( "fa-spin" );
                 $.ajax({
                     url:"../inblensa/reset_ventas/",
                     type:"GET",
                     success:function (data) {
                         $("#total_inventario_facturacion").html("0.0")
+                    }
+                });
+            }
+            var icon;
+            function get_actualizar_inventario(e){
+                icon = $(e.target).find('i');
+                icon.toggleClass( "fa-spin" );
+                swal({
+                     title: "Sincronizando!",
+                    text: "El proceso de sincronización se ha iniciado exitosamente! el proceso tardará un poco porfavor continue trabajando",
+                    type: "success"
+                });
+                $.ajax({
+                    url:"{% url 'get_actualizar_inventario' %}",
+                    type:"GET",
+                    success:function (data) {
+                        icon.toggleClass( "fa-spin" );
+                    }
+                });
+            }
+            function get_actualizar_cliente(e){
+                icon = $(e.target).find('i');
+                icon.toggleClass( "fa-spin" );
+                swal({
+                     title: "Sincronizando!",
+                    text: "El proceso de sincronización se ha iniciado exitosamente! el proceso tardará un poco porfavor continue trabajando",
+                    type: "success"
+                });
+                $.ajax({
+                    url:"{% url 'get_actualizar_cliente' %}",
+                    type:"GET",
+                    success:function (data) {
+                        icon.toggleClass( "fa-spin" );
                     }
                 });
             }
