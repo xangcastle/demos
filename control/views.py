@@ -75,18 +75,19 @@ def actualizar_cliente():
     assert response.status_code == 200
     json_data = response.json()
     i = 321
-    if json_data:
-        for d in json_data:
-            i += 1
-            if d["identificacion"]:
-                Import.objects.get_or_create(id=i,
-                                             razon_social=d["razon_social"],
-                                             numero_ruc=d["numero_ruc"],
-                                             nombre=d["nombre"],
-                                             identificacion=d["identificacion"],
-                                             telefono=d["telefono"],
-                                             direccion=d["direccion"],
-                                             contacto=d["contacto"])
+    for d in json_data:
+        i += 1
+        print d["CLAVE"]
+        if d['CLAVE'] == '96':
+            print 'cliente perdido encontrado!'
+        Import.objects.get_or_create(id=i,
+                                     razon_social=d["razon_social"],
+                                     numero_ruc=d["numero_ruc"],
+                                     nombre=d["nombre"],
+                                     identificacion=d["identificacion"],
+                                     telefono=d["telefono"],
+                                     direccion=d["direccion"],
+                                     contacto=d["contacto"])
 
 
 @csrf_exempt

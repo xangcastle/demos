@@ -1,0 +1,54 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrahead %}
+    <style>
+        .firma{
+            width: 150px;
+            height: 25px;
+        }
+    </style>
+
+{% endblock %}
+{% block header %}
+    <div>
+        <h1>Delta Logistic Sociedad Anonima</h1>
+        <h3>Planilla del {{ obj.fecha_inicio }} al {{ obj.fecha_fin }}</h3>
+    </div>
+{% endblock %}
+{% block content %}
+    <table class="">
+        <thead>
+        <tr>
+            <th>Empleado</th>
+            <th>Codigo INSS</th>
+            <th>Salario</th>
+            <th>Inss</th>
+            <th>Prestamos</th>
+            <th>Neto a Recibir</th>
+            <th>Firma</th>
+        </tr>
+        </thead>
+      <tbody>
+        {% for d in obj.pagos %}
+        <tr>
+            <td>{{ d.empleado.nombre }}</td>
+            <td>{{ d.empleado.inss }}</td>
+            <td>{{ d.empleado.salario_quincenal }}</td>
+            <td>{{ d.inss_laboral }}</td>
+            <td>{{ d.prestamo }}</td>
+            <td>{{ d.neto_recibir }}</td>
+            <td><div class="firma"></div></td>
+        </tr>
+        {% endfor %}
+            <tr>
+                <th></th>
+                <th></th>
+                <th>{{ obj.total_salarios }}</th>
+                <th>{{ obj.total_inss_laboral }}</th>
+                <th>{{ obj.total_prestamos }}</th>
+                <th>{{ obj.total_pagos }}</th>
+                <td></td>
+            </tr>
+      </tbody>
+    </table>
+{% endblock %}
