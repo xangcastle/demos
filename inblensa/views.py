@@ -656,6 +656,7 @@ def pedidos(request):
         data.append((p.no_pedido, format_fecha(p.fecha_creacion), p.cliente.nombre, p.comentario, p.total))
     return render_to_excel("Pedidos al Dia.xls", data)
 
+
 def get_actualizar_inventario(request):
     obj_json = {}
 
