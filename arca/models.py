@@ -71,6 +71,7 @@ class Usuario(Login):
     apellido = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField(max_length=255, null=True, blank=True)
     age = models.PositiveIntegerField(null=True)
+    fecha_nacimiento = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=15, null=True)
     foto = models.ImageField(upload_to=get_media_url, null=True, blank=True)
     telefono = models.CharField(max_length=20, null=True, blank=True)

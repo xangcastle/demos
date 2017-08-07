@@ -125,4 +125,9 @@ urlpatterns = [
         name='reset_recibos'),
     url(r'^reset_ventas/', login_required(reset_ventas),
         name='reset_ventas'),
+
+    url(r'^get_actualizar_inventario/', get_actualizar_inventario,
+        name='get_actualizar_inventario'),
+    url(r'^get_actualizar_cliente/', get_actualizar_cliente,
+        name='get_actualizar_cliente'),
 ]

@@ -6,6 +6,8 @@ from .ajax import *
 
 urlpatterns = [
     url(r'^$', Index.as_view(), name='arca'),
+    url(r'^indexfinal/', IndexFinal.as_view(), name='IndexFinal'),
+
     #url(r'^$', login_comercio.as_view(), name='arca'),
     url(r'^comercios/', index_comercio, name='arca_comercios'),
     url(r'^login_app/', login_app, name='arca_login_app'),
@@ -24,9 +26,9 @@ urlpatterns = [
     url(r'^registrar_negocio/',registrar_negocio.as_view(), name="registrar_negocio"),
 
     url(r'^registrar_negocio_st1/', registrar_negocio_st1.as_view(), name="registrar_negocio_st1"),
-    url(r'^registrar_negocio_st2/', registrar_negocio_st2.as_view(), name="registrar_negocio_st2"),
-    url(r'^registrar_negocio_st3/', registrar_negocio_st3.as_view(), name="registrar_negocio_st3"),
-    url(r'^registrar_negocio_st4/', registrar_negocio_st4.as_view(), name="registrar_negocio_st4"),
+    # url(r'^registrar_negocio_st2/', registrar_negocio_st2.as_view(), name="registrar_negocio_st2"),
+    # url(r'^registrar_negocio_st3/', registrar_negocio_st3.as_view(), name="registrar_negocio_st3"),
+    # url(r'^registrar_negocio_st4/', registrar_negocio_st4.as_view(), name="registrar_negocio_st4"),
 
     url(r'^mi_comercio/', mi_comercio.as_view(), name="mi_comercio"),
     url(r'^edit_comercio/', edit_comercio.as_view(), name="edit_comercio"),

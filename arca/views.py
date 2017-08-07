@@ -128,6 +128,14 @@ class Index(TemplateView):
         context['categorias'] = Comercio_Categoria.objects.all().order_by('nombre')
         return super(Index, self).render_to_response(context)
 
+class IndexFinal(TemplateView):
+    template_name = "arca/basenew.html"
+
+    def get(self, request, *args, **kwargs):
+        context = super(IndexFinal, self).get_context_data(**kwargs)
+        context = authorize(request, context)
+        context['categorias'] = Comercio_Categoria.objects.all().order_by('nombre')
+        return super(IndexFinal, self).render_to_response(context)
 
 def get_comercio_categorias(request):
     categorias = Comercio_Categoria.objects.all()
@@ -178,9 +186,13 @@ def createUserAuth(request):
     nombre = request.POST.get("nombre")
     apellido = request.POST.get("apellido")
     age = request.POST.get("age", "0")
+    fecha_nacimiento = request.POST.get("fecha_nacimiento", None)
     gender = request.POST.get("gender", None)
     email = request.POST.get("email", None)
     telefono = request.POST.get("telefono", None)
+
+    if fecha_nacimiento == "null" or fecha_nacimiento=="":
+        fecha_nacimiento = None
     if age == "null":
         age = 0
     if telefono == "null":
@@ -198,6 +210,8 @@ def createUserAuth(request):
             usuario.apellido = apellido
             if int(age) > 0:
                 usuario.age = int(age)
+            if fecha_nacimiento:
+                usuario.fecha_nacimiento = fecha_nacimiento
             if gender:
                 usuario.gender = gender
             usuario.email = email
@@ -208,6 +222,7 @@ def createUserAuth(request):
             usuario.nombre = nombre
             usuario.apellido = apellido
             usuario.age = int(age)
+            usuario.fecha_nacimiento = fecha_nacimiento
             usuario.gender = gender
             usuario.email = email
             usuario.telefono = telefono
@@ -215,6 +230,7 @@ def createUserAuth(request):
         obj_json['codigo'] = str(usuario.codigo)
         obj_json['id_usuario'] = usuario.id
         obj_json['age'] = usuario.age
+        obj_json['fecha_nacimiento'] = usuario.fecha_nacimiento
         obj_json['gender'] = usuario.gender
         obj_json['telefono'] = usuario.telefono
         obj_json['code'] = 200
@@ -263,6 +279,7 @@ class negocio_form(ModelForm):
         comercio.nombre = self.cleaned_data['nombre']
         comercio.telefono = self.cleaned_data['telefono']
         comercio.username = self.cleaned_data['username']
+
         comercio.categoria = categoria
         if self.cleaned_data['logo']:
             comercio.logo = self.cleaned_data['logo']
@@ -318,8 +335,6 @@ class edit_comercio(TemplateView):
         context = super(edit_comercio, self).get_context_data(**kwargs)
         form = negocio_form(request.POST, request.FILES)
         if form.is_valid():
-            comercio = form.save(commit=True)
-        if form.is_valid():
             form.save(commit=True)
             context["form"] = form
             context["success_message"] = "Datos actualizados exitosamente!"
@@ -329,13 +344,18 @@ class edit_comercio(TemplateView):
 
         return super(edit_comercio, self).render_to_response(context)
 
+
 @csrf_exempt
 def get_comercios(request):
     comercios = Comercio.objects.all()
     jcomercios = []
     for comercio in comercios:
         jcomercio = {'id': comercio.id, 'nombre': comercio.nombre, 'direccion': comercio.direccion,
-                     'telefono': comercio.telefono, 'rating': comercio.rating()}
+                     'telefono': comercio.telefono, 'rating': comercio.rating(),
+                     'tiene_descuento_compra_minima': comercio.tiene_descuento_compra_minima,
+                     'tiene_descuento_vigencia': comercio.tiene_descuento_vigencia,
+                     'tiene_servicio_afiliacion': comercio.tiene_servicio_afiliacion,
+                     'tiene_servicio_crm': comercio.tiene_servicio_crm}
 
         if comercio.position:
             jcomercio['latitude'] = float(comercio.position.latitude)
@@ -401,11 +421,6 @@ def get_comercios(request):
 class registrar_negocio_st1(TemplateView):
     template_name = "arca/comercio/registrar_negocio_st1.html"
 
-    @csrf_exempt
-    def get(self, request, *args, **kwargs):
-        context = super(registrar_negocio_st1, self).get_context_data(**kwargs)
-        if request.session['categoria_empresa']:
-            context['categoriaactual'] = int(request.session['categoria_empresa'])
     def get(self, request, *args, **kwargs):
         context = super(registrar_negocio_st1, self).get_context_data(**kwargs)
         try:
@@ -417,21 +432,7 @@ class registrar_negocio_st1(TemplateView):
 
     @csrf_exempt
     def post(self, request, *args, **kwargs):
-        context = super(registrar_negocio, self).get_context_data(**kwargs)
-        form = negocio_form(request.POST, request.FILES)
-        # check whether it's valid:
-        if form.is_valid():
-            comercio = form.save(commit=False, user=request.user)
-            comercio.propietario = request.user
-            comercio.save()
-            context["form"] = form
-            context["success_message"] = "Datos actualizados exitosamente!"
-            return redirect("mi_comercio")
-        else:
-            context["form"] = form
-
-        return super(registrar_negocio, self).render_to_response(context)
-        response=None
+        response = None
         obj_json = {}
         nombre_empresa = request.POST.get('nombre_empresa', None)
         identificacion_empresa = request.POST.get('identificacion', None)
@@ -467,6 +468,10 @@ class registrar_negocio_st1(TemplateView):
             obj_json['code'] = 400
             obj_json['mensaje'] = "Telefono de empresa requerido"
             obj_json['paso'] = 2
+        elif (telefono_empresa) > 10:
+            obj_json['code'] = 500
+            obj_json['mensaje'] = "Telefono invalido, verifique porfavor."
+            obj_json['paso'] = 2
         elif not usuario_nombre or usuario_nombre == "":
             obj_json['code'] = 400
             obj_json['mensaje'] = "Nombre del propietario requerido"
@@ -495,8 +500,6 @@ class registrar_negocio_st1(TemplateView):
 
             comercio = autenticate(Comercio(), usuario_email, usuario_password)
 
-
-
             if comercio:
                 obj_json['code'] = 200
                 obj_json['mensaje'] = "Comecio registrado exitosamente!"
@@ -515,23 +518,6 @@ class registrar_negocio_st1(TemplateView):
             response = HttpResponse(data, content_type='application/json')
 
         return response
-
-
-        # context = super(registrar_negocio, self).get_context_data(**kwargs)
-        # form = negocio_form(request.POST, request.FILES)
-        # # check whether it's valid:
-        # if form.is_valid():
-        #     comercio = form.save(commit=False, user=request.user)
-        #     comercio.propietario = request.user
-        #     comercio.save()
-        #     context["form"] = form
-        #     context["success_message"] = "Datos actualizados exitosamente!"
-        #     return redirect("mi_comercio")
-        # else:
-        #     context["form"] = form
-        #
-        # return super(registrar_negocio, self).render_to_response(context)
-
 
 
 class registrar_negocio_st2(TemplateView):
@@ -828,9 +814,10 @@ def get_cupones(request):
             }
 
             if cupon.actualizado_por:
-                obj_cupon['actualizado_por'] = {'id': cupon.actualizado_por.id,
+                obj_cupon['actualizado_por'] = {
+                                                   'id': cupon.actualizado_por.id,
                                                    'nombre': cupon.actualizado_por.nombre,
-                                                    'apellido': cupon.actualizado_por.apellido
+                                                   'apellido': cupon.actualizado_por.apellido
                                                },
             obj_cupnes.append(obj_cupon)
         obj_json['cupones'] = obj_cupnes
@@ -1060,6 +1047,7 @@ def canjear_cupon(request):
     actualizado = request.POST.get('actualizado', '')
     id_empleado = request.POST.get('id_empleado')
 
+    empleado = None
     if id_empleado:
         empleado = Empleado.objects.filter(id=id_empleado).first()
 
@@ -1084,13 +1072,24 @@ def canjear_cupon(request):
         obj_json['code'] = 400
         obj_json['mensaje'] = "Descuento invalido"
     else:
-
-        nuevo_cupon, c = Codigo_Descuento.objects.get_or_create(
+        nuevo_cupon = Codigo_Descuento.objects.filter(
             descuento=cupon.descuento,
             canjeado=False,
             cliente=cupon.cliente,
-            creado_por=empleado
-        )
+        ).exclude(codigo=codigo_cupon).first()
+
+        if not nuevo_cupon:
+            Codigo_Descuento.objects.create(
+                descuento=cupon.descuento,
+                canjeado=False,
+                cliente=cupon.cliente,
+                creado_por=empleado
+            )
+            nuevo_cupon = Codigo_Descuento.objects.filter(
+                descuento=cupon.descuento,
+                canjeado=False,
+                cliente=cupon.cliente,
+            ).exclude(codigo=codigo_cupon).first()
         if not nuevo_cupon:
             obj_json['code'] = 500
             obj_json['mensaje'] = "No fue posible generar el nuvo cupon"

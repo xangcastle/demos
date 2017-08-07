@@ -2393,20 +2393,12 @@ body.bodyColor.container {
 }
 @media (min-width: 480px) {
 	.whiteSection,.mainContent {
-<<<<<<< HEAD
-		padding:90px 0 0 0;
-=======
 		padding:30px 0 0 0;
->>>>>>> 89101f29c2167759bb1a887ff5df43b90f257542
 	}
 }
 @media (min-width: 768px) {
 	.whiteSection,.mainContent {
-<<<<<<< HEAD
-		padding:90px 0 60px 0;
-=======
 		padding:30px 0 60px 0;
->>>>>>> 89101f29c2167759bb1a887ff5df43b90f257542
 	}
 }
 .whiteSection .featuredCollection .thumbnail,.mainContent .featuredCollection .thumbnail {
