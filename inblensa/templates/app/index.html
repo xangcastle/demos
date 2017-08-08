@@ -837,8 +837,6 @@
             }
 
             function reset_inventario_facturacion() {
-                icon = $(e.target).find('i');
-                icon.toggleClass( "fa-spin" );
                 $.ajax({
                     url:"../inblensa/reset_ventas/",
                     type:"GET",
