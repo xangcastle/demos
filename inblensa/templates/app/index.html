@@ -478,7 +478,6 @@
                          {% if user.is_superuser %}
                              <div class="row">
                                 <div class="col-md-8">
-                                     <a href="#">
                                        <div class="widget-box clearfix">
                                            <div>
                                                <table class="table table-responsive table-bordered table-striped">
@@ -491,15 +490,14 @@
                                                         {% for e in estadisticas %}
                                                         <tr>
                                                             <td>{{ e.vendedor }}</td>
-                                                            <td>{{ e.total_recuperado }}</td>
-                                                            <td>{{ e.total_vendido }}</td>
+                                                            <td><a href="#">{{ e.total_recuperado }}</a></td>
+                                                            <td><a href="#">{{ e.total_vendido }}</a></td>
                                                         </tr>
                                                         {% endfor %}
                                                    </tbody>
                                                </table>
                                            </div>
                                        </div>
-                                     </a>
                                  </div>
                              </div>
                          {%  else %}
