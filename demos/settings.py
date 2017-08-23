@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'realstate',
     #'arca',
     'rrhh',
+    'base',
 ]
 
 MIDDLEWARE = [
@@ -205,4 +206,3 @@ SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/arca/'
 SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/arca/'
 SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/arca/'
 SOCIAL_AUTH_INACTIVE_USER_URL = '/arca/'
-

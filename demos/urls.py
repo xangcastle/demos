@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^inblensa/', include("inblensa.urls")),
     url(r'^realstate/', include("realstate.urls")),
+    url(r'^ajax/', include('base.ajax_urls')),
     #url(r'^arca/', include("arca.urls")),
     url(r'^rrhh/', include("rrhh.urls")),
     url(r'^soc/', include("social_django.urls", namespace="social")),

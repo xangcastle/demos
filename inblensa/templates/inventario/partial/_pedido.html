@@ -8,18 +8,50 @@
         </div>
     </div>
 </div>
+<div class="row">
+  <center><label class="col-sm-12 control-label"><b>Cliente</b></label></center>
+</div>
  <div class="row">
     <div class="form-group">
-        <label class="col-sm-4 control-label">Cliente:</label>
-        <div class="col-sm-8">
-            <select name="cliente" data-live-search="true" class="form-control select2" type="text">
+
+            <!--<select name="cliente" data-live-search="true" class="form-control select2" type="text">
                 <option selected="selected">--seleccione cliente--</option>
                 {% for cliente in clientes %}
                 <option value="{{ cliente.id }}">{{ cliente.identificacion }}; {{ cliente.nombre }}; {{ cliente.telefono }}</option>
                 {% endfor %}
-            </select>
+            </select>-->
+            <div class="control-group">
+                  <label class="control-label col-sm-3  col-xs-12"><span class="red">*</span> Nombre:</label>
+                  <div class="controls col-sm-3  col-xs-12">
+                    <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" class="requerido">
+                  </div>
+            </div>
+            <div class="control-group">
+                  <label class="control-label col-sm-3  col-xs-12"><span class="red">*</span> Telefono:</label>
+                  <div class="controls col-sm-3  col-xs-12">
+                    <input type="text" class="form-control" id="telefono_cliente" name="telefono_cliente" class="requerido">
+                  </div>
+            </div>
+            <div class="control-group">
+                  <label class="control-label col-sm-3  col-xs-12"><span class="red">*</span> No.Ced:</label>
+                  <div class="controls col-sm-3  col-xs-12">
+                    <input type="text" class="form-control" id="cedula_cliente" name="cedula_cliente" class="requerido">
+                  </div>
+            </div>
+            <div class="control-group">
+                  <label class="control-label col-sm-3  col-xs-12"><span class="red">*</span> Dirección:</label>
+                  <div class="controls col-sm-3  col-xs-12">
+                    <input type="text" class="form-control" id="direccion_cliente" name="direccion_cliente" class="requerido">
+                  </div>
+            </div>
+            <div class="control-group">
+                  <label class="control-label col-sm-3  col-xs-12"><span class="red">*</span> Referencia:</label>
+                  <div class="controls col-sm-3  col-xs-12">
+                    <input type="text" class="form-control" id="referencia_cliente" name="referencia_cliente" class="requerido">
+                  </div>
+            </div>
+
         </div>
-    </div>
 </div>
 
 <div class="hr-line-dashed"></div>
