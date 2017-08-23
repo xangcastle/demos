@@ -2,8 +2,6 @@ import json
 
 from django.utils.encoding import smart_str
 from ..dbmanager import *
-from django.core import serializers
-from django.db.models import Max
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
@@ -29,7 +27,7 @@ def get_productos(request):
     filtro = request.GET.get('q')
     if not filtro:
         # productos = Producto.objects.values('codigo', 'nombre', 'precio', 'imagen', 'categoria', 'marca').distinct()
-        productos = local_sql_exec('SELECT DISTINCT codigo, nombre, precio, imagen, marca, ' +
+        productos = local_sql_exec('SELECT DISTINCT codigo, nombre, precio, marca, ' +
                                    '(select sum(existencia) from inblensa_bodega_detalle where producto_id in ' +
                                    '(select p.id from inblensa_producto p where  p.codigo =p1.codigo)) as cantidad ' +
                                    'FROM inblensa_producto p1 INNER  JOIN inblensa_producto_categoria ' +
@@ -37,7 +35,7 @@ def get_productos(request):
                                    'INNER JOIN inblensa_producto_marca ' +
                                    'on p1.marca_id=inblensa_producto_marca.id LIMIT 100')
     else:
-        productos = local_sql_exec('SELECT DISTINCT codigo, nombre, precio, imagen, marca, ' +
+        productos = local_sql_exec('SELECT DISTINCT codigo, nombre, precio, marca, ' +
                                    '(select sum(existencia) from inblensa_bodega_detalle where producto_id in ' +
                                    '(select p.id from inblensa_producto p where  p.codigo =p1.codigo)) as cantidad ' +
                                    'FROM inblensa_producto p1 INNER  JOIN inblensa_producto_categoria ' +
@@ -52,8 +50,7 @@ def get_productos(request):
                    'nombre': p.nombre,
                    'precio': p.precio,
                    'marca': p.marca,
-                   'existencia': p.cantidad,
-                   'imagen': "/media/" + p.imagen if p.imagen != "" else "/media/foto-no-disponible.jpg",}
+                   'existencia': p.cantidad}
             data.append(pro)
         # data = serializers.serialize('json', productos)
         # struct = json.loads(data)

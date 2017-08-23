@@ -17,18 +17,16 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from control.views import *
+from inblensa.views import index
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
-    url(r'^$', login_required(Index.as_view()), name="control_index"),
-    url(r'^agregar_registro/',agregar_registro, name="agregar_registro"),
-    url(r'^calculator/', login_required(Calculator.as_view()), name="control_calculator"),
+    url(r'^$', login_required(index.as_view()), name="control_index"),
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^inblensa/', include("inblensa.urls")),
     url(r'^realstate/', include("realstate.urls")),
-    url(r'^arca/', include("arca.urls")),
+    #url(r'^arca/', include("arca.urls")),
     url(r'^rrhh/', include("rrhh.urls")),
     url(r'^soc/', include("social_django.urls", namespace="social")),
     url('', include('django.contrib.auth.urls', namespace='auth')),

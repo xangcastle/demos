@@ -1,19 +1,14 @@
-from datetime import datetime
 
 import requests
-from background_task import background
 from django.utils.encoding import smart_str
 from .dbmanager import sql_exec
 from .html_to_pdf import render_to_pdf, render_to_excel
 from django.core import serializers
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 import json
-from django.http import HttpResponseRedirect
 from .models import *
 from datetime import datetime
 
@@ -667,7 +662,7 @@ def get_actualizar_inventario(request):
     data = json.dumps(obj_json)
     return HttpResponse(data, content_type='application/json')
 
-#@background(schedule=3)
+
 def actualizar_inventario():
     url = 'http://inblensa.ddns.net:7779/Home/get_data_from_server'
     params = {'vista': 'view_info_migration'}
@@ -716,7 +711,7 @@ def get_actualizar_cliente(request):
     data = json.dumps(obj_json)
     return HttpResponse(data, content_type='application/json')
 
-#@background(schedule=3)
+
 def actualizar_cliente():
     url = 'http://inblensa.ddns.net:7779/Home/get_data_from_server'
     params = {'vista': 'view_info_migration_cliente'}
@@ -736,3 +731,4 @@ def actualizar_cliente():
                                              telefono=d["telefono"],
                                              direccion=d["direccion"],
                                              contacto=d["contacto"])
+

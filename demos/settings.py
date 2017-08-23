@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social_django',
-    'control',
+    #'control',
     'import_export',
     'django.contrib.humanize',
     'fontawesome',
@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'colorfield',
     'inblensa',
     'realstate',
-    'arca',
+    #'arca',
     'rrhh',
 ]
 
