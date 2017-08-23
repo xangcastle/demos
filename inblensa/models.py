@@ -164,7 +164,7 @@ class Cliente(models.Model):
     empresa = models.ForeignKey(Empresa, null=False)
 
     def to_json(self):
-        return {'nombre': u' '.join(self.nombre).encode('utf-8').strip(),
+        return {'nombre': u''.join(self.nombre).encode('utf-8').strip(),
                 'id': self.id,
                 'identificacion': self.identificacion,
                 'telefono': self.telefono,
