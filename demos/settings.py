@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     'realstate',
     #'arca',
     'rrhh',
-    'base',
 ]
 
 MIDDLEWARE = [

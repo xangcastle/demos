@@ -3,10 +3,8 @@ from django.db.models import Q
 import operator
 import datetime
 import decimal
-from functools import reduce
 from django.db.models.fields.files import ImageFieldFile, FileField
 from django.contrib.contenttypes.models import ContentType
-
 
 
 class Codec(json.JSONEncoder):
