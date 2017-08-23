@@ -165,6 +165,7 @@ class Cliente(models.Model):
 
     def to_json(self):
         return {'nombre': u' '.join(self.nombre).encode('utf-8').strip(),
+                'id': self.id,
                 'identificacion': self.identificacion,
                 'telefono': self.telefono,
                 'celular': self.celular,
@@ -587,4 +588,3 @@ def estadisticas_ventas():
             obj['total_vendido'] = 0.0
         data.append(obj)
     return data
-

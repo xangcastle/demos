@@ -15,17 +15,11 @@
 </div>
  <div class="row">
     <div class="form-group">
-
-            <!--<select name="cliente" data-live-search="true" class="form-control select2" type="text">
-                <option selected="selected">--seleccione cliente--</option>
-                {% for cliente in clientes %}
-                <option value="{{ cliente.id }}">{{ cliente.identificacion }}; {{ cliente.nombre }}; {{ cliente.telefono }}</option>
-                {% endfor %}
-            </select>-->
             <div class="control-group">
                   <label class="control-label col-sm-3  col-xs-12"><span class="red">*</span> Nombre:</label>
                   <div class="controls col-sm-3  col-xs-12">
                     <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" class="requerido">
+                    <input type="hidden" class="form-control" id="id_cliente" name="id_cliente" class="requerido">
                   </div>
             </div>
             <div class="control-group">
