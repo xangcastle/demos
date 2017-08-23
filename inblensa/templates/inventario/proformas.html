@@ -176,14 +176,18 @@
 
 
                     complete_cliente = function() {
+                                $("#id_cliente").val("");
+                                $("#direccion_cliente").val("");
+                                $("#cedula_cliente").val("");
+                                $("#telefono_cliente").val("");
                                $(this).autocomplete({
                                  minLength: 2,
                                  source: "/ajax/autocomplete/?app_label=inblensa&model=cliente&column_name=nombre",
                                  select: function (i, o) {
-                                    $("#id_cliente").val(o.item.obj.id)
-                                    $("#direccion_cliente").val(o.item.obj.direccion)
-                                    $("#cedula_cliente").val(o.item.obj.identificacion)
-                                    $("#telefono_cliente").val(o.item.obj.telefono)
+                                    $("#id_cliente").val(o.item.obj.id);
+                                    $("#direccion_cliente").val(o.item.obj.direccion);
+                                    $("#cedula_cliente").val(o.item.obj.identificacion);
+                                    $("#telefono_cliente").val(o.item.obj.telefono);
 
                                    //$("#"+$(this).attr('id')+"_").val(o.item.obj.id);
                                  },error(e)
