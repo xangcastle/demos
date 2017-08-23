@@ -475,33 +475,62 @@
                 </div>
                 <div class="content-wrapper container">
                      {% block cuerpo %}
-                     <div class="row">
-                         <div class="col-md-3">
-                             <a href="/app/lrecibo_provicional/">
-                               <div class="widget-box clearfix">
-                                   <div>
-                                       <a href="javascript:void(0)" onclick="reset_cartera_cobro()"><i class="fa fa-refresh fa-fw"></i> Reiniciar</a>
-                                       <h2><i class="fa fa-usd pull-right p4-color"></i></h2>
-                                       <h4>Cartera y Cobro</h4>
-                                       <h2 id="total_cartera_cobro">{{ total_recuperado }}</h2>
-                                   </div>
-                               </div>
-                             </a>
-                         </div>
-                         <div class="col-md-3">
-                             <a href="/app/proformas/">
-                               <div class="widget-box clearfix">
-                                   <div>
-                                       <a  href="javascript:void(0)" onclick="reset_inventario_facturacion()"><i class="fa fa-refresh fa-fw"></i> Reiniciar</a>
-                                       <h2><i class="fa fa-shopping-cart pull-right p2-color"></i></h2>
-                                       <h4>Inventario y Facturacion</h4>
-                                       <h2 id="total_inventario_facturacion">{{ total_vendido }}</h2>
+                         {% if user.is_superuser %}
+                             <div class="row">
+                                <div class="col-md-8">
+                                     <a href="#">
+                                       <div class="widget-box clearfix">
+                                           <div>
+                                               <table class="table table-responsive table-bordered table-striped">
+                                                   <thead>
+                                                        <th>Vendedor</th>
+                                                        <th>Rec</th>
+                                                        <th>Venta</th>
+                                                   </thead>
+                                                   <tbody>
+                                                        {% for e in estadisticas %}
+                                                        <tr>
+                                                            <td>{{ e.vendedor }}</td>
+                                                            <td>{{ e.total_recuperado }}</td>
+                                                            <td>{{ e.total_vendido }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                   </tbody>
+                                               </table>
+                                           </div>
+                                       </div>
+                                     </a>
+                                 </div>
+                             </div>
+                         {%  else %}
+                             <div class="row">
+                                 <div class="col-md-3">
+                                     <a href="/inblensa/lrecibo_provicional/">
+                                       <div class="widget-box clearfix">
+                                           <div>
+                                               <a href="javascript:void(0)" onclick="reset_cartera_cobro()"><i class="fa fa-refresh fa-fw"></i> Reiniciar</a>
+                                               <h2><i class="fa fa-usd pull-right p4-color"></i></h2>
+                                               <h4>Cartera y Cobro</h4>
+                                               <h2 id="total_cartera_cobro">{{ total_recuperado }}</h2>
+                                           </div>
+                                       </div>
+                                     </a>
+                                 </div>
+                                 <div class="col-md-3">
+                                     <a href="/inblensa/proformas/">
+                                       <div class="widget-box clearfix">
+                                           <div>
+                                               <a  href="javascript:void(0)" onclick="reset_inventario_facturacion()"><i class="fa fa-refresh fa-fw"></i> Reiniciar</a>
+                                               <h2><i class="fa fa-shopping-cart pull-right p2-color"></i></h2>
+                                               <h4>Inventario y Facturacion</h4>
+                                               <h2 id="total_inventario_facturacion">{{ total_vendido }}</h2>
 
-                                   </div>
-                               </div>
-                             </a>
-                         </div>
-                     </div>
+                                           </div>
+                                       </div>
+                                     </a>
+                                 </div>
+                             </div>
+                         {% endif %}
                          {% comment %}
                     <div class="row">
                         <div class="col-sm-12">

@@ -560,3 +560,24 @@ def get_no_recibo(user):
 
 def next_pedido():
     return int(Pedido.objects.all().aggregate(Max('no_pedido'))['no_pedido__max']) + 1
+
+
+
+def estadisticas_ventas():
+    data = []
+    vendedores = Vendedor.objects.filter(activo=True)
+    for v in vendedores:
+        obj = {'vendedor': v.usuario.username}
+        recibos = Recibo_Provicional.objects.filter(cerrado=False, usuario_creacion=v.usuario, anulado=False)
+        ventas = Pedido.objects.filter(cerrado=False, usuario_creacion=v.usuario, anulado=False)
+        if recibos:
+            obj['total_recuperado'] = round(recibos.aggregate(Sum('monto'))['monto__sum'], 2)
+        else:
+            obj['total_recuperado'] = 0.0
+        if ventas:
+            obj['total_vendido'] = round(ventas.aggregate(Sum('total'))['total__sum'], 2)
+        else:
+            obj['total_vendido'] = 0.0
+        data.append(obj)
+    return data
+

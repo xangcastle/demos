@@ -28,6 +28,8 @@ class index(TemplateView):
             context['total_vendido'] = round(ventas.aggregate(Sum('total'))['total__sum'], 2)
         else:
             context['total_vendido'] = 0.0
+        if request.user.is_superuser:
+            context['estadisticas'] = estadisticas_ventas()
         return super(index, self).render_to_response(context)
 
 
