@@ -178,7 +178,7 @@
                     complete_cliente = function() {
                                $(this).autocomplete({
                                  minLength: 2,
-                                 source: "/ajax/autocomplete_object_execute/?app_label=base&model=cliente&method=",
+                                 source: "/ajax/autocomplete/?app_label=base&model=cliente",
                                  select: function (i, o) {
                                    console.log(o.item.obj.id);
                                    //$("#"+$(this).attr('id')+"_").val(o.item.obj.id);
