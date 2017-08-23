@@ -27,7 +27,7 @@ def autocomplete(request):
                       model_name=request.GET.get('model')
                      ).filter_by_list(
         [('{}__like'.format(column),
-          request.GET.get('term')), ('empresa', request.user.empresa.id)])
+          request.GET.get('term'))])
     for q in queryset:
         result.append({'obj': q.to_json(),
                        'label': str(q.to_json()[column]),

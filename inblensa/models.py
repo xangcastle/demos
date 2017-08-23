@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 import datetime
 from string import upper
-
 from .numero_letras import numero_a_letras
 from django.db import models
 from django.db.models import Sum, Max
@@ -163,6 +162,14 @@ class Cliente(models.Model):
     gestiones = models.ManyToManyField(Gestion)
     comentarios = models.ManyToManyField(Comentario)
     empresa = models.ForeignKey(Empresa, null=False)
+
+    def to_json(self):
+        return {'nombre': u' '.join(self.nombre).encode('utf-8').strip(),
+                'identificacion': self.identificacion,
+                'telefono': self.telefono,
+                'celular': self.celular,
+                'contacto': self.contacto,
+                'direccion': self.direccion}
 
     def __unicode__(self):
         return "%s-%s" % (self.identificacion, self.nombre)
