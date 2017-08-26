@@ -11,7 +11,7 @@ from django.views.generic import TemplateView
 import json
 from .models import *
 from datetime import datetime
-
+from django.contrib.auth import authenticate
 
 class index(TemplateView):
     template_name = "app/index.html"
@@ -733,4 +733,17 @@ def actualizar_cliente():
                                              telefono=d["telefono"],
                                              direccion=d["direccion"],
                                              contacto=d["contacto"])
+
+
+def service_login(request):
+    obj = {'error': "error de authenticacion"}
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username='john', password='secret')
+        obj = {'username': user.username, 'id': user.id,
+               'email': user.email}
+
+    data = json.dumps(obj)
+    return HttpResponse(data, content_type='application/json')
 

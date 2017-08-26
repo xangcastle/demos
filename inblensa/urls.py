@@ -127,4 +127,5 @@ urlpatterns = [
         name='get_actualizar_inventario'),
     url(r'^get_actualizar_cliente/', get_actualizar_cliente,
         name='get_actualizar_cliente'),
+    url(r'^service_login/', service_login, name="service_login"),
 ]
