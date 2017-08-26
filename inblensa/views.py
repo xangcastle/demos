@@ -734,7 +734,7 @@ def actualizar_cliente():
                                              direccion=d["direccion"],
                                              contacto=d["contacto"])
 
-
+@csrf_exempt
 def service_login(request):
     obj = {'error': "error de authenticacion"}
     if request.method == "POST":
