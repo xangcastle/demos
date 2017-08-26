@@ -740,9 +740,10 @@ def service_login(request):
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user = authenticate(username='john', password='secret')
-        obj = {'username': user.username, 'id': user.id,
-               'email': user.email}
+        user = authenticate(username=username, password=password)
+        if user:
+            obj = {'username': user.username, 'id': user.id,
+                   'email': user.email}
 
     data = json.dumps(obj)
     return HttpResponse(data, content_type='application/json')
