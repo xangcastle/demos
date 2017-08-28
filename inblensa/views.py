@@ -757,7 +757,7 @@ def salvar_cabecera(request):
         vendedor_id = request.POST.get('vendedor_id')
         subtotal = request.POST.get('subtotal')
         impuesto = request.POST.get('impuesto')
-        total = request.POST.get('impuesto')
+        total = request.POST.get('total')
         comentario = request.POST.get('comentario')
         p = Pedido(cliente=Cliente.objects.get(id=int(cliente_id)),
                    vendedor=Vendedor.objects.get(usuario=int(vendedor_id)),
@@ -771,14 +771,17 @@ def salvar_cabecera(request):
 
 @csrf_exempt
 def salvar_detalle(request):
-    obj = {'error': "error de authenticacion"}
+    obj = {'error': "datos incompletos"}
     if request.method == "POST":
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
-        if user:
-            obj = {'username': user.username, 'id': user.id,
-                   'email': user.email}
+        pedido_id = request.POST.get('pedido_id')
+        producto_codigo = request.POST.get('producto_codigo')
+        cantidad = request.POST.get('impuesto')
+        valor = request.POST.get('total')
+        d = Pedido_Detalle(pedido=Pedido.objects.get(id=int(pedido_id)),
+                           producto=Producto.objects.get(codigo=producto_codigo),
+                           cantidad=cantidad, valor=valor)
+        if d:
+            obj = {'id': d.id, 'producto_id': d.producto.id}
 
     data = json.dumps(obj)
     return HttpResponse(data, content_type='application/json')
