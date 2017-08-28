@@ -748,3 +748,38 @@ def service_login(request):
     data = json.dumps(obj)
     return HttpResponse(data, content_type='application/json')
 
+
+@csrf_exempt
+def salvar_cabecera(request):
+    obj = {'error': "datos incompletos"}
+    if request.method == "POST":
+        cliente_id = request.POST.get('cliente_id')
+        vendedor_id = request.POST.get('vendedor_id')
+        subtotal = request.POST.get('subtotal')
+        impuesto = request.POST.get('impuesto')
+        total = request.POST.get('impuesto')
+        comentario = request.POST.get('comentario')
+        p = Pedido(cliente=Cliente.objects.get(id=int(cliente_id)),
+                   vendedor=Vendedor.objects.get(usuario=int(vendedor_id)),
+                   subtotal=subtotal, impuesto=impuesto, total=total, comentario=comentario)
+        p.save()
+        if p:
+            obj = {'id': p.id, 'numero': p.no_pedido}
+    data = json.dumps(obj)
+    return HttpResponse(data, content_type='application/json')
+
+
+@csrf_exempt
+def salvar_detalle(request):
+    obj = {'error': "error de authenticacion"}
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user:
+            obj = {'username': user.username, 'id': user.id,
+                   'email': user.email}
+
+    data = json.dumps(obj)
+    return HttpResponse(data, content_type='application/json')
+

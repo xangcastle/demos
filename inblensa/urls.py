@@ -128,4 +128,6 @@ urlpatterns = [
     url(r'^get_actualizar_cliente/', get_actualizar_cliente,
         name='get_actualizar_cliente'),
     url(r'^service_login/', service_login, name="service_login"),
+    url(r'^salvar_cabecera/', salvar_cabecera, name="salvar_cabecera"),
+    url(r'^salvar_detalle/', salvar_detalle, name="salvar_detalle"),
 ]
