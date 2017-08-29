@@ -826,6 +826,7 @@ def salvar_detalle(request):
         d = Pedido_Detalle(pedido=pe,
                            producto=p,
                            cantidad=obj['cantidad'], valor=obj['valor'])
+        d.save()
         if d:
             obj = {'id': d.id, 'producto_id': d.producto.id}
 
