@@ -1,4 +1,4 @@
-from .models import Import_Imventario, Producto, Vendedor, Moneda
+from inblensa.models import Import_Imventario, Producto, Vendedor, Moneda
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
@@ -19,8 +19,5 @@ class producto_admin(admin.ModelAdmin):
     search_fields = ('codigo', 'nombre', 'marca__marca')
 admin.site.register(Producto, producto_admin)
 
-class vendedor_admin(admin.ModelAdmin):
-    admin.site.register(Vendedor)
 
-class moneda_admin(admin.ModelAdmin):
-    admin.site.register(Moneda)
+admin.site.register(Moneda)

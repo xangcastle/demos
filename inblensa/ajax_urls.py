@@ -8,6 +8,4 @@ urlpatterns = [
     url(r'^autocomplete/', autocomplete, name="ajax_autocomplete"),
     url(r'^object_execute/', object_execute, name="ajax_objectExecute"),
     url(r'^autocomplete_object_execute/', autocomplete_object_execute, name="ajax_autocomplete_object_execute")
-
-
 ]

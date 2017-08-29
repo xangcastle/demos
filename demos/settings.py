@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'realstate',
     #'arca',
     'rrhh',
+    'inblensa.inventario'
 ]
 
 MIDDLEWARE = [
