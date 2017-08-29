@@ -786,7 +786,7 @@ def salvar_cabecera(request):
 
         comentario = request.POST.get('comentario')
         obj['comentario'] = comentario
-        
+
         if not comentario:
             obj['error'] = "el parametro comentario es requerido"
         # c = Cliente.objects.get(id=cliente_id)
@@ -795,8 +795,8 @@ def salvar_cabecera(request):
         #            impuesto=float(impuesto), total=float(total),
         #            comentario=comentario)
         # p.save()
-        if p:
-            obj = {'id': p.id, 'numero': p.no_pedido}
+        # if p:
+        #     obj = {'id': p.id, 'numero': p.no_pedido}
     print(obj)
     data = json.dumps(obj)
     return HttpResponse(data, content_type='application/json')
