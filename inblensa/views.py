@@ -754,17 +754,32 @@ def salvar_cabecera(request):
     obj = {'error': "datos incompletos"}
     if request.method == "POST":
         cliente_id = request.POST.get('cliente_id')
+        if not cliente_id:
+            obj = {'error': "debe incluir el parametro cliente_id, con un id valido de cliente"}
         vendedor_id = request.POST.get('vendedor_id')
+        if not vendedor_id:
+            obj = {'error': "debe incluir el parametro vendedor_id, con un id valido de vendedor"}
         subtotal = request.POST.get('subtotal')
+        if not subtotal:
+            obj = {'error': "el parametro subtotal es requerido"}
         impuesto = request.POST.get('impuesto')
+        if not impuesto:
+            obj = {'error': "el parametro impuesto es requerido"}
         total = request.POST.get('total')
+        if not total:
+            obj = {'error': "el parametro total es requerido"}
         comentario = request.POST.get('comentario')
-        p = Pedido(cliente=Cliente.objects.get(id=int(cliente_id)),
-                   vendedor=Vendedor.objects.get(usuario=int(vendedor_id)),
-                   subtotal=subtotal, impuesto=impuesto, total=total, comentario=comentario)
-        p.save()
-        if p:
-            obj = {'id': p.id, 'numero': p.no_pedido}
+        if not comentario:
+            obj = {'error': "el parametro comentario es requerido"}
+        try:
+            p = Pedido(cliente=Cliente.objects.get(id=int(cliente_id)),
+                       vendedor=Vendedor.objects.get(usuario=int(vendedor_id)),
+                       subtotal=subtotal, impuesto=impuesto, total=total, comentario=comentario)
+            p.save()
+            if p:
+                obj = {'id': p.id, 'numero': p.no_pedido}
+        except:
+            obj = {'error': "parametro cliente_id o vendedor_id no valido"}
     data = json.dumps(obj)
     return HttpResponse(data, content_type='application/json')
 
