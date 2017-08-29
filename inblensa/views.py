@@ -812,7 +812,7 @@ def salvar_detalle(request):
     if request.method == "POST":
         pedido_id = request.POST.get('pedido_id')
         producto_codigo = request.POST.get('producto_codigo')
-        cantidad = request.POST.get('impuesto')
+        cantidad = request.POST.get('cantidad')
         valor = request.POST.get('total')
 
         obj['pedido_id'] = int(pedido_id)
@@ -820,8 +820,11 @@ def salvar_detalle(request):
         obj['cantidad'] = float(cantidad)
         obj['valor'] = float(valor)
 
-        d = Pedido_Detalle(pedido=Pedido.objects.get(id=int(obj['pedido_id'])),
-                           producto=Producto.objects.get(codigo=obj['producto_codigo']),
+        pe = Pedido.objects.get(id=int(obj['pedido_id']))
+        p = Producto.objects.get(codigo=obj['producto_codigo'])
+
+        d = Pedido_Detalle(pedido=pe,
+                           producto=p,
                            cantidad=obj['cantidad'], valor=obj['valor'])
         if d:
             obj = {'id': d.id, 'producto_id': d.producto.id}
