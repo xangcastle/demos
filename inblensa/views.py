@@ -814,9 +814,15 @@ def salvar_detalle(request):
         producto_codigo = request.POST.get('producto_codigo')
         cantidad = request.POST.get('impuesto')
         valor = request.POST.get('total')
-        d = Pedido_Detalle(pedido=Pedido.objects.get(id=int(pedido_id)),
-                           producto=Producto.objects.get(codigo=producto_codigo),
-                           cantidad=cantidad, valor=valor)
+
+        obj['pedido_id'] = int(pedido_id)
+        obj['producto_codigo'] = producto_codigo
+        obj['cantidad'] = float(cantidad)
+        obj['valor'] = float(valor)
+
+        d = Pedido_Detalle(pedido=Pedido.objects.get(id=int(obj['pedido_id'])),
+                           producto=Producto.objects.get(codigo=obj['producto_codigo']),
+                           cantidad=obj['cantidad'], valor=obj['valor'])
         if d:
             obj = {'id': d.id, 'producto_id': d.producto.id}
 
