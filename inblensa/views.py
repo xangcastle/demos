@@ -813,7 +813,7 @@ def salvar_detalle(request):
         pedido_id = request.POST.get('pedido_id')
         producto_codigo = request.POST.get('producto_codigo')
         cantidad = request.POST.get('cantidad')
-        valor = request.POST.get('total')
+        valor = request.POST.get('valor')
 
         obj['pedido_id'] = int(pedido_id)
         obj['producto_codigo'] = producto_codigo
