@@ -774,7 +774,8 @@ def salvar_cabecera(request):
         try:
             p = Pedido(cliente=Cliente.objects.get(id=int(cliente_id)),
                        vendedor=Vendedor.objects.get(usuario=int(vendedor_id)),
-                       subtotal=subtotal, impuesto=impuesto, total=total, comentario=comentario)
+                       subtotal=float(subtotal), impuesto=float(impuesto),
+                       total=float(total), comentario=comentario)
             p.save()
             if p:
                 obj = {'id': p.id, 'numero': p.no_pedido}
