@@ -775,16 +775,13 @@ def salvar_cabecera(request):
         comentario = request.POST.get('comentario')
         if not comentario:
             obj = {'error': "el parametro comentario es requerido"}
-        try:
-            p = Pedido(cliente=Cliente.objects.get(id=int(cliente_id)),
-                       vendedor=Vendedor.objects.get(usuario=int(vendedor_id)),
-                       subtotal=float(subtotal), impuesto=float(impuesto),
-                       total=float(total), comentario=comentario)
-            p.save()
-            if p:
-                obj = {'id': p.id, 'numero': p.no_pedido}
-        except:
-            obj = {'error': "parametro cliente_id o vendedor_id no valido"}
+        p = Pedido(cliente=Cliente.objects.get(id=int(cliente_id)),
+                   vendedor=Vendedor.objects.get(usuario=int(vendedor_id)),
+                   subtotal=float(subtotal), impuesto=float(impuesto),
+                   total=float(total), comentario=comentario)
+        p.save()
+        if p:
+            obj = {'id': p.id, 'numero': p.no_pedido}
     print(obj)
     data = json.dumps(obj)
     return HttpResponse(data, content_type='application/json')
