@@ -753,34 +753,48 @@ def service_login(request):
 def salvar_cabecera(request):
     obj = {'error': "datos incompletos"}
     if request.method == "POST":
+
         cliente_id = request.POST.get('cliente_id')
         if not cliente_id:
             obj['error'] = "debe incluir el parametro cliente_id, con un id valido de cliente"
         else:
             obj['cliente_id'] = int(cliente_id)
+
         vendedor_id = request.POST.get('vendedor_id')
         if not vendedor_id:
             obj['error'] = "debe incluir el parametro vendedor_id, con un id valido de vendedor"
         else:
             obj['vendedor_id'] = int(vendedor_id)
+
         subtotal = request.POST.get('subtotal')
         if not subtotal:
             obj['error'] = "el parametro subtotal es requerido"
+        else:
+            obj['subtotal'] = subtotal
+
         impuesto = request.POST.get('impuesto')
         if not impuesto:
             obj['error'] = "el parametro impuesto es requerido"
+        else:
+            obj['impuesto'] = impuesto
+
         total = request.POST.get('total')
         if not total:
             obj['error'] = "el parametro total es requerido"
+        else:
+            obj['total'] = total
+
         comentario = request.POST.get('comentario')
+        obj['comentario'] = comentario
+        
         if not comentario:
             obj['error'] = "el parametro comentario es requerido"
-        c = Cliente.objects.get(id=cliente_id)
-        v = Vendedor.objects.get(usuario=int(vendedor_id))
-        p = Pedido(cliente=c, vendedor=v, subtotal=float(subtotal),
-                   impuesto=float(impuesto), total=float(total),
-                   comentario=comentario)
-        p.save()
+        # c = Cliente.objects.get(id=cliente_id)
+        # v = Vendedor.objects.get(usuario=int(vendedor_id))
+        # p = Pedido(cliente=c, vendedor=v, subtotal=float(subtotal),
+        #            impuesto=float(impuesto), total=float(total),
+        #            comentario=comentario)
+        # p.save()
         if p:
             obj = {'id': p.id, 'numero': p.no_pedido}
     print(obj)
