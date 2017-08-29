@@ -756,9 +756,13 @@ def salvar_cabecera(request):
         cliente_id = request.POST.get('cliente_id')
         if not cliente_id:
             obj = {'error': "debe incluir el parametro cliente_id, con un id valido de cliente"}
+        else:
+            obj['cliente_id'] = int(cliente_id)
         vendedor_id = request.POST.get('vendedor_id')
         if not vendedor_id:
             obj = {'error': "debe incluir el parametro vendedor_id, con un id valido de vendedor"}
+        else:
+            obj['vendedor_id'] = int(vendedor_id)
         subtotal = request.POST.get('subtotal')
         if not subtotal:
             obj = {'error': "el parametro subtotal es requerido"}
@@ -781,6 +785,7 @@ def salvar_cabecera(request):
                 obj = {'id': p.id, 'numero': p.no_pedido}
         except:
             obj = {'error': "parametro cliente_id o vendedor_id no valido"}
+    print(obj)
     data = json.dumps(obj)
     return HttpResponse(data, content_type='application/json')
 
