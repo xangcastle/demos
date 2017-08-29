@@ -770,33 +770,37 @@ def salvar_cabecera(request):
         if not subtotal:
             obj['error'] = "el parametro subtotal es requerido"
         else:
-            obj['subtotal'] = subtotal
+            obj['subtotal'] = float(subtotal)
 
         impuesto = request.POST.get('impuesto')
         if not impuesto:
             obj['error'] = "el parametro impuesto es requerido"
         else:
-            obj['impuesto'] = impuesto
+            obj['impuesto'] = float(impuesto)
 
         total = request.POST.get('total')
         if not total:
             obj['error'] = "el parametro total es requerido"
         else:
-            obj['total'] = total
+            obj['total'] = float(total)
 
         comentario = request.POST.get('comentario')
-        obj['comentario'] = comentario
-
         if not comentario:
             obj['error'] = "el parametro comentario es requerido"
-        # c = Cliente.objects.get(id=cliente_id)
-        # v = Vendedor.objects.get(usuario=int(vendedor_id))
-        # p = Pedido(cliente=c, vendedor=v, subtotal=float(subtotal),
-        #            impuesto=float(impuesto), total=float(total),
-        #            comentario=comentario)
-        # p.save()
-        # if p:
-        #     obj = {'id': p.id, 'numero': p.no_pedido}
+        else:
+            obj['comentario'] = comentario
+
+        c = Cliente.objects.get(id=obj['cliente_id'])
+        u = User.objects.get(id=obj['vendedor_id'])
+        v = Vendedor.objects.get(usuario=u)
+        p = Pedido(cliente=c, vendedor=v, stotal=obj['subtotal'],
+                   impuesto=obj['impuesto'], total=obj['total'],
+                   comentario=comentario)
+        p.no_pedido = next_pedido()
+        p.usuario_creacion = u
+        p.save()
+        if p:
+            obj = {'id': p.id, 'numero': p.no_pedido}
     print(obj)
     data = json.dumps(obj)
     return HttpResponse(data, content_type='application/json')
