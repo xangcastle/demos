@@ -820,7 +820,7 @@ def salvar_detalle(request):
         obj['cantidad'] = float(cantidad)
         obj['valor'] = float(valor)
 
-        pe = Pedido.objects.get(id=int(obj['pedido_id']))
+        pe = Pedido.objects.get(id=obj['pedido_id'])
         p = Producto.objects.get(codigo=obj['producto_codigo'])
 
         d = Pedido_Detalle(pedido=pe,
