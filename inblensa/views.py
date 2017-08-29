@@ -775,7 +775,7 @@ def salvar_cabecera(request):
         comentario = request.POST.get('comentario')
         if not comentario:
             obj['error'] = "el parametro comentario es requerido"
-        c = Cliente.objects.get(id=int(cliente_id))
+        c = Cliente.objects.get(id=cliente_id)
         v = Vendedor.objects.get(usuario=int(vendedor_id))
         p = Pedido(cliente=c, vendedor=v, subtotal=float(subtotal),
                    impuesto=float(impuesto), total=float(total),
