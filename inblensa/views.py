@@ -755,26 +755,26 @@ def salvar_cabecera(request):
     if request.method == "POST":
         cliente_id = request.POST.get('cliente_id')
         if not cliente_id:
-            obj = {'error': "debe incluir el parametro cliente_id, con un id valido de cliente"}
+            obj['error'] = "debe incluir el parametro cliente_id, con un id valido de cliente"
         else:
             obj['cliente_id'] = int(cliente_id)
         vendedor_id = request.POST.get('vendedor_id')
         if not vendedor_id:
-            obj = {'error': "debe incluir el parametro vendedor_id, con un id valido de vendedor"}
+            obj['error'] = "debe incluir el parametro vendedor_id, con un id valido de vendedor"
         else:
             obj['vendedor_id'] = int(vendedor_id)
         subtotal = request.POST.get('subtotal')
         if not subtotal:
-            obj = {'error': "el parametro subtotal es requerido"}
+            obj['error'] = "el parametro subtotal es requerido"
         impuesto = request.POST.get('impuesto')
         if not impuesto:
-            obj = {'error': "el parametro impuesto es requerido"}
+            obj['error'] = "el parametro impuesto es requerido"
         total = request.POST.get('total')
         if not total:
-            obj = {'error': "el parametro total es requerido"}
+            obj['error'] = "el parametro total es requerido"
         comentario = request.POST.get('comentario')
         if not comentario:
-            obj = {'error': "el parametro comentario es requerido"}
+            obj['error'] = "el parametro comentario es requerido"
         p = Pedido(cliente=Cliente.objects.get(id=int(cliente_id)),
                    vendedor=Vendedor.objects.get(usuario=int(vendedor_id)),
                    subtotal=float(subtotal), impuesto=float(impuesto),
