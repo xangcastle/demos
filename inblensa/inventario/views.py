@@ -319,7 +319,12 @@ class proformas(TemplateView):
 
 
 def render_listado_pedido(request):
-    pedidos = Pedido.objects.filter(usuario_creacion=request.user, cerrado=False).order_by('-no_pedido')
+    id_vendedor = request.GET.get('id_vendedor', None)
+    if id_vendedor:
+        id_vendedor = int(id_vendedor)
+        pedidos = Pedido.objects.filter(usuario_creacion=User.objects.get(id=id_vendedor), cerrado=False).order_by('-no_pedido')
+    else:
+        pedidos = Pedido.objects.filter(usuario_creacion=request.user, cerrado=False).order_by('-no_pedido')
     html = render_to_string('inventario/partial/_pedidos.html', {'pedidos': pedidos})
     return HttpResponse(html)
 

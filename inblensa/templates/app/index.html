@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <!-- Mirrored from flicksbootstrap.com/demo/boost-admin/v1.3/boost-admin/index-2.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Sep 2016 01:49:34 GMT -->
 <head>
@@ -493,8 +493,8 @@
                                                         {% for e in estadisticas %}
                                                         <tr>
                                                             <td>{{ e.vendedor }}</td>
-                                                            <td><a href="#">{{ e.total_recuperado }}</a></td>
-                                                            <td><a href="#">{{ e.total_vendido }}</a></td>
+                                                            <td><a class="total-recuperado" href="#">{{ e.total_recuperado }}</a></td>
+                                                            <td><a class="total-vendido" href="#" data-idvendedor="{{ e.id }}">{{ e.total_vendido }}</a></td>
                                                             <td>{{ e.meta }}</td>
                                                             <td>{{ e.porcentaje }} %</td>
                                                         </tr>
@@ -818,7 +818,23 @@
                             </div><!-- End .panel -->
                         </div>
                     </div>{% endcomment %}
-                    {% endblock cuerpo %}
+
+                            <div class="modal fade in" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header text-center">
+                                            <h4 class="modal-title">Pedido</h4>
+                                        </div>
+                                        <div class="modal-body" id="contenido-modal">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                     {% endblock cuerpo %}
                 </div>
             </div>
         </section>
@@ -912,6 +928,19 @@
                     }
                 });
             }
+
+            var ver_ventas = function () {
+                $.ajax({
+                url:"/inblensa/render_listado_pedido/",
+                    data: {id_vendedor: $(this).data('idvendedor')},
+                type:"GET",
+                success:function (result) {
+                    $("#contenido-modal").empty().html(result);
+                    $('#modal').modal('show');
+                }
+            });
+            }
+            $('.total-vendido').on('click', ver_ventas);
         </script>
         {% block scripts-block %}
 

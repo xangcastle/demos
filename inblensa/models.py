@@ -606,7 +606,8 @@ def estadisticas_ventas():
     data = []
     vendedores = Vendedor.objects.filter(activo=True)
     for v in vendedores:
-        obj = {'vendedor': v.usuario.username,
+        obj = {'id': v.usuario.id,
+              'vendedor': v.usuario.username,
                'total_recuperado': v.total_recuperado(),
                'total_vendido': v.total_vendido(),
                'meta': v.meta, 'porcentaje': v.porcentaje()}
