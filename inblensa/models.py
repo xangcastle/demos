@@ -574,7 +574,10 @@ def get_no_recibo(user):
 
 
 def next_pedido():
-    return int(Pedido.objects.all().aggregate(Max('no_pedido'))['no_pedido__max']) + 1
+    try:
+        return int(Pedido.objects.all().aggregate(Max('no_pedido'))['no_pedido__max']) + 1
+    except:
+        return 1
 
 
 

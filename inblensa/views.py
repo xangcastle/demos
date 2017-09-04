@@ -794,7 +794,7 @@ def salvar_cabecera(request):
             obj['error'] = "el parametro comentario es requerido"
         else:
             obj['comentario'] = comentario
-
+        print obj['cliente_id']
         c = Cliente.objects.get(codigo=obj['cliente_id'])
         u = User.objects.get(id=obj['vendedor_id'])
         v = Vendedor.objects.get(usuario=u)
