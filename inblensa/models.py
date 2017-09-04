@@ -202,7 +202,29 @@ class Vendedor(models.Model):
     usuario = models.ForeignKey(User, null=False)
     serie = models.CharField(max_length=25, null=True, blank=True, verbose_name="Serie de Recibos")
     numero_inicial = models.PositiveIntegerField(null=True, blank=True, verbose_name="Numero Inicial para los recibos")
+    meta = models.FloatField(default=1.0)
     activo = models.BooleanField(default=True, null=False)
+
+    def ventas(self):
+        return Pedido.objects.filter(cerrado=False, usuario_creacion=self.usuario, anulado=False)
+
+    def recibos(self):
+        return Recibo_Provicional.objects.filter(cerrado=False, usuario_creacion=self.usuario, anulado=False)
+
+    def total_recuperado(self):
+        if self.recibos().count() == 0:
+            return 0.0
+        else:
+            return round(self.recibos().aggregate(Sum('monto'))['monto__sum'], 2)
+
+    def total_vendido(self):
+        if self.ventas().count() == 0:
+            return 0.0
+        else:
+            return round(self.ventas().aggregate(Sum('total'))['total__sum'], 2)
+
+    def porcentaje(self):
+        return (self.total_vendido() / self.meta) * 100
 
     class Meta:
         verbose_name_plural = "vendedores"
@@ -572,7 +594,6 @@ def get_no_recibo(user):
             no_recibo = v.numero_inicial
     return no_recibo
 
-
 def next_pedido():
     try:
         return int(Pedido.objects.all().aggregate(Max('no_pedido'))['no_pedido__max']) + 1
@@ -585,16 +606,9 @@ def estadisticas_ventas():
     data = []
     vendedores = Vendedor.objects.filter(activo=True)
     for v in vendedores:
-        obj = {'vendedor': v.usuario.username}
-        recibos = Recibo_Provicional.objects.filter(cerrado=False, usuario_creacion=v.usuario, anulado=False)
-        ventas = Pedido.objects.filter(cerrado=False, usuario_creacion=v.usuario, anulado=False)
-        if recibos:
-            obj['total_recuperado'] = round(recibos.aggregate(Sum('monto'))['monto__sum'], 2)
-        else:
-            obj['total_recuperado'] = 0.0
-        if ventas:
-            obj['total_vendido'] = round(ventas.aggregate(Sum('total'))['total__sum'], 2)
-        else:
-            obj['total_vendido'] = 0.0
+        obj = {'vendedor': v.usuario.username,
+               'total_recuperado': v.total_recuperado(),
+               'total_vendido': v.total_vendido(),
+               'meta': v.meta, 'porcentaje': v.porcentaje()}
         data.append(obj)
     return data

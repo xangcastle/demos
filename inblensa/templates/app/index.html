@@ -478,7 +478,7 @@
                      {% block cuerpo %}
                          {% if user.is_superuser %}
                              <div class="row">
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                        <div class="widget-box clearfix">
                                            <div>
                                                <table class="table table-responsive table-bordered table-striped">
@@ -486,6 +486,8 @@
                                                         <th>Vendedor</th>
                                                         <th>Rec</th>
                                                         <th>Venta</th>
+                                                        <th>Meta</th>
+                                                        <th>Porcentaje</th>
                                                    </thead>
                                                    <tbody>
                                                         {% for e in estadisticas %}
@@ -493,6 +495,8 @@
                                                             <td>{{ e.vendedor }}</td>
                                                             <td><a href="#">{{ e.total_recuperado }}</a></td>
                                                             <td><a href="#">{{ e.total_vendido }}</a></td>
+                                                            <td>{{ e.meta }}</td>
+                                                            <td>{{ e.porcentaje }} %</td>
                                                         </tr>
                                                         {% endfor %}
                                                    </tbody>
