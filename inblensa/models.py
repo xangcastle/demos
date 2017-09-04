@@ -19,6 +19,7 @@ def get_media_url(self, filename):
 
 # region OTROS
 class Import(models.Model):
+    codigo = models.CharField(max_length=50, null=True)
     razon_social = models.CharField(max_length=255)
     numero_ruc = models.CharField(max_length=20)
     nombre = models.CharField(max_length=165)
@@ -53,10 +54,15 @@ class Import(models.Model):
     def get_cliente(self):
         o = None
         try:
-            o = Cliente.objects.get(identificacion=self.identificacion, nombre=self.nombre,
+            o = Cliente.objects.get(codigo=self.codigo, nombre=self.nombre,
                                     empresa=self.get_empresa())
+            o.codigo = self.codigo
+            o.contacto = self.contacto
+            o.direccion = self.direccion
+            o.celular = self.celular
+            o.save()
         except:
-            o, create = Cliente.objects.get_or_create(
+            o, create = Cliente.objects.get_or_create(codigo=self.codigo,
                 empresa=self.get_empresa(),
                 identificacion=self.identificacion,
                 nombre=self.nombre,
@@ -153,6 +159,7 @@ class Comentario(models.Model):
 
 
 class Cliente(models.Model):
+    codigo = models.CharField(max_length=65, null=True)
     identificacion = models.CharField(max_length=65, null=True)
     nombre = models.CharField(max_length=165)
     telefono = models.CharField(max_length=50, null=True, blank=True)
@@ -165,7 +172,7 @@ class Cliente(models.Model):
 
     def to_json(self):
         return {'nombre': u''.join(self.nombre).encode('utf-8').strip(),
-                'id': self.id,
+                'id': self.id, 'codigo': self.codigo,
                 'identificacion': self.identificacion,
                 'telefono': self.telefono,
                 'celular': self.celular,

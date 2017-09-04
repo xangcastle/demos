@@ -718,14 +718,17 @@ def actualizar_cliente():
     url = 'http://inblensa.ddns.net:7779/Home/get_data_from_server'
     params = {'vista': 'view_info_migration_cliente'}
     response = requests.post(url, params=params)
+    print response
     assert response.status_code == 200
     json_data = response.json()
+    print json_data
     i = 321
     if json_data:
         for d in json_data:
             i += 1
+            print d
             if d["identificacion"]:
-                Import.objects.get_or_create(id=i,
+                Import.objects.get_or_create(id=i, codigo=int(d['CLAVE']),
                                              razon_social=d["razon_social"],
                                              numero_ruc=d["numero_ruc"],
                                              nombre=d["nombre"],
@@ -733,6 +736,8 @@ def actualizar_cliente():
                                              telefono=d["telefono"],
                                              direccion=d["direccion"],
                                              contacto=d["contacto"])
+    else:
+        print 'error error'
 
 @csrf_exempt
 def service_login(request):
@@ -790,7 +795,7 @@ def salvar_cabecera(request):
         else:
             obj['comentario'] = comentario
 
-        c = Cliente.objects.get(id=obj['cliente_id'])
+        c = Cliente.objects.get(codigo=obj['cliente_id'])
         u = User.objects.get(id=obj['vendedor_id'])
         v = Vendedor.objects.get(usuario=u)
         p = Pedido(cliente=c, vendedor=v, stotal=obj['subtotal'],
