@@ -28,15 +28,15 @@ class base_tabular(admin.TabularInline):
 
 
 class cliente_admin(ImportExportModelAdmin):
-    list_display = ('identificacion', 'nombre', 'telefono', 'direccion')
-    search_fields = ('nombre', 'identificacion')
+    list_display = ('codigo', 'identificacion', 'nombre', 'telefono', 'direccion')
+    search_fields = ('codigo', 'nombre', 'identificacion')
 
-    def get_actions(self, request):
-        actions = super(cliente_admin, self).get_actions(request)
-        if request.user.username[0].upper() != 'J':
-            if 'delete_selected' in actions:
-                del actions['delete_selected']
-        return actions
+    # def get_actions(self, request):
+    #     actions = super(cliente_admin, self).get_actions(request)
+    #     if request.user.username[0].upper() != 'J':
+    #         if 'delete_selected' in actions:
+    #             del actions['delete_selected']
+    #     return actions
 
 admin.site.register(Cliente, cliente_admin)
 

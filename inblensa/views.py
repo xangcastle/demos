@@ -722,20 +722,19 @@ def actualizar_cliente():
     assert response.status_code == 200
     json_data = response.json()
     print json_data
-    i = 321
     if json_data:
         for d in json_data:
-            i += 1
-            print d
-            if d["identificacion"]:
-                Import.objects.get_or_create(id=i, codigo=int(d['CLAVE']),
-                                             razon_social=d["razon_social"],
-                                             numero_ruc=d["numero_ruc"],
-                                             nombre=d["nombre"],
-                                             identificacion=d["identificacion"],
-                                             telefono=d["telefono"],
-                                             direccion=d["direccion"],
-                                             contacto=d["contacto"])
+            if d["CLAVE"] and d["CLAVE"] != "MOSTR":
+                i = Import(codigo=int(d['CLAVE']))
+                i.razon_social = d["razon_social"]
+                i.numero_ruc = d["numero_ruc"]
+                i.nombre = d["nombre"]
+                i.identificacion = d["identificacion"]
+                i.telefono = d["telefono"]
+                i.direccion = d["direccion"]
+                i.contacto = d["contacto"]
+                i.save()
+                i.integrar()
     else:
         print 'error error'
 

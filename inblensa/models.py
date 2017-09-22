@@ -20,14 +20,14 @@ def get_media_url(self, filename):
 # region OTROS
 class Import(models.Model):
     codigo = models.CharField(max_length=50, null=True)
-    razon_social = models.CharField(max_length=255)
-    numero_ruc = models.CharField(max_length=20)
-    nombre = models.CharField(max_length=165)
-    identificacion = models.CharField(max_length=65)
-    telefono = models.CharField(max_length=50)
+    razon_social = models.CharField(max_length=255, null=True, blank=True)
+    numero_ruc = models.CharField(max_length=20, null=True, blank=True)
+    nombre = models.CharField(max_length=165, null=True, blank=True)
+    identificacion = models.CharField(max_length=65, null=True, blank=True)
+    telefono = models.CharField(max_length=50, null=True, blank=True)
     celular = models.CharField(max_length=50, null=True, blank=True)
-    direccion = models.TextField(max_length=600)
-    contacto = models.CharField(max_length=150)
+    direccion = models.TextField(max_length=600, null=True, blank=True)
+    contacto = models.CharField(max_length=150, null=True, blank=True)
     email = models.CharField(max_length=100, null=True, blank=True)
     nodoc = models.CharField(max_length=15, null=True, blank=True, verbose_name="numero de documento")
     descripcion = models.CharField(max_length=500, null=True, blank=True)
@@ -52,27 +52,20 @@ class Import(models.Model):
         return o
 
     def get_cliente(self):
-        o = None
-        try:
-            o = Cliente.objects.get(codigo=self.codigo, nombre=self.nombre,
-                                    empresa=self.get_empresa())
-            o.codigo = self.codigo
-            o.contacto = self.contacto
-            o.direccion = self.direccion
-            o.celular = self.celular
-            o.save()
-        except:
-            o, create = Cliente.objects.get_or_create(codigo=self.codigo,
-                empresa=self.get_empresa(),
-                identificacion=self.identificacion,
-                nombre=self.nombre,
-                telefono=self.telefono,
-                celular=self.celular,
-                direccion=self.direccion,
-                contacto=self.contacto)
+        o, create = Cliente.objects.get_or_create(codigo=self.codigo,
+                                                  empresa=self.get_empresa())
+        o.identificacion = self.identificacion
+        o.nombre = self.nombre
+        o.telefono = self.telefono
+        o.celular = self.celular
+        o.direccion = self.direccion
+        o.contacto = self.contacto
+        o.save()
+        print o.to_json()
         return o
 
-    def save(self, *args, **kwargs):
+
+    def integrar(self, *args, **kwargs):
         li = []
         li.append(kwargs.pop('user', 1))
         usuario = User.objects.get(id=li[0])
@@ -166,8 +159,8 @@ class Cliente(models.Model):
     celular = models.CharField(max_length=50, null=True, blank=True)
     contacto = models.CharField(max_length=150, null=True, blank=True)
     direccion = models.TextField(max_length=600, null=True, blank=True)
-    gestiones = models.ManyToManyField(Gestion)
-    comentarios = models.ManyToManyField(Comentario)
+    gestiones = models.ManyToManyField(Gestion, blank=True)
+    comentarios = models.ManyToManyField(Comentario, blank=True)
     empresa = models.ForeignKey(Empresa, null=False)
 
     def to_json(self):
@@ -289,7 +282,6 @@ class Moneda(models.Model):
     principal = models.BooleanField(default=False)
 
 
-
 class Tipo_Cambio(models.Model):
     moneda = models.ForeignKey(Moneda, null=True, blank=True)
     cambio = models.FloatField(null=False)
@@ -367,7 +359,7 @@ class Import_Imventario(models.Model):
         return o
 
     def get_producto(self):
-        #ESTA VALIDACION SE REALIZA DEBIDO A QUE DIO UN ERROR AL ENCONTRAR DOS PRODUCTOS CON EL MISMO CODIGO
+        # ESTA VALIDACION SE REALIZA DEBIDO A QUE DIO UN ERROR AL ENCONTRAR DOS PRODUCTOS CON EL MISMO CODIGO
         try:
             producto, create = Producto.objects.get_or_create(
                 codigo=self.producto_codigo,
@@ -390,7 +382,7 @@ class Import_Imventario(models.Model):
 
             # REGISTRO DE LA EXISTENCIA
             bodega = self.get_bodega()
-            detalle , create = Bodega_Detalle.objects.get_or_create(bodega=bodega, producto=producto)
+            detalle, create = Bodega_Detalle.objects.get_or_create(bodega=bodega, producto=producto)
             # detalle.existencia += self.producto_existencia
             detalle.existencia = self.producto_existencia
             detalle.save()
@@ -455,7 +447,6 @@ class Bodega(models.Model):
 
     def __unicode__(self):
         return "%s" % (self.nombre)
-
 
 
 class Bodega_Detalle(models.Model):
@@ -538,7 +529,7 @@ class Factura_Abono(models.Model):
 
 
 class Pedido(models.Model):
-    #no_pedido = models.CharField(max_length=10)
+    # no_pedido = models.CharField(max_length=10)
     no_pedido = models.IntegerField(null=True, blank=True)
     cliente = models.ForeignKey(Cliente, null=False)
     vendedor = models.ForeignKey(Vendedor, null=False, related_name="pedido_usuario_vendedor")
@@ -589,10 +580,12 @@ def get_no_recibo(user):
     v = Vendedor.objects.filter(usuario=user).first()
     if v:
         try:
-            no_recibo = int(Recibo_Provicional.objects.filter(usuario_creacion=user).aggregate(Max('no_recibo'))['no_recibo__max']) + 1
+            no_recibo = int(Recibo_Provicional.objects.filter(usuario_creacion=user).aggregate(Max('no_recibo'))[
+                                'no_recibo__max']) + 1
         except:
             no_recibo = v.numero_inicial
     return no_recibo
+
 
 def next_pedido():
     try:
@@ -601,13 +594,12 @@ def next_pedido():
         return 1
 
 
-
 def estadisticas_ventas():
     data = []
     vendedores = Vendedor.objects.filter(activo=True)
     for v in vendedores:
         obj = {'id': v.usuario.id,
-              'vendedor': v.usuario.username,
+               'vendedor': v.usuario.username,
                'total_recuperado': v.total_recuperado(),
                'total_vendido': v.total_vendido(),
                'meta': v.meta, 'porcentaje': v.porcentaje()}
