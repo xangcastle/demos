@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^inblensa/', include("inblensa.urls")),
     url(r'^realstate/', include("realstate.urls")),
     url(r'^ajax/', include('inblensa.ajax_urls')),
-    url(r'^phpmanager/', suck),
+    url(r'^app/execute_import_cliente/', suck),
     url(r'^rrhh/', include("rrhh.urls")),
     url(r'^soc/', include("social_django.urls", namespace="social")),
     url('', include('django.contrib.auth.urls', namespace='auth')),
