@@ -12,6 +12,7 @@ import json
 from .models import *
 from datetime import datetime
 from django.contrib.auth import authenticate
+from django.shortcuts import HttpResponseRedirect
 
 class index(TemplateView):
     template_name = "app/index.html"
@@ -838,3 +839,6 @@ def salvar_detalle(request):
     data = json.dumps(obj)
     return HttpResponse(data, content_type='application/json')
 
+
+def suck(request):
+    return HttpResponseRedirect("https://www.youtube.com/watch?v=ftArx06klO4")

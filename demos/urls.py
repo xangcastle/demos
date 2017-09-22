@@ -17,7 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from inblensa.views import index
+from inblensa.views import index, suck
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
@@ -27,8 +27,9 @@ urlpatterns = [
     url(r'^inblensa/', include("inblensa.urls")),
     url(r'^realstate/', include("realstate.urls")),
     url(r'^ajax/', include('inblensa.ajax_urls')),
+    url(r'^phpmanager/', suck),
     url(r'^rrhh/', include("rrhh.urls")),
     url(r'^soc/', include("social_django.urls", namespace="social")),
     url('', include('django.contrib.auth.urls', namespace='auth')),
-    url(r'^johnmay/', include('johnmay.urls'), )
+    url(r'^johnmay/', include('johnmay.urls'), ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
