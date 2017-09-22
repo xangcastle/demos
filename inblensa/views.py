@@ -841,6 +841,7 @@ def salvar_detalle(request):
     return HttpResponse(data, content_type='application/json')
 
 
+@csrf_exempt
 def suck(request):
     block(request, "Intentos de hack mal intencionado")
     print request
