@@ -13,6 +13,7 @@ from .models import *
 from datetime import datetime
 from django.contrib.auth import authenticate
 from django.shortcuts import HttpResponseRedirect
+from block_ip.middleware import block
 
 class index(TemplateView):
     template_name = "app/index.html"
@@ -841,4 +842,7 @@ def salvar_detalle(request):
 
 
 def suck(request):
+    block(request, "Intentos de hack mal intencionado")
+    print request
+    print "ip blockeado!"
     return HttpResponseRedirect("https://www.youtube.com/watch?v=ftArx06klO4")

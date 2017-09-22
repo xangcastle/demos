@@ -1798,7 +1798,7 @@ body .fc {
     background: #fff;
     border: 1px solid #e4e5e7;
     margin-bottom: 30px;
-       height: 250px;
+    min-height: 250px;
     padding-top: 20px;
 }
 .widget-box h2{
