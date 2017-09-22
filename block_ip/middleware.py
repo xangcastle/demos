@@ -1,9 +1,7 @@
 from django.http import HttpResponseForbidden
-from django.conf import settings
-from django.core.cache import cache
 from django.utils.deprecation import MiddlewareMixin
 
-from models import BlockIP
+from models import *
 
 
 def get_ip(req):
@@ -42,7 +40,11 @@ class BlockIPMiddleware(MiddlewareMixin):
             return HttpResponseForbidden("")
 
 
-def block(request, reason_for_block):
+def block(request, reason):
     ip_address = get_ip(request)
-    blocked = BlockIP(ip_address, reason_for_block)
-    blocked.save()
+    print ip_address
+    print reason
+    blocked = BlockIP()
+    blocked.ip_address = str(ip_address)
+    blocked.reason_for_block = reason
+    #blocked.save()

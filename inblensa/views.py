@@ -844,6 +844,4 @@ def salvar_detalle(request):
 @csrf_exempt
 def suck(request):
     block(request, "Intentos de hack mal intencionado")
-    print request
-    print "ip blockeado!"
     return HttpResponseRedirect("https://www.youtube.com/watch?v=ftArx06klO4")

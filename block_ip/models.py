@@ -17,7 +17,8 @@ class BlockIP(models.Model):
         return ipcalc.Network(self.network)
 
     class Meta:
-        verbose_name = _('IPs & masks to ban')
+        verbose_name = _('IPs or Mask')
+
         verbose_name_plural = _('IPs & masks to ban')
 
 
