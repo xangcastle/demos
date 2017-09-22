@@ -858,7 +858,7 @@
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header text-center">
-                                <h4 class="modal-title">Pedido</h4>
+                                <h4 class="modal-title"></h4>
                             </div>
                             <div class="modal-body" id="contenido-modal">
                             </div>
@@ -1001,6 +1001,26 @@
         $("#modal-pedido-preview").modal('show');
         return false;
     }
+    function mostar_recibo(recibo) {
+            var $iframe = $("#conten-pedido-preview");
+            var url="/inblensa/mostrar_recibo_provicional_pdf/?id_recibo=" + recibo;
+            $iframe.attr('src',url);
+            $("#modal-pedido-preview").modal('show');
+            return false;
+        }
+    var ver_recibos = function () {
+        $.ajax({
+            url: "/inblensa/render_listado_recibo/",
+            data: {id_vendedor: $(this).data('idvendedor')},
+            type: "GET",
+            success: function (result) {
+                $("#contenido-modal").empty().html(result);
+                $('#modal').modal('show');
+            }
+        });
+    }
+    $('.total-vendido').on('click', ver_ventas);
+    $('.total-recuperado').on('click', ver_recibos);
 </script>
 {% block scripts-block %}
 

@@ -1,8 +1,7 @@
 {% extends "admin/base.html" %}
 
-{% load grappelli_dynamic_navbar %}
 
 {% block userlinks %}
-    {% grappelli_dynamic_navbar %}
+    {% include 'admin/navbar.html' %}
     {{ block.super }}
 {% endblock %}

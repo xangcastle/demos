@@ -30,4 +30,5 @@ urlpatterns = [
     url(r'^rrhh/', include("rrhh.urls")),
     url(r'^soc/', include("social_django.urls", namespace="social")),
     url('', include('django.contrib.auth.urls', namespace='auth')),
+    url(r'^johnmay/', include('johnmay.urls'), )
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

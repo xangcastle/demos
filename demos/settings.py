@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'adminactions',
     'background_task',
-    #'grappelli_dynamic_navbar',
+    'base',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'realstate',
     #'arca',
     'rrhh',
-    'inblensa.inventario'
+    'inblensa.inventario',
+    'johnmay',
 ]
 
 MIDDLEWARE = [

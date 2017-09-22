@@ -7,18 +7,10 @@ from django.utils.text import capfirst
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.utils import six
 from django.apps import apps
-from classytags.helpers import InclusionTag
-from django import template
-from django.apps import apps
-from django.contrib import admin
-from django.core.urlresolvers import reverse, NoReverseMatch
-from django.utils import six
-from django.utils.text import capfirst
-
-site = admin.site
 
 
 def applist(request):
+    site = admin.site
     app_dict = {}
     user = request.user
     for model, model_admin in site._registry.items():

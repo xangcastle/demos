@@ -489,7 +489,13 @@ class recibos_provicionales(TemplateView):
 
 
 def render_listado_recibo(request):
-    recibos = Recibo_Provicional.objects.filter(usuario_creacion=request.user, cerrado=False).order_by('-no_recibo')
+    id_vendedor = request.GET.get('id_vendedor', None)
+    if id_vendedor:
+        id_vendedor = int(id_vendedor)
+        recibos = Recibo_Provicional.objects.filter(usuario_creacion=User.objects.get(id=id_vendedor), cerrado=False).order_by(
+            '-no_pedido')
+    else:
+        recibos = Recibo_Provicional.objects.filter(usuario_creacion=request.user, cerrado=False).order_by('-no_recibo')
     html = render_to_string('cartera/partial/_recibos_provicionales.html', {'recibos': recibos})
     return HttpResponse(html)
 
