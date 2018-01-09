@@ -336,7 +336,7 @@ def render_nuevo_pedido(request):
     html = render_to_string('inventario/partial/_pedido.html',
                             {'vendedores': vendedores,
                              'clientes': clientes,
-                             'actual_vendedor': vendedor})
+                             'vendedor': vendedor})
     return HttpResponse(html)
 
 

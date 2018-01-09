@@ -6,6 +6,14 @@ from django.db import models
 from django.db.models import Sum, Max
 from django.contrib.auth.models import User
 
+def get_vendedor(user):
+    try:
+        return Vendedor.objects.get(usuario=user)
+    except:
+        return None
+
+User.add_to_class('vendedor', get_vendedor)
+
 
 def format_fecha(fecha):
     return "%s-%s-%s" % (fecha.year, fecha.month, fecha.day)
@@ -484,6 +492,7 @@ class Factura(models.Model):
     no_fac = models.CharField(max_length=10)
     serie = models.CharField(max_length=2, default="A")
     cliente = models.ForeignKey(Cliente, null=False, related_name="inventario_factura_cliente")
+    cliente_codigo = models.IntegerField(null=True, blank=True)
     stotal = models.FloatField(null=False)
     impuesto = models.FloatField(null=False)
     total = models.FloatField(null=False)
@@ -532,6 +541,7 @@ class Pedido(models.Model):
     # no_pedido = models.CharField(max_length=10)
     no_pedido = models.IntegerField(null=True, blank=True)
     cliente = models.ForeignKey(Cliente, null=False)
+    cliente_codigo = models.IntegerField(null=True, blank=True)
     vendedor = models.ForeignKey(Vendedor, null=False, related_name="pedido_usuario_vendedor")
     stotal = models.FloatField(null=False, verbose_name="subtotal")
     impuesto = models.FloatField(null=False)

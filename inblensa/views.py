@@ -720,10 +720,9 @@ def actualizar_cliente():
     url = 'http://inblensa.ddns.net:7779/Home/get_data_from_server'
     params = {'vista': 'view_info_migration_cliente'}
     response = requests.post(url, params=params)
-    print response
     assert response.status_code == 200
     json_data = response.json()
-    print json_data
+    Cliente.objects.all()
     if json_data:
         for d in json_data:
             if d["CLAVE"] and d["CLAVE"] != "MOSTR":
@@ -737,6 +736,8 @@ def actualizar_cliente():
                 i.contacto = d["contacto"]
                 i.save()
                 i.integrar()
+        else:
+            print "Error"
     else:
         print 'error error'
 
