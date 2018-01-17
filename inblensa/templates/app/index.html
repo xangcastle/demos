@@ -524,10 +524,14 @@
                                         {% for e in estadisticas %}
                                             <tr>
                                                 <td>{{ e.vendedor }}</td>
-                                                <td><a class="total-recuperado" href="#">{{ e.total_recuperado }}</a>
+
+                                                <td><a class="total-recuperado" href="#"
+                                                        data-idvendedor="{{ e.id }}">{{ e.total_recuperado }} </a>
                                                 </td>
+
                                                 <td><a class="total-vendido" href="#"
                                                        data-idvendedor="{{ e.id }}">{{ e.total_vendido }}</a></td>
+
                                                 <td>{{ e.meta }}</td>
                                                 <td>{{ e.porcentaje }} %</td>
                                             </tr>
@@ -1008,6 +1012,10 @@
             $("#modal-pedido-preview").modal('show');
             return false;
         }
+
+    var test = function () {
+        alert($(this).data('idvendedor'));
+    }
     var ver_recibos = function () {
         $.ajax({
             url: "/inblensa/render_listado_recibo/",
