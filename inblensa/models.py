@@ -69,7 +69,6 @@ class Import(models.Model):
         o.direccion = self.direccion
         o.contacto = self.contacto
         o.save()
-        print o.to_json()
         return o
 
 
